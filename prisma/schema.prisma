@@ -1,0 +1,198 @@
+// schema.prisma untuk SI Surat Kelurahan Liliba
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  WARGA
+  RT
+  STAFF
+  LURAH
+  ADMIN
+}
+
+enum JenisKelamin {
+  LAKI_LAKI
+  PEREMPUAN
+}
+
+enum StatusHidup {
+  HIDUP
+  MENINGGAL
+}
+
+model JenisSurat {
+  id        String  @id @default(uuid())
+  kode      String  @unique
+  nama      String
+  deskripsi String?
+  aktif     Boolean @default(true)
+  surat     Surat[]
+}
+
+enum StatusSurat {
+  DIAJUKAN
+  DIVERIFIKASI_STAFF
+  DITOLAK_STAFF
+  DIVERIFIKASI_LURAH
+  DITOLAK_LURAH
+  DITERBITKAN
+}
+
+enum PeranKeluarga {
+  KEPALA_KELUARGA
+  ISTRI
+  ANAK
+  ORANG_TUA
+  FAMILI_LAINNYA
+}
+
+model User {
+  id            String   @id @default(uuid())
+  username      String   @unique
+  email         String?  @unique
+  password      String
+  role          Role     @default(WARGA)
+  rememberToken String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  profil            ProfilPengguna?
+  suratDiajukan     Surat[]         @relation("PemohonSurat")
+  suratSebagaiStaff Surat[]         @relation("StaffVerifikasi")
+  suratSebagaiLurah Surat[]         @relation("LurahVerifikasi")
+}
+
+model ProfilPengguna {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  namaLengkap        String
+  nik                String       @unique
+  tempatTanggalLahir String?
+  jenisKelamin       JenisKelamin
+  pekerjaan          String?
+  agama              String?
+  noTelepon          String?
+  rt                 String?
+  rw                 String?
+  alamat             String?
+  foto               String?
+  statusHidup        StatusHidup  @default(HIDUP)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  anggotaKeluarga AnggotaKeluarga[]
+  KartuKeluarga   KartuKeluarga[]
+}
+
+model KartuKeluarga {
+  id               String         @id @default(uuid())
+  nomorKK          String         @unique
+  kepalaKeluargaId String
+  kepalaKeluarga   ProfilPengguna @relation(fields: [kepalaKeluargaId], references: [id])
+  alamat           String
+  rt               String?
+  rw               String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  anggota AnggotaKeluarga[]
+}
+
+model AnggotaKeluarga {
+  id              String         @id @default(uuid())
+  kartuKeluargaId String
+  kartuKeluarga   KartuKeluarga  @relation(fields: [kartuKeluargaId], references: [id])
+  profilId        String
+  profil          ProfilPengguna @relation(fields: [profilId], references: [id])
+  peran           PeranKeluarga
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model Surat {
+  id                     String       @id @default(uuid())
+  idJenisSurat           String
+  jenis                  JenisSurat   @relation(fields: [idJenisSurat], references: [id])
+  idPemohon              String
+  pemohon                User         @relation("PemohonSurat", fields: [idPemohon], references: [id])
+  noTelepon              String?
+  noSurat                String?      @unique
+  namaLengkap            String
+  jenisKelamin           JenisKelamin
+  tempatTanggalLahir     String
+  nik                    String
+  agama                  String?
+  pekerjaan              String?
+  alamat                 String?
+  alasanPengajuan        String?
+  status                 StatusSurat  @default(DIAJUKAN)
+  tanggalPengajuan       DateTime?
+  idStaff                String?
+  staff                  User?        @relation("StaffVerifikasi", fields: [idStaff], references: [id])
+  tanggalVerifikasiStaff DateTime?
+  idLurah                String?
+  lurah                  User?        @relation("LurahVerifikasi", fields: [idLurah], references: [id])
+  tanggalVerifikasiLurah DateTime?
+  catatanPenolakan       String?
+  fileSuratTerbit        String?
+  fileKtp                String?
+  fileKk                 String?
+  noSuratPengantar       String?
+  fileSuratPengantar     String?
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+
+  detailUsaha     DetailSuratUsaha?
+  detailKematian  DetailSuratKematian?
+  detailAhliWaris DetailSuratAhliWaris?
+}
+
+model DetailSuratUsaha {
+  id          String  @id @default(uuid())
+  suratId     String  @unique
+  surat       Surat   @relation(fields: [suratId], references: [id])
+  jenisUsaha  String
+  namaUsaha   String
+  alamatUsaha String
+  fotoUsaha   String?
+}
+
+model DetailSuratKematian {
+  id                String   @id @default(uuid())
+  suratId           String   @unique
+  surat             Surat    @relation(fields: [suratId], references: [id])
+  namaAyah          String
+  namaIbu           String
+  tanggalKematian   DateTime
+  tempatKematian    String
+  sebabKematian     String
+  fileSuratKematian String?
+}
+
+model DetailSuratAhliWaris {
+  id                     String   @id @default(uuid())
+  suratId                String   @unique
+  surat                  Surat    @relation(fields: [suratId], references: [id])
+  namaAlmarhum           String
+  tanggalMeninggal       DateTime
+  alamatTerakhir         String
+  hubunganDenganAlmarhum String
+  dataAhliWaris          Json?
+  dataIstri              Json?
+  dataAnak               Json?
+  dataSaksi              Json?
+  fileAktaKematian       String?
+  fileKtpAhliWaris       Json?
+  fileAktaLahirAhliWaris Json?
+  fileKtpSaksi           Json?
+}
