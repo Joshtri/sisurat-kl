@@ -1,20 +1,22 @@
 "use client";
 
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
-// opsional, jika ada aksi berupa tombol
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { ChevronRightIcon, Cog6ToothIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { ReactNode } from "react";
-
+import { Button } from "@heroui/react";
 interface BreadcrumbItem {
   label: string;
   href?: string;
 }
 
 interface PageHeaderProps {
-  title: string;
+  title?: string;
   description?: string;
   actions?: ReactNode;
   breadcrumbs?: BreadcrumbItem[];
+  onOptionsClick?: () => void; // <-- opsi baru
+  backHref?: string; // <-- opsi untuk kembali
 }
 
 export function PageHeader({
@@ -22,6 +24,8 @@ export function PageHeader({
   description,
   actions,
   breadcrumbs,
+  onOptionsClick,
+  backHref,
 }: PageHeaderProps) {
   return (
     <div className="flex flex-col gap-4 mb-6">
@@ -48,13 +52,37 @@ export function PageHeader({
         </nav>
       )}
 
-      {/* Header Title + Actions */}
+      {/* Title, Actions, Options */}
+      {/* Title, Back Button, Actions, Options */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
-          {description && <p className="text-gray-600 mt-1">{description}</p>}
+        <div className="flex items-center gap-2">
+          {backHref && (
+            <Button
+              className="text-sm"
+              size="sm"
+              startContent={<ChevronLeftIcon className="w-4 h-4 mr-1" />}
+              variant="solid"
+            >
+              <Link href={backHref}>Kembali</Link>
+            </Button>
+          )}
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
+            {description && <p className="text-gray-600 mt-1">{description}</p>}
+          </div>
         </div>
-        {actions && <div className="flex gap-2 ml-auto">{actions}</div>}
+        <div className="flex gap-2 items-center ml-auto">
+          {onOptionsClick && (
+            <button
+              className="p-2 rounded-md hover:bg-gray-100 transition"
+              title="Opsi"
+              onClick={onOptionsClick}
+            >
+              <Cog6ToothIcon className="w-5 h-5 text-gray-500" />
+            </button>
+          )}
+          {actions}
+        </div>
       </div>
     </div>
   );
