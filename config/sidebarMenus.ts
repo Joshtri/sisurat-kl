@@ -149,6 +149,18 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
     },
 
     {
+      title: "Manajemen User",
+      href: "/superadmin/users",
+      icon: UserGroupIcon,
+      iconSolid: UserGroupSolidIcon,
+    },
+    {
+      title: "Manajemen Jenis Surat",
+      href: "/superadmin/jenis-surat",
+      icon: DocumentTextIcon,
+      iconSolid: DocumentSolidIcon,
+    },
+    {
       title: "Manajemen Surat",
       href: "/superadmin/surat",
       icon: DocumentTextIcon,
@@ -156,19 +168,19 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
     },
 
     {
-      title: "Manajemen User",
-      href: "/superadmin/users",
+      title: "Manajemen Kartu Keluarga",
+      href: "/superadmin/kartu-keluarga",
+      icon: DocumentTextIcon,
+      iconSolid: DocumentSolidIcon,
+    },
+
+    {
+      title: "Manajemen Warga",
+      href: "/superadmin/warga",
       icon: UserGroupIcon,
       iconSolid: UserGroupSolidIcon,
-      submenu: [
-        { title: "Semua User", href: "/superadmin/users/all" },
-        { title: "Staff", href: "/superadmin/users/staff" },
-        { title: "Lurah", href: "/superadmin/users/lurah" },
-        { title: "Warga", href: "/superadmin/users/warga" },
-        { title: "RT", href: "/superadmin/users/rt" },
-        { title: "Superadmin", href: "/superadmin/users/superadmin" },
-      ],
     },
+
     {
       title: "Sistem",
       href: "/superadmin/sistem",

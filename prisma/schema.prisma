@@ -27,15 +27,6 @@ enum StatusHidup {
   MENINGGAL
 }
 
-model JenisSurat {
-  id        String  @id @default(uuid())
-  kode      String  @unique
-  nama      String
-  deskripsi String?
-  aktif     Boolean @default(true)
-  surat     Surat[]
-}
-
 enum StatusSurat {
   DIAJUKAN
   DIVERIFIKASI_STAFF
@@ -53,6 +44,8 @@ enum PeranKeluarga {
   FAMILI_LAINNYA
 }
 
+
+
 model User {
   id            String   @id @default(uuid())
   username      String   @unique
@@ -63,13 +56,13 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  profil            ProfilPengguna?
-  suratDiajukan     Surat[]         @relation("PemohonSurat")
-  suratSebagaiStaff Surat[]         @relation("StaffVerifikasi")
-  suratSebagaiLurah Surat[]         @relation("LurahVerifikasi")
+  profil            Warga?
+  suratDiajukan     Surat[] @relation("PemohonSurat")
+  suratSebagaiStaff Surat[] @relation("StaffVerifikasi")
+  suratSebagaiLurah Surat[] @relation("LurahVerifikasi")
 }
 
-model ProfilPengguna {
+model Warga {
   id     String @id @default(uuid())
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
@@ -87,36 +80,29 @@ model ProfilPengguna {
   foto               String?
   statusHidup        StatusHidup  @default(HIDUP)
 
+  kartuKeluargaId String?
+  kartuKeluarga   KartuKeluarga? @relation("AnggotaKK", fields: [kartuKeluargaId], references: [id])
+
+  peranDalamKK PeranKeluarga?
+  kepalaDariKK KartuKeluarga? @relation("KepalaKeluarga")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  anggotaKeluarga AnggotaKeluarga[]
-  KartuKeluarga   KartuKeluarga[]
 }
 
 model KartuKeluarga {
-  id               String         @id @default(uuid())
-  nomorKK          String         @unique
-  kepalaKeluargaId String
-  kepalaKeluarga   ProfilPengguna @relation(fields: [kepalaKeluargaId], references: [id])
-  alamat           String
-  rt               String?
-  rw               String?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  id               String @id @default(uuid())
+  nomorKK          String @unique
+  kepalaKeluargaId String @unique
+  kepalaKeluarga   Warga  @relation("KepalaKeluarga", fields: [kepalaKeluargaId], references: [id])
 
-  anggota AnggotaKeluarga[]
-}
+  alamat String
+  rt     String?
+  rw     String?
 
-model AnggotaKeluarga {
-  id              String         @id @default(uuid())
-  kartuKeluargaId String
-  kartuKeluarga   KartuKeluarga  @relation(fields: [kartuKeluargaId], references: [id])
-  profilId        String
-  profil          ProfilPengguna @relation(fields: [profilId], references: [id])
-  peran           PeranKeluarga
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  anggota   Warga[]  @relation("AnggotaKK")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Surat {
@@ -155,6 +141,15 @@ model Surat {
   detailUsaha     DetailSuratUsaha?
   detailKematian  DetailSuratKematian?
   detailAhliWaris DetailSuratAhliWaris?
+}
+
+model JenisSurat {
+  id        String  @id @default(uuid())
+  kode      String  @unique
+  nama      String
+  deskripsi String?
+  aktif     Boolean @default(true)
+  surat     Surat[]
 }
 
 model DetailSuratUsaha {
