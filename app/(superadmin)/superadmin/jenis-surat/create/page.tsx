@@ -11,14 +11,37 @@ import {
   jenisSuratSchema,
   JenisSuratSchema,
 } from "@/validations/jenisSuratSchema";
+import { createJenisSurat } from "@/services/jenisSuratService";
+import { showToast } from "@/utils/toastHelper";
 
 export default function CreateJenisSuratPage() {
   const router = useRouter();
 
   const onSubmit = async (data: JenisSuratSchema) => {
-    console.log("SUBMIT JENIS SURAT:", data);
-    await new Promise((r) => setTimeout(r, 1000));
-    router.push("/superadmin/jenis-surat");
+    try {
+      console.log("SUBMIT JENIS SURAT:", data);
+
+      await createJenisSurat({
+        ...data,
+        deskripsi: data.deskripsi ?? null,
+      });
+
+      showToast({
+        title: "Berhasil",
+        description: "Jenis surat berhasil dibuat.",
+        color: "success",
+      });
+
+      router.push("/superadmin/jenis-surat");
+    } catch (error) {
+      console.error("Gagal membuat jenis surat:", error);
+
+      showToast({
+        title: "Gagal",
+        description: "Terjadi kesalahan saat menyimpan data.",
+        color: "error",
+      });
+    }
   };
 
   return (
@@ -34,9 +57,14 @@ export default function CreateJenisSuratPage() {
 
       <CardContainer>
         <FormWrapper<JenisSuratSchema>
-          defaultValues={{ kode: "", nama: "", deskripsi: "", aktif: true }}
           schema={jenisSuratSchema}
           onSubmit={onSubmit}
+          defaultValues={{
+            kode: "",
+            nama: "",
+            deskripsi: "",
+            aktif: true,
+          }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextInput label="Kode Surat" name="kode" />
@@ -45,12 +73,11 @@ export default function CreateJenisSuratPage() {
             <SelectInput
               label="Status Aktif"
               name="aktif"
-              options={[
-                { label: "Aktif", value: "true" },
-                { label: "Nonaktif", value: "false" },
-              ]}
-              
               isRequired
+              options={[
+                { label: "Aktif", value: true },
+                { label: "Nonaktif", value: false },
+              ]}
             />
           </div>
 

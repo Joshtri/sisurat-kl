@@ -1,57 +1,51 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
+import { Role } from "@prisma/client";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { userSchema, UserSchema } from "@/validations/userSchema";
 import { TextInput } from "@/components/ui/inputs/TextInput";
-import { FormWrapper } from "@/components/FormWrapper";
 import { SelectInput } from "@/components/ui/inputs/SelectInput";
+import { FormWrapper } from "@/components/FormWrapper";
 import { CardContainer } from "@/components/common/CardContainer";
-
-interface UserFormData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  role: string;
-  phone: string;
-  address: string;
-}
+import { createUser } from "@/services/userService";
+import { showToast } from "@/utils/toastHelper"; // ✅ toast helper
 
 export default function UsersCreatePage() {
   const router = useRouter();
-  const [formData, setFormData] = useState<UserFormData>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    role: "user",
-    phone: "",
-    address: "",
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Partial<UserFormData>>({});
-
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
-    if (errors[name as keyof UserFormData]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
 
   const onSubmit = async (data: UserSchema) => {
-    console.log("SUBMIT:", data);
-    await new Promise((r) => setTimeout(r, 1000));
-    router.push("/superadmin/users");
+    try {
+      const payload = {
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+        role: data.role as Role,
+        phone: data.phone,
+        address: data.address,
+      };
+
+      await createUser(payload);
+
+      showToast({
+        title: "Berhasil",
+        description: "Pengguna berhasil dibuat.",
+        color: "success",
+      });
+
+      router.push("/superadmin/users");
+    } catch (error) {
+      console.error("Gagal membuat user:", error);
+
+      showToast({
+        title: "Gagal",
+        description: "Terjadi kesalahan saat menyimpan data pengguna.",
+        color: "error",
+      });
+    }
   };
 
   return (
@@ -66,12 +60,10 @@ export default function UsersCreatePage() {
         ]}
       />
 
-      {/* <div className="max-w-2xl mx-auto p-2">
-        <div className="bg-white rounded-lg shadow-md p-6"> */}
       <CardContainer>
         <FormWrapper<UserSchema>
           defaultValues={{
-            name: "",
+            username: "",
             email: "",
             password: "",
             confirmPassword: "",
@@ -82,7 +74,7 @@ export default function UsersCreatePage() {
           schema={userSchema}
           onSubmit={onSubmit}
         >
-          <TextInput label="Username" name="name" />
+          <TextInput label="Username" name="username" />
           <TextInput label="Email" name="email" type="email" />
           <TextInput label="Password" name="password" type="password" />
           <TextInput
@@ -90,7 +82,6 @@ export default function UsersCreatePage() {
             name="confirmPassword"
             type="password"
           />
-
           <SelectInput
             label="Role"
             name="role"
@@ -100,8 +91,9 @@ export default function UsersCreatePage() {
               { label: "Super Admin", value: "superadmin" },
             ]}
           />
+          <TextInput label="No. Telepon" name="phone" />
+          <TextInput label="Alamat" name="address" />
 
-          {/* DropdownInput, TextareaInput, dsb akan menyusul */}
           <div className="flex justify-end space-x-3 pt-6">
             <button
               className="px-4 py-2 bg-gray-200 rounded-md"
@@ -119,8 +111,6 @@ export default function UsersCreatePage() {
           </div>
         </FormWrapper>
       </CardContainer>
-      {/* </div>
-      </div> */}
     </>
   );
 }

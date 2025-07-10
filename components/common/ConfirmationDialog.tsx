@@ -52,7 +52,7 @@ export function ConfirmationDialog({
       onOpenChange(); // Close the modal after successful confirmation
     } catch (error) {
       // Don't close the modal on error, but log it
-      // eslint-disable-next-line no-console
+
       console.error("Error during confirmation:", error);
     } finally {
       setLoading(false);

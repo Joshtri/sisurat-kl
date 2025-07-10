@@ -13,3 +13,15 @@ export async function getUsers(): Promise<User[]> {
     createdAt: u.createdAt,
   }));
 }
+
+export async function createUser(data: Partial<User>) {
+  const res = await axios.post("/api/users", data);
+
+  return res.data;
+}
+
+export async function getUserById(id: string): Promise<User> {
+  const res = await axios.get(`/api/users/${id}`);
+
+  return res.data;
+}

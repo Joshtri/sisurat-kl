@@ -1,11 +1,11 @@
 "use client";
 
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { Select, SelectItem } from "@heroui/react";
 
 interface Option {
   label: string;
-  value: string;
+  value: string | boolean | number;
 }
 
 interface SelectInputProps {
@@ -14,8 +14,8 @@ interface SelectInputProps {
   options: Option[];
   placeholder?: string;
   disabled?: boolean;
-  isRequired?: boolean; // default: true
-  isLoading?: boolean; // optional, for async loading
+  isRequired?: boolean;
+  isLoading?: boolean;
 }
 
 export function SelectInput({
@@ -28,14 +28,11 @@ export function SelectInput({
   isLoading = false,
 }: SelectInputProps) {
   const {
-    register,
-    setValue,
-    watch,
+    control,
     formState: { errors },
   } = useFormContext();
 
   const error = errors[name]?.message as string | undefined;
-  const value = watch(name); // watch selected value
 
   return (
     <div className="space-y-1">
@@ -46,20 +43,34 @@ export function SelectInput({
         </label>
       )}
 
-      <Select
-        aria-label={name}
-        isDisabled={disabled}
-        isInvalid={!!error}
-        isLoading={isLoading}
-        placeholder={placeholder}
-        selectedKeys={value ? [value] : []}
-        // selectedKeys={value}
-        onSelectionChange={(val) => setValue(name, val as string)}
-      >
-        {options.map((opt) => (
-          <SelectItem key={opt.value}>{opt.label}</SelectItem>
-        ))}
-      </Select>
+      <Controller
+        control={control}
+        name={name}
+        render={({ field }) => (
+          <Select
+            aria-label={name}
+            isDisabled={disabled}
+            isInvalid={!!error}
+            isLoading={isLoading}
+            placeholder={placeholder}
+            selectedKeys={new Set([String(field.value)])}
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0];
+              let newValue: any = selected;
+
+              // Convert to correct type if possible
+              if (selected === "true") newValue = true;
+              else if (selected === "false") newValue = false;
+
+              field.onChange(newValue);
+            }}
+          >
+            {options.map((opt) => (
+              <SelectItem key={String(opt.value)}>{opt.label}</SelectItem>
+            ))}
+          </Select>
+        )}
+      />
 
       {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
