@@ -25,3 +25,7 @@ export async function getUserById(id: string): Promise<User> {
 
   return res.data;
 }
+
+export async function deleteUser(id: string): Promise<void> {
+  await axios.delete(`/api/users/${id}`);
+}
