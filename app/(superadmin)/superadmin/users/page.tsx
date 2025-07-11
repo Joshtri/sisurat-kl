@@ -39,7 +39,7 @@ export default function UsersPage() {
           onConfirm: () => alert(`Hapus ${user.username}`),
         }}
         onEdit={() => alert(`Edit ${user.username}`)}
-        onView={() => alert(`Lihat ${user.username}`)}
+        onView={() => router.push(`/superadmin/users/${user.id}`)}
       />
     ),
   }));
