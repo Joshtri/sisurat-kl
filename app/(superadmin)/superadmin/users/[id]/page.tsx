@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/common/PageHeader";
 import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
 import { CardContainer } from "@/components/common/CardContainer";
-import { Card, CardBody } from "@heroui/react";
 import { getUserById } from "@/services/userService";
 
 const roleLabel = (role: string) => {
@@ -51,15 +50,15 @@ export default function UsersDetailPage() {
       <CardContainer>
         {user && (
           <>
-               <ReadOnlyInput label="Nama Pengguna" value={user.username} />
-              <ReadOnlyInput label="Email" value={user.email} />
-              <ReadOnlyInput label="Role" value={user.role} />
-              <ReadOnlyInput
-                label="Dibuat pada"
-                value={new Date(user.createdAt).toLocaleString()}
-                />
-                </>
-          )}
+            <ReadOnlyInput label="Nama Pengguna" value={user.username} />
+            <ReadOnlyInput label="Email" value={user.email} />
+            <ReadOnlyInput label="Role" value={user.role} />
+            <ReadOnlyInput
+              label="Dibuat pada"
+              value={new Date(user.createdAt).toLocaleString()}
+            />
+          </>
+        )}
       </CardContainer>
     </>
   );

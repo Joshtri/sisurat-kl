@@ -5,10 +5,7 @@ import z from "zod";
 import { prisma } from "@/lib/prisma";
 import { userSchema } from "@/validations/userSchema";
 
-export async function GET(
-  req: Request,
-  context: { params: { id: string } }
-) {
+export async function GET(req: Request, context: { params: { id: string } }) {
   // ambil id dari context (TIDAK langsung destructuring di parameter fungsi!)
   const id = context.params.id;
 
@@ -26,15 +23,19 @@ export async function GET(
     });
 
     if (!user) {
-      return NextResponse.json({ message: "User tidak ditemukan" }, { status: 404 });
+      return NextResponse.json(
+        { message: "User tidak ditemukan" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(user);
   } catch (error: any) {
     console.error("GET USER ERROR:", error);
+
     return NextResponse.json(
       { message: "Gagal mengambil detail user", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
