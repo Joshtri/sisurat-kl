@@ -21,8 +21,10 @@ interface TableActionsProps {
   onView?: () => void;
   onEdit?: (() => void) | React.ReactNode;
   onDelete?: {
+    title?: string;
     message?: string;
     confirmLabel?: string;
+    loadingText?: string;
     onConfirm: () => Promise<void> | void;
   };
 }
@@ -39,19 +41,14 @@ export function TableActions({ onView, onEdit, onDelete }: TableActionsProps) {
         onView?.();
         break;
       case "edit":
-        if (typeof onEdit === "function") {
-          onEdit();
-        }
+        if (typeof onEdit === "function") onEdit();
         break;
       case "delete":
         setShowDeleteDialog(true);
         break;
-      default:
-        break;
     }
   };
 
-  // Create items array for DropdownMenu
   const items = [
     ...(onView ? [{ key: "view", label: "Lihat", icon: EyeIcon }] : []),
     ...(onEdit && typeof onEdit === "function"
@@ -93,25 +90,24 @@ export function TableActions({ onView, onEdit, onDelete }: TableActionsProps) {
         </DropdownMenu>
       </Dropdown>
 
-      {/* Custom Edit ReactNode */}
+      {/* Custom Edit as ReactNode (outside menu) */}
       {onEdit && typeof onEdit !== "function" && (
         <div className="inline-block ml-2">{onEdit}</div>
       )}
 
-      {/* Delete Confirmation Dialog */}
-      {onDelete && showDeleteDialog && (
+      {/* Confirmation Dialog */}
+      {onDelete && (
         <ConfirmationDialog
+          isOpen={showDeleteDialog}
+          onOpenChange={setShowDeleteDialog}
           confirmColor="danger"
           confirmLabel={onDelete.confirmLabel ?? "Hapus"}
-          icon={<TrashIcon className="h-5 w-5 text-red-600" />}
-          message={onDelete.message ?? "Yakin ingin menghapus data ini?"}
-          title="Hapus Data"
-          trigger={
-            <button
-              className="hidden"
-              onClick={() => setShowDeleteDialog(true)}
-            />
+          loadingText={onDelete.loadingText ?? "Menghapus..."}
+          title={onDelete.title ?? "Konfirmasi Hapus"}
+          message={
+            onDelete.message ?? "Apakah Anda yakin ingin menghapus item ini?"
           }
+          icon={<TrashIcon className="h-5 w-5 text-red-600" />}
           onConfirm={async () => {
             await onDelete.onConfirm();
             setShowDeleteDialog(false);
