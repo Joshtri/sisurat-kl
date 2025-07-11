@@ -7,22 +7,20 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
 import { CardContainer } from "@/components/common/CardContainer";
 import { getUserById } from "@/services/userService";
-
-const roleLabel = (role: string) => {
-  switch (role) {
-    case "superadmin":
-      return "Superadmin";
-    case "admin":
-      return "Admin";
-    case "user":
-      return "User";
-    default:
-      return role;
-  }
-};
+import { roleLabel, toLowerCase } from "@/utils/common";
+import { Chip } from "@heroui/react";
 
 export default function UsersDetailPage() {
   const { id } = useParams();
+
+  const roleColorMap: Record<
+    string,
+    "primary" | "success" | "warning" | "danger"
+  > = {
+    superadmin: "danger",
+    admin: "warning",
+    user: "primary",
+  };
 
   const {
     data: user,
@@ -51,8 +49,20 @@ export default function UsersDetailPage() {
         {user && (
           <>
             <ReadOnlyInput label="Nama Pengguna" value={user.username} />
-            <ReadOnlyInput label="Email" value={user.email} />
-            <ReadOnlyInput label="Role" value={user.role} />
+            <ReadOnlyInput label="Email" value={user.email || ""} />
+            <ReadOnlyInput
+              label="Role"
+              value={
+                <Chip
+                  color={roleColorMap[toLowerCase(user.role)] ?? "default"}
+                  variant="flat"
+                  className="w-fit"
+                >
+                  {roleLabel(toLowerCase(user.role))}
+                </Chip>
+              }
+            />
+
             <ReadOnlyInput
               label="Dibuat pada"
               value={new Date(user.createdAt).toLocaleString()}
