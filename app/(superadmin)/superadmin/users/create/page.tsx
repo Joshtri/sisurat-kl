@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import { Role } from "@prisma/client";
 
 import { PageHeader } from "@/components/common/PageHeader";
@@ -11,41 +12,44 @@ import { SelectInput } from "@/components/ui/inputs/SelectInput";
 import { FormWrapper } from "@/components/FormWrapper";
 import { CardContainer } from "@/components/common/CardContainer";
 import { createUser } from "@/services/userService";
-import { showToast } from "@/utils/toastHelper"; // ✅ toast helper
+import { showToast } from "@/utils/toastHelper";
+
+import { Button } from "@heroui/react";
+import { CreateOrEditButtons } from "@/components/ui/CreateOrEditButtons";
 
 export default function UsersCreatePage() {
   const router = useRouter();
 
-  const onSubmit = async (data: UserSchema) => {
-    try {
-      const payload = {
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        confirmPassword: data.confirmPassword,
-        role: data.role as Role,
-        phone: data.phone,
-        address: data.address,
-      };
-
-      await createUser(payload);
-
+  const { mutate, isPending } = useMutation({
+    mutationFn: createUser,
+    onSuccess: () => {
       showToast({
         title: "Berhasil",
         description: "Pengguna berhasil dibuat.",
         color: "success",
       });
-
       router.push("/superadmin/users");
-    } catch (error) {
-      console.error("Gagal membuat user:", error);
-
+    },
+    onError: () => {
       showToast({
         title: "Gagal",
         description: "Terjadi kesalahan saat menyimpan data pengguna.",
         color: "error",
       });
-    }
+    },
+  });
+
+  const onSubmit = (data: UserSchema) => {
+    const payload = {
+      username: data.username,
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+      role: data.role as Role,
+      phone: data.phone,
+      address: data.address,
+    };
+    mutate(payload);
   };
 
   return (
@@ -67,7 +71,7 @@ export default function UsersCreatePage() {
             email: "",
             password: "",
             confirmPassword: "",
-            role: "user",
+            role: "" as Role,
             phone: "",
             address: "",
           }}
@@ -86,28 +90,21 @@ export default function UsersCreatePage() {
             label="Role"
             name="role"
             options={[
-              { label: "User", value: "user" },
-              { label: "Admin", value: "admin" },
-              { label: "Super Admin", value: "superadmin" },
+              { label: "Warga", value: "WARGA" },
+              { label: "RT", value: "RT" },
+              { label: "Staff", value: "STAFF" },
+              { label: "Lurah", value: "LURAH" },
+              { label: "Admin", value: "ADMIN" },
             ]}
           />
           <TextInput label="No. Telepon" name="phone" />
           <TextInput label="Alamat" name="address" />
 
           <div className="flex justify-end space-x-3 pt-6">
-            <button
-              className="px-4 py-2 bg-gray-200 rounded-md"
-              type="button"
-              onClick={() => router.push("/superadmin/users")}
-            >
-              Batal
-            </button>
-            <button
-              className="px-4 py-2 bg-blue-600 text-white rounded-md"
-              type="submit"
-            >
-              Simpan
-            </button>
+            <CreateOrEditButtons
+              isLoading={isPending}
+              onCancel={() => router.push("/superadmin/users")}
+            />
           </div>
         </FormWrapper>
       </CardContainer>
