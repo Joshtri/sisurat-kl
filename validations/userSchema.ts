@@ -1,3 +1,4 @@
+import { Role } from "@prisma/client";
 import { z } from "zod";
 
 const userBaseSchema = z.object({
@@ -5,7 +6,7 @@ const userBaseSchema = z.object({
   email: z.string().email("Email tidak valid"),
   password: z.string().min(6, "Password minimal 6 karakter"),
   confirmPassword: z.string(),
-  role: z.enum(["user", "admin", "superadmin"]),
+  role: z.nativeEnum(Role),
   phone: z.string().optional(),
   address: z.string().optional(),
 });
