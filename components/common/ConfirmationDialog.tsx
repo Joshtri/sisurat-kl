@@ -9,10 +9,16 @@ import {
   Button,
   useDisclosure,
 } from "@heroui/react";
-import { ReactNode, useState, cloneElement, isValidElement } from "react";
+import {
+  ReactNode,
+  useState,
+  cloneElement,
+  isValidElement,
+  MouseEvent,
+} from "react";
 
 interface ConfirmationDialogProps {
-  trigger: ReactNode;
+  trigger?: ReactNode; // ✅ opsional, untuk programatik
   title?: string;
   message?: string;
   icon?: ReactNode;
@@ -28,6 +34,10 @@ interface ConfirmationDialogProps {
     | "center"
     | "top-center"
     | "bottom-center";
+
+  // ✅ external control
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function ConfirmationDialog({
@@ -41,40 +51,48 @@ export function ConfirmationDialog({
   loadingText = "Memproses...",
   confirmColor = "primary",
   placement = "center",
+  isOpen: externalOpen,
+  onOpenChange: externalSetOpen,
 }: ConfirmationDialogProps) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const internalDisclosure = useDisclosure();
+  const isControlled = typeof externalOpen === "boolean" && !!externalSetOpen;
+
+  const isOpen = isControlled ? externalOpen : internalDisclosure.isOpen;
+  const setOpen = isControlled
+    ? externalSetOpen
+    : internalDisclosure.onOpenChange;
+  const onOpen = internalDisclosure.onOpen;
+
   const [loading, setLoading] = useState(false);
 
   const handleConfirm = async () => {
     try {
       setLoading(true);
       await onConfirm();
-      onOpenChange(); // Close the modal after successful confirmation
+      setOpen(false); // ✅ tutup dialog setelah sukses
     } catch (error) {
-      // Don't close the modal on error, but log it
-
       console.error("Error during confirmation:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Clone the trigger element and add our onClick handler
+  // Clone trigger element jika ada
   const triggerWithHandler = isValidElement(trigger)
     ? cloneElement(trigger as React.ReactElement<any>, {
-        onClick: (e: React.MouseEvent) => {
+        onClick: (e: MouseEvent) => {
           e.preventDefault();
           e.stopPropagation();
-          onOpen();
+          onOpen(); // gunakan internal open
         },
       })
-    : trigger;
+    : null;
 
   return (
     <>
       {triggerWithHandler}
 
-      <Modal isOpen={isOpen} placement={placement} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} placement={placement} onOpenChange={setOpen}>
         <ModalContent>
           {(onClose) => (
             <>
