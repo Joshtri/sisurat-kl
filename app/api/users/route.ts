@@ -56,10 +56,12 @@ export async function GET() {
 
 function convertRole(role: string): Role {
   const map: Record<string, Role> = {
-    user: "WARGA",
-    admin: "STAFF",
-    superadmin: "ADMIN",
+    warga: "WARGA",
+    rt: "RT",
+    staff: "STAFF",
+    lurah: "LURAH",
+    admin: "ADMIN",
   };
 
-  return map[role] || "WARGA";
+  return map[role.toLowerCase()] || "WARGA";
 }
