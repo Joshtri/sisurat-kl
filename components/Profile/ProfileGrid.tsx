@@ -7,6 +7,7 @@ import { UserProfileSection } from "./UserProfileSection";
 import { WargaProfileSection } from "./WargaProfileSection";
 
 import { getMe } from "@/services/authService";
+import { RTProfileSection } from "./RTProfileSection";
 
 export default function ProfileGrid() {
   const {
@@ -54,6 +55,18 @@ export default function ProfileGrid() {
             alamat: user.alamat,
             statusHidup: user.statusHidup,
             foto: user.foto,
+          }}
+        />
+      )}
+
+      {user.role === "RT" && user.rtProfile && (
+        <RTProfileSection
+          rtProfile={{
+            id: user.rtProfile.id,
+            nik: user.rtProfile.nik,
+            rt: user.rtProfile.rt,
+            rw: user.rtProfile.rw,
+            wilayah: user.rtProfile.wilayah,
           }}
         />
       )}
