@@ -6,6 +6,7 @@ import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
+import "react-datepicker/dist/react-datepicker.css";
 
 export const metadata: Metadata = {
   title: {
