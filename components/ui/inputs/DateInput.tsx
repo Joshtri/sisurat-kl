@@ -8,6 +8,7 @@ interface DateInputProps {
   label?: string;
   placeholder?: string;
   disabled?: boolean;
+  isRequired?: boolean;
 }
 
 export function DateInput({
@@ -15,6 +16,7 @@ export function DateInput({
   label,
   placeholder,
   disabled,
+  isRequired = true,
 }: DateInputProps) {
   const {
     register,
@@ -32,6 +34,7 @@ export function DateInput({
         isInvalid={!!error}
         placeholder={placeholder}
         type="date"
+        required={isRequired}
       />
       {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
