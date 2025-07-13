@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
       where: { id: userId },
       include: {
         profil: true,
+        RTProfile: true,
       },
     });
 
@@ -31,6 +32,7 @@ export async function GET(req: NextRequest) {
     }
 
     const warga = user.profil;
+    const rtProfile = user.RTProfile;
 
     return NextResponse.json({
       // 🔐 USER SECTION
@@ -41,7 +43,7 @@ export async function GET(req: NextRequest) {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
 
-      // 👤 WARGA SECTION (nullable if not WARGA)
+      // 👤 WARGA SECTION
       namaLengkap: warga?.namaLengkap ?? null,
       nik: warga?.nik ?? null,
       tempatLahir: warga?.tempatLahir ?? null,
@@ -57,6 +59,17 @@ export async function GET(req: NextRequest) {
       foto: warga?.foto ?? null,
       fileKtp: warga?.fileKtp ?? null,
       fileKk: warga?.fileKk ?? null,
+
+      // 🏠 RT PROFILE SECTION
+      rtProfile: rtProfile
+        ? {
+            id: rtProfile.id,
+            nik: rtProfile.nik,
+            rt: rtProfile.rt,
+            rw: rtProfile.rw,
+            wilayah: rtProfile.wilayah,
+          }
+        : null,
     });
   } catch (error) {
     console.error("GET /api/me error:", error);
