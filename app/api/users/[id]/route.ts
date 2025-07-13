@@ -74,7 +74,7 @@ export async function PATCH(
     const parsed = partialUserSchema.parse(body);
 
     const updateData: any = {
-      ...(parsed.name && { username: parsed.name }),
+      ...(parsed.username && { username: parsed.username }),
       ...(parsed.email && { email: parsed.email }),
       ...(parsed.role && { role: convertRole(parsed.role) }),
       ...(parsed.password && {
