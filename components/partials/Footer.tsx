@@ -3,7 +3,7 @@
 import { Link, Divider, Chip } from "@heroui/react";
 
 interface FooterProps {
-  userRole?: "WARGA" | "STAFF" | "LURAH" | "SUPERADMIN";
+  userRole?: "WARGA" | "STAFF" | "LURAH" | "SUPERADMIN" | "RT";
   showVersion?: boolean;
   customText?: string;
   links?: Array<{
@@ -24,6 +24,7 @@ export default function Footer({
     | "staff"
     | "lurah"
     | "superadmin"
+    | "rt"
     | undefined;
 
   const getFooterText = () => {
@@ -34,6 +35,7 @@ export default function Footer({
       staff: "© 2025 Kelurahan Liliba - Staff Portal",
       lurah: "© 2025 Kelurahan Liliba - Portal Lurah",
       superadmin: "© 2025 Kelurahan Liliba - Super Admin Portal",
+      rt: "© 2025 Kelurahan Liliba - RT Portal",
     };
 
     return roleKey ? roleTexts[roleKey] : "© 2025 Kelurahan Liliba";
@@ -59,6 +61,10 @@ export default function Footer({
         { label: "Help", href: "/superadmin/help" },
         { label: "Settings", href: "/superadmin/settings" },
       ],
+      rt: [
+        { label: "Bantuan", href: "/rt/bantuan" },
+        { label: "Kontak", href: "/rt/kontak" },
+      ],
     };
 
     return roleKey ? roleLinks[roleKey] : [];
@@ -70,6 +76,7 @@ export default function Footer({
       staff: "secondary",
       lurah: "success",
       superadmin: "danger",
+      rt: "info",
     };
 
     return roleKey ? roleColors[roleKey] : "default";
