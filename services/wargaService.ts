@@ -1,5 +1,7 @@
-import { Warga } from "@prisma/client";
+// import { Warga } from "@prisma/client";
 import axios from "axios";
+
+import { Warga } from "@/interfaces/warga";
 
 export async function getAllWarga(): Promise<Warga[]> {
   const res = await axios.get("/api/warga");
