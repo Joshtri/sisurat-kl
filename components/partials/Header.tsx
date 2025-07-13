@@ -14,11 +14,15 @@ import {
   Avatar,
 } from "@heroui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
+
+import { logout } from "@/services/authService";
 
 interface HeaderProps {
-  userRole: "WARGA" | "STAFF" | "LURAH" | "SUPERADMIN";
+  userRole: "WARGA" | "STAFF" | "LURAH" | "SUPERADMIN" | "RT";
   userName?: string;
   userAvatar?: string;
+  onToggleSidebar?: () => void; // <- ini tambahan penting
 }
 
 interface NavItem {
@@ -31,6 +35,7 @@ export default function Header({
   userRole,
   userName = "User",
   userAvatar,
+  onToggleSidebar,
 }: HeaderProps) {
   // Navigation items untuk setiap role
   const navigationItems: Record<string, NavItem[]> = {
@@ -58,6 +63,11 @@ export default function Header({
       { label: "Backup", href: "/superadmin/backup" },
       { label: "Logs", href: "/superadmin/logs" },
     ],
+    rt: [
+      { label: "Dashboard", href: "/rt" },
+      { label: "Pengajuan", href: "/rt/pengajuan" },
+      { label: "Riwayat", href: "/rt/riwayat" },
+    ],
   };
 
   // Portal titles untuk setiap role
@@ -66,6 +76,7 @@ export default function Header({
     staff: "Portal Staff",
     lurah: "Portal Lurah",
     superadmin: "Portal Super Admin",
+    rt: "Portal RT",
   };
 
   // Color variants untuk setiap role
@@ -74,11 +85,19 @@ export default function Header({
     staff: "secondary",
     lurah: "success",
     superadmin: "danger",
+    rt: "info",
   };
 
   const currentNavItems = navigationItems[userRole] || [];
   const portalTitle = portalTitles[userRole] || "Portal";
   const roleColor = roleColors[userRole] || "primary";
+
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/"); // Redirect to home or login page
+  };
 
   return (
     <Navbar
@@ -155,21 +174,56 @@ export default function Header({
                 </span>
               </div>
             </DropdownItem>
-            <DropdownItem key="settings" href={`/${userRole}/profile`}>
+            <DropdownItem
+              key="settings"
+              href={`/${userRole.toLowerCase()}/profile`}
+            >
               Profil
             </DropdownItem>
-            <DropdownItem key="help" href={`/${userRole}/bantuan`}>
+            <DropdownItem
+              key="help"
+              href={`/${userRole.toLowerCase()}/bantuan`}
+            >
               Bantuan
             </DropdownItem>
-            <DropdownItem key="logout" className="text-danger" color="danger">
+            <DropdownItem
+              onClick={handleLogout}
+              key="logout"
+              className="text-danger"
+              color="danger"
+            >
               Keluar
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu (untuk toggle sidebar di mobile) */}
         <div className="md:hidden">
-          <Dropdown>
+          <Button
+            isIconOnly
+            className="text-default-500"
+            variant="light"
+            onClick={onToggleSidebar}
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M4 6h16M4 12h16M4 18h16"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+              />
+            </svg>
+          </Button>
+        </div>
+
+        {/* Mobile Menu */}
+        {/* <div className="md:hidden"> */}
+        {/* <Dropdown>
             <DropdownTrigger>
               <Button isIconOnly className="text-default-500" variant="light">
                 <svg
@@ -195,7 +249,7 @@ export default function Header({
               ))}
             </DropdownMenu>
           </Dropdown>
-        </div>
+        </div> */}
       </NavbarContent>
     </Navbar>
   );
