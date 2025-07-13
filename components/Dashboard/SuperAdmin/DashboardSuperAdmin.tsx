@@ -16,12 +16,14 @@ import { SystemOverview } from "./SystemOverview";
 import { TableActionsDemo } from "./TableActionsDemo";
 import { useRouter } from "next/navigation";
 import {
+  DatabaseStatus,
   getBackupStatus,
   getDatabaseStatus,
   getDiskStatus,
   getServerStatus,
 } from "@/services/healthService";
 import { SkeletonText } from "@/components/ui/skeleton/SkeletonText";
+import { getDashboardStats } from "@/services/dashboardService";
 
 export default function DashboardSuperAdmin() {
   const { data: serverStatusData, isLoading: serverLoading } = useQuery({
@@ -30,11 +32,12 @@ export default function DashboardSuperAdmin() {
     refetchInterval: 10000,
   });
 
-  const { data: databaseStatusData, isLoading: databaseLoading } = useQuery({
-    queryKey: ["health-database"],
-    queryFn: getDatabaseStatus,
-    refetchInterval: 10000,
-  });
+  const { data: databaseStatusData, isLoading: databaseLoading } =
+    useQuery<DatabaseStatus>({
+      queryKey: ["health-database"],
+      queryFn: getDatabaseStatus,
+      refetchInterval: 10000,
+    });
 
   const { data: backupStatusData, isLoading: backupLoading } = useQuery({
     queryKey: ["health-backup"],
@@ -48,11 +51,9 @@ export default function DashboardSuperAdmin() {
     refetchInterval: 30000,
   });
 
-  const [stats, setStats] = useState({
-    totalUsers: 150,
-    totalSurat: 1234,
-    pendingReview: 45,
-    systemAlerts: 3,
+  const { data: stats, isLoading: statsLoading } = useQuery({
+    queryKey: ["dashboard-stats"],
+    queryFn: getDashboardStats,
   });
 
   const router = useRouter();
@@ -66,12 +67,12 @@ export default function DashboardSuperAdmin() {
   const databaseStatus = databaseLoading ? (
     <SkeletonText />
   ) : (
-    databaseStatusData?.status || "Unknown"
+    databaseStatusData?.database || "Unknown"
   );
   const backupStatus = backupLoading ? (
     <SkeletonText />
   ) : (
-    backupStatusData?.status || "Unknown"
+    backupStatusData?.lastBackup || "Unknown"
   );
   const diskStatus = diskLoading ? (
     <SkeletonText />
@@ -91,7 +92,7 @@ export default function DashboardSuperAdmin() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="Total Pengajuan Surat"
-          value={stats.totalSurat}
+          value={statsLoading ? <SkeletonText /> : (stats?.totalSurat ?? 0)}
           color="success"
           action={
             <Button
@@ -106,28 +107,9 @@ export default function DashboardSuperAdmin() {
         />
 
         <StatsCard
-          title={"Surat Masuk"}
-          value={stats.totalSurat}
-          color="success"
-          action={
-            <Button onPress={() => {}} color="primary" size="sm">
-              View Surat
-            </Button>
-          }
-          icon={<DocumentTextIcon className="w-6 h-6 text-success" />}
-        />
-        <StatsCard
-          title={"Surat Keluar"}
-          value={stats.totalSurat}
-          color="success"
-          action={
-            <Button color="success" size="sm">
-              View Surat
-            </Button>
-          }
-          icon={<DocumentTextIcon className="w-6 h-6 text-success" />}
-        />
-        <StatsCard
+          title="Total Users"
+          value={statsLoading ? <SkeletonText /> : (stats?.totalUsers ?? 0)}
+          color="primary"
           action={
             <Button
               onPress={() => router.push("/superadmin/users")}
@@ -138,33 +120,30 @@ export default function DashboardSuperAdmin() {
             </Button>
           }
           icon={<UserGroupIcon className="w-6 h-6 text-primary" />}
-          title="Total Users"
-          value={stats.totalUsers}
-          color="primary"
         />
 
         <StatsCard
+          title="Surat Dalam Tinjauan"
+          value={statsLoading ? <SkeletonText /> : (stats?.pendingReview ?? 0)}
+          color="warning"
           action={
             <Button color="warning" size="sm">
               Review
             </Button>
           }
           icon={<ShieldExclamationIcon className="w-6 h-6 text-warning" />}
-          title="Surat Dalam Tinjauan"
-          value={stats.pendingReview}
-          color="warning"
         />
 
         <StatsCard
+          title="Surat Ditolak"
+          value={statsLoading ? <SkeletonText /> : (stats?.rejected ?? 0)}
+          color="danger"
           action={
             <Button color="danger" size="sm">
               Review
             </Button>
           }
           icon={<ShieldExclamationIcon className="w-6 h-6 text-danger" />}
-          title="Surat Ditolak"
-          value={stats.pendingReview}
-          color="danger"
         />
       </div>
 
