@@ -2,44 +2,53 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { CardContainer } from "@/components/common/CardContainer";
 import { FormWrapper } from "@/components/FormWrapper";
 import { TextInput } from "@/components/ui/inputs/TextInput";
 import { SelectInput } from "@/components/ui/inputs/SelectInput";
+import { CreateOrEditButtons } from "@/components/ui/CreateOrEditButtons";
 import {
   kartuKeluargaSchema,
   KartuKeluargaSchema,
 } from "@/validations/kartuKeluargaSchema";
-
-interface KepalaKeluargaOption {
-  label: string;
-  value: string;
-}
+import { getAllWarga } from "@/services/wargaService";
+import { createKartuKeluarga } from "@/services/kartuKeluargaService";
+import { showToast } from "@/utils/toastHelper"; // kalau pakai
 
 export default function CreateKartuKeluargaPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const { data: options = [], isLoading } = useQuery<KepalaKeluargaOption[]>({
+  const { data: wargaList = [], isLoading } = useQuery({
     queryKey: ["warga-options"],
-    queryFn: async () => {
-      const res = await axios.get("/api/warga");
-      const wargaList = res.data as any[];
+    queryFn: getAllWarga,
+  });
 
-      return wargaList.map((warga) => ({
-        label: warga.namaLengkap,
-        value: warga.id,
-      }));
+  const { mutate, isPending: isSubmitting } = useMutation({
+    mutationFn: createKartuKeluarga,
+    onSuccess: () => {
+      showToast({
+        title: "Berhasil",
+        description: "Kartu Keluarga berhasil dibuat",
+        color: "success",
+      });
+      queryClient.invalidateQueries({ queryKey: ["kartu-keluarga"] });
+      router.push("/superadmin/kartu-keluarga");
+    },
+    onError: (error: any) => {
+      showToast({
+        title: "Gagal",
+        description: error?.response?.data?.message || "Gagal menyimpan data",
+        color: "error",
+      });
     },
   });
 
-  const onSubmit = async (data: KartuKeluargaSchema) => {
-    console.log("SUBMIT KK:", data);
-    await new Promise((r) => setTimeout(r, 1000));
-    router.push("/superadmin/kartu-keluarga");
+  const onSubmit = (data: KartuKeluargaSchema) => {
+    mutate(data);
   };
 
   return (
@@ -67,14 +76,17 @@ export default function CreateKartuKeluargaPage() {
           onSubmit={onSubmit}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <TextInput label="Nomor KK" name="nomorKK" />
+            <TextInput label="Nomor KK" name="nomorKK" maxLength={16} />
             <SelectInput
               isLoading={isLoading}
               label="Kepala Keluarga"
               name="kepalaKeluargaId"
               options={[
                 { label: "-- Pilih Kepala Keluarga --", value: "" },
-                ...options,
+                ...wargaList.map((w) => ({
+                  label: w.namaLengkap,
+                  value: w.id,
+                })),
               ]}
             />
             <TextInput label="Alamat" name="alamat" />
@@ -83,19 +95,13 @@ export default function CreateKartuKeluargaPage() {
           </div>
 
           <div className="flex justify-end space-x-3 pt-6">
-            <button
-              className="px-4 py-2 bg-gray-200 rounded-md"
-              type="button"
-              onClick={() => router.push("/superadmin/kartu-keluarga")}
-            >
-              Batal
-            </button>
-            <button
-              className="px-4 py-2 bg-blue-600 text-white rounded-md"
-              type="submit"
-            >
-              Simpan
-            </button>
+            <CreateOrEditButtons
+              submitType="submit"
+              cancelLabel="Batal"
+              showCancel
+              isLoading={isSubmitting}
+              onCancel={() => router.push("/superadmin/kartu-keluarga")}
+            />
           </div>
         </FormWrapper>
       </CardContainer>
