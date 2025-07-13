@@ -2,13 +2,14 @@
 
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { Chip } from "@heroui/react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
 import { CardContainer } from "@/components/common/CardContainer";
 import { getUserById } from "@/services/userService";
 import { roleLabel, toLowerCase } from "@/utils/common";
-import { Chip } from "@heroui/react";
+import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 
 export default function UsersDetailPage() {
   const { id } = useParams();
@@ -18,7 +19,7 @@ export default function UsersDetailPage() {
     "primary" | "success" | "warning" | "danger"
   > = {
     superadmin: "danger",
-    admin: "warning",
+    superadmin: "warning",
     user: "primary",
   };
 
@@ -45,7 +46,9 @@ export default function UsersDetailPage() {
         actions={[]}
       />
 
-      <CardContainer>
+      <CardContainer isLoading={isLoading} skeleton={<SkeletonCard rows={4} />}>
+        {/* {isLoading && <SkeletonCard rows={4} />} */}
+
         {user && (
           <>
             <ReadOnlyInput label="Nama Pengguna" value={user.username} />
@@ -62,7 +65,6 @@ export default function UsersDetailPage() {
                 </Chip>
               }
             />
-
             <ReadOnlyInput
               label="Dibuat pada"
               value={new Date(user.createdAt).toLocaleString()}
