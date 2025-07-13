@@ -47,8 +47,8 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       icon: DocumentTextIcon,
       iconSolid: DocumentSolidIcon,
       submenu: [
-        { title: "Buat Permohonan", href: "/warga/permohonan/buat" },
-        { title: "Riwayat Permohonan", href: "/warga/permohonan/riwayat" },
+        { title: "Buat Permohonan", href: "/warga/permohonan/create" },
+        { title: "Riwayat Permohonan", href: "/warga/permohonan/history" },
       ],
     },
     {
@@ -58,8 +58,8 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       iconSolid: ClipboardDocumentListIcon,
     },
     {
-      title: "Profil",
-      href: "/warga/profil",
+      title: "Profile",
+      href: "/warga/profile",
       icon: UserIcon,
       iconSolid: UserIcon,
     },
@@ -182,6 +182,13 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
     },
 
     {
+      title: "Manajemen RT",
+      href: "/superadmin/rt",
+      icon: DocumentTextIcon,
+      iconSolid: DocumentSolidIcon,
+    },
+
+    {
       title: "Sistem",
       href: "/superadmin/sistem",
       icon: CogIcon,
@@ -197,6 +204,26 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       href: "/superadmin/laporan-global",
       icon: ChartBarIcon,
       iconSolid: ChartSolidIcon,
+    },
+  ],
+  RT: [
+    {
+      title: "Dashboard",
+      href: "/rt/dashboard",
+      icon: HomeIcon,
+      iconSolid: HomeSolidIcon,
+    },
+    {
+      title: "Pengajuan",
+      href: "/rt/pengajuan",
+      icon: DocumentTextIcon,
+      iconSolid: DocumentSolidIcon,
+    },
+    {
+      title: "Riwayat",
+      href: "/rt/riwayat",
+      icon: ArchiveBoxIcon,
+      iconSolid: ArchiveBoxIcon,
     },
   ],
 };
