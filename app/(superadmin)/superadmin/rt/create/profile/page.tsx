@@ -1,16 +1,16 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { CardContainer } from "@/components/common/CardContainer";
 import { PageHeader } from "@/components/common/PageHeader";
 import { FormWrapper } from "@/components/FormWrapper";
-import { TextInput } from "@/components/ui/inputs/TextInput";
-import { showToast } from "@/utils/toastHelper";
-import { createRTProfile } from "@/services/rtService";
 import { CreateOrEditButtons } from "@/components/ui/CreateOrEditButtons";
+import { TextInput } from "@/components/ui/inputs/TextInput";
+import { createRTProfile } from "@/services/rtService";
+import { showToast } from "@/utils/toastHelper";
 
 import * as z from "zod";
 
@@ -25,8 +25,7 @@ type RTProfileSchema = z.infer<typeof rtProfileSchema>;
 
 export default function CreateProfileRTPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const userId = searchParams.get("userId");
+   // const userId = searchParams.get("userId");
 
   const { mutate, isPending } = useMutation({
     mutationFn: createRTProfile,
@@ -49,8 +48,14 @@ export default function CreateProfileRTPage() {
     },
   });
 
+  const [userId, setUserId] = useState<string | null>(null);
+
   useEffect(() => {
-    if (!userId) {
+    const sp = new URLSearchParams(window.location.search);
+    const uid = sp.get("userId");
+    setUserId(uid);
+
+    if (!uid) {
       showToast({
         title: "Gagal",
         description: "User ID tidak ditemukan.",
@@ -58,8 +63,7 @@ export default function CreateProfileRTPage() {
       });
       router.push("/superadmin/rt");
     }
-  }, [userId, router]);
-
+  }, [router]);
   const onSubmit = (data: RTProfileSchema) => {
     if (!userId) return;
     mutate({ userId, ...data });

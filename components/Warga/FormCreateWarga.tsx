@@ -1,29 +1,28 @@
 "use client";
 
-import React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { CreateOrEditButtons } from "../ui/CreateOrEditButtons";
 import { DateInput } from "../ui/inputs/DateInput";
 
-import {
-  StatusHidupEnum,
-  JenisKelaminEnum,
-  Agama,
-  Pekerjaan,
-} from "@/constants/enums";
-import { enumToSelectOptions } from "@/utils/enumHelpers";
-import { FormWrapper } from "@/components/FormWrapper";
-import { TextInput } from "@/components/ui/inputs/TextInput";
-import { SelectInput } from "@/components/ui/inputs/SelectInput";
 import { CardContainer } from "@/components/common/CardContainer";
-import { wargaSchema, WargaSchema } from "@/validations/wargaSchema";
+import { FormWrapper } from "@/components/FormWrapper";
+import { SelectInput } from "@/components/ui/inputs/SelectInput";
+import { TextInput } from "@/components/ui/inputs/TextInput";
+import {
+  Agama,
+  JenisKelaminEnum,
+  Pekerjaan,
+  StatusHidupEnum,
+} from "@/constants/enums";
+import { getKartuKeluarga } from "@/services/kartuKeluargaService";
 import { getUsers } from "@/services/userService";
 import { createWarga } from "@/services/wargaService";
+import { enumToSelectOptions } from "@/utils/enumHelpers";
 import { showToast } from "@/utils/toastHelper"; // kalau ada
-import { getKartuKeluarga } from "@/services/kartuKeluargaService";
+import { wargaSchema, WargaSchema } from "@/validations/wargaSchema";
 interface FormCreateWargaProps {
   defaultUserId?: string;
   onSuccess?: () => void;
@@ -34,11 +33,19 @@ export default function FormCreateWarga({
   onSuccess,
 }: FormCreateWargaProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
 
-  const userIdFromQuery = searchParams.get("userId") || "";
+  // const userIdFromQuery = searchParams.get("userId") || "";
 
-  const effectiveUserId = defaultUserId || userIdFromQuery;
+  // const effectiveUserId = defaultUserId || userIdFromQuery;
+
+  const [userIdFromQuery, setUserIdFromQuery] = useState<string>("");
+
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    const uid = sp.get("userId");
+    if (uid) setUserIdFromQuery(uid);
+  }, []);
   const queryClient = useQueryClient();
 
   const { data: users = [], isLoading: loadingUsers } = useQuery({
@@ -81,7 +88,7 @@ export default function FormCreateWarga({
     <CardContainer>
       <FormWrapper<WargaSchema>
         defaultValues={{
-          userId: effectiveUserId,
+          userId: userIdFromQuery,
           namaLengkap: "",
           nik: "",
           //   tempatTanggalLahir: "",
