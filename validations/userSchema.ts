@@ -7,8 +7,8 @@ const userBaseSchema = z.object({
   password: z.string().min(6, "Password minimal 6 karakter"),
   confirmPassword: z.string(),
   role: z.nativeEnum(Role),
-  phone: z.string().optional(),
-  address: z.string().optional(),
+  // phone: z.string().optional(),
+  // address: z.string().optional(),
 });
 
 export const userSchema = userBaseSchema.refine(
