@@ -2,10 +2,14 @@ export const roleLabel = (role: string) => {
   switch (role) {
     case "superadmin":
       return "Superadmin";
-    case "superadmin":
-      return "Admin";
-    case "user":
-      return "User";
+    case "staff":
+      return "Staff";
+    case "lurah":
+      return "Lurah";
+    case "rt":
+      return "RT";
+    case "warga":
+      return "Warga";
     default:
       return role;
   }
