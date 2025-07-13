@@ -14,7 +14,7 @@ import { useState } from "react";
 
 import { sidebarMenus } from "@/config/sidebarMenus";
 interface SidebarProps {
-  userRole: "WARGA" | "STAFF" | "LURAH" | "SUPERADMIN";
+  userRole: "WARGA" | "STAFF" | "LURAH" | "SUPERADMIN" | "RT";
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
   className?: string;
@@ -33,69 +33,26 @@ export default function Sidebar({
     setExpandedSubmenus((prev) =>
       prev.includes(menuTitle)
         ? prev.filter((item) => item !== menuTitle)
-        : [...prev, menuTitle],
+        : [...prev, menuTitle]
     );
   };
 
   const menuItems: MenuItem[] = sidebarMenus[userRole] ?? [];
 
-  const getRoleDisplayName = () => {
-    switch (userRole) {
-      case "WARGA":
-        return "Warga";
-      case "STAFF":
-        return "Staff";
-      case "LURAH":
-        return "Lurah";
-      case "SUPERADMIN":
-        return "Super Admin";
-      default:
-        return "User";
-    }
-  };
-
-  const getRoleColor = () => {
-    switch (userRole) {
-      case "WARGA":
-        return "bg-blue-600";
-      case "STAFF":
-        return "bg-green-600";
-      case "LURAH":
-        return "bg-purple-600";
-      case "SUPERADMIN":
-        return "bg-red-600";
-      default:
-        return "bg-gray-600";
-    }
-  };
-
   return (
     <aside
-      className={`bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 border-r border-blue-700/50 transition-all duration-500 ease-out flex flex-col h-full shadow-2xl ${
-        isCollapsed ? "w-16" : "w-64"
-      } ${className}`}
+      className={`bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900
+    border-r border-blue-700/50 transition-all duration-500 ease-out
+    flex flex-col shadow-2xl
+    ${isCollapsed ? "w-16" : "w-64"}
+    ${className}
+    h-full  
+    fixed z-40 top-16 bottom-0 lg:static pt-0 lg:pt-0
+  `}
     >
       {/* Header */}
       <div className="p-4 border-b border-blue-600/30 bg-gradient-to-r from-blue-800/50 to-blue-700/50 backdrop-blur-sm">
         <div className="flex items-center justify-between">
-          {!isCollapsed && (
-            <div className="flex items-center space-x-3 animate-in slide-in-from-left duration-300">
-              <div
-                className={`w-10 h-10 ${getRoleColor()} rounded-lg flex items-center justify-center shadow-lg transform transition-all duration-300 hover:scale-110 hover:rotate-3 hover:shadow-xl ring-2 ring-white/20`}
-              >
-                <ShieldCheckIcon className="w-6 h-6 text-white transition-transform duration-300" />
-              </div>
-              <div className="transition-all duration-300">
-                <h3 className="font-bold text-white text-sm hover:text-blue-200 transition-colors duration-200">
-                  SI SURAT
-                </h3>
-                <p className="text-xs text-blue-200 hover:text-blue-100 transition-colors duration-200">
-                  Kelurahan Liliba
-                </p>
-              </div>
-            </div>
-          )}
-
           {onToggleCollapse && (
             <Button
               isIconOnly
@@ -112,22 +69,10 @@ export default function Sidebar({
             </Button>
           )}
         </div>
-
-        {!isCollapsed && (
-          <div className="mt-3 animate-in fade-in slide-in-from-top duration-500 delay-100">
-            <Chip
-              className={`${getRoleColor()} text-white transition-all duration-300 hover:scale-105 hover:shadow-lg ring-1 ring-white/30`}
-              size="sm"
-              variant="flat"
-            >
-              {getRoleDisplayName()}
-            </Chip>
-          </div>
-        )}
       </div>
 
       {/* Navigation Menu */}
-      <nav className="flex-1 p-4 overflow-y-auto">
+      <nav className="flex-1 p-2 overflow-y-auto">
         <ul className="space-y-2">
           {menuItems.map((item, index) => {
             const isActive = activeMenu === item.title.toLowerCase();
