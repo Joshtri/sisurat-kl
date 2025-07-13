@@ -5,6 +5,7 @@ import { ChevronRightIcon, Cog6ToothIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { ReactNode } from "react";
 import { Button } from "@heroui/react";
+
 interface BreadcrumbItem {
   label: string;
   href?: string;
@@ -15,8 +16,8 @@ interface PageHeaderProps {
   description?: string;
   actions?: ReactNode;
   breadcrumbs?: BreadcrumbItem[];
-  onOptionsClick?: () => void; // <-- opsi baru
-  backHref?: string; // <-- opsi untuk kembali
+  onOptionsClick?: () => void;
+  backHref?: string;
 }
 
 export function PageHeader({
@@ -52,7 +53,6 @@ export function PageHeader({
         </nav>
       )}
 
-      {/* Title, Actions, Options */}
       {/* Title, Back Button, Actions, Options */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-2">
@@ -67,7 +67,9 @@ export function PageHeader({
             </Button>
           )}
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
+            <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">
+              {title}
+            </h1>
             {description && <p className="text-gray-600 mt-1">{description}</p>}
           </div>
         </div>
