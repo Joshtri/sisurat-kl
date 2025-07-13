@@ -14,6 +14,7 @@ import { ReactNode, useEffect, useMemo, useState } from "react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import SearchBar from "@/components/ui/SearchBar";
+import { SkeletonTable } from "@/components/ui/skeleton/SkeletonTable"; // ✅ sesuaikan path-nya
 
 interface Column {
   key: string;
@@ -141,7 +142,7 @@ export function ListGrid({
       )}
 
       {loading ? (
-        <div className="text-center text-gray-500">Memuat data...</div>
+        <SkeletonTable rows={pageSize} columns={columns.length} />
       ) : filteredRows.length === 0 ? (
         (empty ?? <div className="text-center text-gray-400">Data kosong.</div>)
       ) : (
@@ -165,7 +166,13 @@ export function ListGrid({
               {(item) => (
                 <TableRow key={item.key}>
                   {(columnKey) => (
-                    <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+                    <TableCell>
+                      {typeof item[columnKey] === "object" &&
+                      item[columnKey] !== null
+                        ? item[columnKey] // Kalau JSX, langsung render
+                        : getKeyValue(item, columnKey)}{" "}
+                      {/* Fallback ke string biasa */}
+                    </TableCell>
                   )}
                 </TableRow>
               )}
