@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { message: "Gagal membuat user", error: error.message },
-      { status: 400 },
+      { status: 400 }
     );
   }
 }
@@ -35,21 +35,35 @@ export async function POST(req: Request) {
 export async function GET() {
   try {
     const users = await prisma.user.findMany({
-      include: {
-        profil: true, // tampilkan data Warga jika ada
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+        profil: {
+          select: { id: true }, // cukup ambil ID untuk cek eksistensi
+        },
       },
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    return NextResponse.json(users);
+    // Tambahkan flag isWarga
+    const usersWithStatus = users.map((user) => ({
+      ...user,
+      isWarga: !!user.profil, // true jika ada profil warga
+    }));
+
+    return NextResponse.json(usersWithStatus);
   } catch (error: any) {
     console.error("GET USER ERROR:", error);
 
     return NextResponse.json(
       { message: "Gagal mengambil data user", error: error.message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -60,7 +74,7 @@ function convertRole(role: string): Role {
     rt: "RT",
     staff: "STAFF",
     lurah: "LURAH",
-    admin: "ADMIN",
+    superadmin: "SUPERADMIN",
   };
 
   return map[role.toLowerCase()] || "WARGA";
