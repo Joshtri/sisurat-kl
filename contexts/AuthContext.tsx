@@ -69,7 +69,7 @@ const mockUsers: Record<string, { password: string; user: User }> = {
       nik: "9999888877",
       name: "Super Admin",
       role: "SUPERADMIN",
-      email: "admin@kelurahan.gov.id",
+      email: "superadmin@kelurahan.gov.id",
     },
   },
 };
