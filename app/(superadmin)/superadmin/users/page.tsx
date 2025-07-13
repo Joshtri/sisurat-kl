@@ -4,20 +4,22 @@ import { UserIcon } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { User } from "@prisma/client";
+// import { User } from "@prisma/client";
+
+import Link from "next/link";
 
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
 import { ListGrid } from "@/components/ui/ListGrid";
 import { getUsers } from "@/services/userService";
-import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { deleteUser } from "@/services/userService";
 import { showToast } from "@/utils/toastHelper";
+import { Users } from "@/interfaces/users";
 
 export default function UsersPage() {
   const router = useRouter();
 
-  const { data = [], isLoading } = useQuery<User[]>({
+  const { data = [], isLoading } = useQuery<Users[]>({
     queryKey: ["users"],
     queryFn: getUsers,
   });
@@ -28,6 +30,7 @@ export default function UsersPage() {
     { key: "email", label: "EMAIL" },
     { key: "role", label: "ROLE" },
     { key: "createdAt", label: "DIBUAT" },
+    { key: "statusWarga", label: "STATUS WARGA" },
     { key: "actions", label: "", align: "end" as "end" },
   ];
 
@@ -37,6 +40,19 @@ export default function UsersPage() {
     email: user.email ?? "-",
     role: user.role,
     createdAt: new Date(user.createdAt).toLocaleDateString("id-ID"),
+    statusWarga: user.isWarga ? (
+      <span className="text-green-700 bg-green-100 px-2 py-1 rounded-full text-xs font-medium">
+        Terdaftar
+      </span>
+    ) : (
+      <Link
+        href={`/superadmin/warga/create?userId=${user.id}`}
+        className="text-red-700 bg-red-100 hover:bg-red-200 px-2 py-1 rounded-full text-xs font-medium"
+      >
+        Belum terdaftar
+      </Link>
+    ),
+
     actions: (
       <TableActions
         onDelete={{
