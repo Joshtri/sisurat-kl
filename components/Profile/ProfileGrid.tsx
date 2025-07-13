@@ -1,0 +1,62 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+
+import ProfileSkeleton from "./ProfileSkeleton";
+import { UserProfileSection } from "./UserProfileSection";
+import { WargaProfileSection } from "./WargaProfileSection";
+
+import { getMe } from "@/services/authService";
+
+export default function ProfileGrid() {
+  const {
+    data: user,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["me"],
+    queryFn: getMe,
+  });
+
+  if (isLoading) return <ProfileSkeleton />;
+
+  if (isError || !user) {
+    return (
+      <div className="text-center text-red-500 py-10">Gagal memuat profil.</div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6 p-6">
+      <UserProfileSection
+        user={{
+          username: user.username,
+          email: user.email,
+          role: user.role,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        }}
+      />
+
+      {user.role === "WARGA" && user.namaLengkap && (
+        <WargaProfileSection
+          warga={{
+            namaLengkap: user.namaLengkap,
+            nik: user.nik,
+            tempatLahir: user.tempatLahir,
+            tanggalLahir: user.tanggalLahir,
+            jenisKelamin: user.jenisKelamin,
+            pekerjaan: user.pekerjaan,
+            agama: user.agama,
+            noTelepon: user.noTelepon,
+            rt: user.rt,
+            rw: user.rw,
+            alamat: user.alamat,
+            statusHidup: user.statusHidup,
+            foto: user.foto,
+          }}
+        />
+      )}
+    </div>
+  );
+}
