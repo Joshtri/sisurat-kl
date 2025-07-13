@@ -13,8 +13,6 @@ import { FormWrapper } from "@/components/FormWrapper";
 import { CardContainer } from "@/components/common/CardContainer";
 import { createUser } from "@/services/userService";
 import { showToast } from "@/utils/toastHelper";
-
-import { Button } from "@heroui/react";
 import { CreateOrEditButtons } from "@/components/ui/CreateOrEditButtons";
 
 export default function UsersCreatePage() {
@@ -46,9 +44,8 @@ export default function UsersCreatePage() {
       password: data.password,
       confirmPassword: data.confirmPassword,
       role: data.role as Role,
-      phone: data.phone,
-      address: data.address,
     };
+
     mutate(payload);
   };
 
@@ -72,19 +69,23 @@ export default function UsersCreatePage() {
             password: "",
             confirmPassword: "",
             role: "" as Role,
-            phone: "",
-            address: "",
           }}
           schema={userSchema}
           onSubmit={onSubmit}
         >
           <TextInput label="Username" name="username" />
           <TextInput label="Email" name="email" type="email" />
-          <TextInput label="Password" name="password" type="password" />
+          <TextInput
+            label="Password"
+            name="password"
+            type="password"
+            showPasswordToggle
+          />
           <TextInput
             label="Konfirmasi Password"
             name="confirmPassword"
             type="password"
+            showPasswordToggle
           />
           <SelectInput
             label="Role"
@@ -94,7 +95,7 @@ export default function UsersCreatePage() {
               { label: "RT", value: "RT" },
               { label: "Staff", value: "STAFF" },
               { label: "Lurah", value: "LURAH" },
-              { label: "Admin", value: "ADMIN" },
+              { label: "Admin", value: "SUPERADMIN" },
             ]}
           />
           <TextInput label="No. Telepon" name="phone" />
