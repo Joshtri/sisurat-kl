@@ -19,8 +19,10 @@ export default function UsersDetailPage() {
     "primary" | "success" | "warning" | "danger"
   > = {
     superadmin: "danger",
-    superadmin: "warning",
-    user: "primary",
+    staff: "warning",
+    lurah: "success",
+    rt: "success",
+    warga: "primary",
   };
 
   const {
