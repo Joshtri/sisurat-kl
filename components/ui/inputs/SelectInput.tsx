@@ -16,6 +16,7 @@ interface SelectInputProps {
   disabled?: boolean;
   isRequired?: boolean;
   isLoading?: boolean;
+  onChange?: (value: string | boolean | number) => void; // ✅ tambahkan ini
 }
 
 export function SelectInput({
@@ -26,6 +27,7 @@ export function SelectInput({
   disabled,
   isRequired = true,
   isLoading = false,
+  onChange,
 }: SelectInputProps) {
   const {
     control,
@@ -58,11 +60,11 @@ export function SelectInput({
               const selected = Array.from(keys)[0];
               let newValue: any = selected;
 
-              // Convert to correct type if possible
               if (selected === "true") newValue = true;
               else if (selected === "false") newValue = false;
 
-              field.onChange(newValue);
+              field.onChange(newValue); // ✅ untuk react-hook-form
+              onChange?.(newValue); // ✅ untuk custom handler dari luar
             }}
           >
             {options.map((opt) => (
