@@ -161,28 +161,20 @@ export default function LoginPage() {
                   control={control}
                   name="nik"
                   rules={{
-                    required: "NIK wajib diisi",
-                    pattern: {
-                      value: /^\d{16}$/,
-                      message: "NIK harus 16 digit angka",
-                    },
+                    required: "NIK atau Email wajib diisi",
+                    // opsional: kamu bisa tambahkan validasi regex jika ingin validasi lebih lanjut
                   }}
                   render={({ field }) => (
                     <Input
                       {...field}
                       type="text"
-                      inputMode="numeric"
-                      maxLength={16}
                       value={field.value}
                       onChange={(e) => {
-                        // hanya izinkan angka (0–9)
-                        const numericValue = e.target.value.replace(/\D/g, "");
-
-                        field.onChange(numericValue);
+                        field.onChange(e.target.value); // izinkan string bebas (NIK atau email)
                       }}
-                      label="NIK"
+                      label="NIK / Email"
                       labelPlacement="outside"
-                      placeholder="Masukkan NIK anda"
+                      placeholder="Masukkan NIK atau Email Anda"
                       isInvalid={!!errors.nik}
                       errorMessage={errors.nik?.message}
                       classNames={{
