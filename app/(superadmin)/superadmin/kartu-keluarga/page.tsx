@@ -25,6 +25,8 @@ export default function KartuKeluargaPage() {
     { key: "alamat", label: "ALAMAT" },
     { key: "rtrw", label: "RT/RW" },
     { key: "createdAt", label: "DIBUAT" },
+    { key: "daftarAnggota", label: "DAFTAR ANGGOTA" },
+
     { key: "actions", label: "", align: "end" as const },
   ];
 
@@ -35,11 +37,21 @@ export default function KartuKeluargaPage() {
     alamat: item.alamat,
     rtrw: `${item.rt ?? "-"} / ${item.rw ?? "-"}`,
     createdAt: new Date(item.createdAt).toLocaleDateString("id-ID"),
+    daftarAnggota: (
+      <Button
+        color="primary"
+        onPress={() =>
+          router.push(`/superadmin/kartu-keluarga/${item.id}/anggota`)
+        }
+      >
+        Lihat Anggota
+      </Button>
+    ),
     actions: (
       <TableActions
         onDelete={{ onConfirm: () => alert(`Hapus KK ${item.nomorKK}`) }}
         onEdit={() => alert(`Edit KK ${item.nomorKK}`)}
-        onView={() => alert(`Lihat KK ${item.nomorKK}`)}
+        onView={() => router.push(`/superadmin/kartu-keluarga/${item.id}`)}
       />
     ),
   }));
