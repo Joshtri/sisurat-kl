@@ -18,7 +18,7 @@ import {
 } from "react";
 
 interface ConfirmationDialogProps {
-  trigger?: ReactNode; // ✅ opsional, untuk programatik
+  trigger?: ReactNode;
   title?: string;
   message?: string;
   icon?: ReactNode;
@@ -34,8 +34,6 @@ interface ConfirmationDialogProps {
     | "center"
     | "top-center"
     | "bottom-center";
-
-  // ✅ external control
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -69,7 +67,7 @@ export function ConfirmationDialog({
     try {
       setLoading(true);
       await onConfirm();
-      setOpen(false); // ✅ tutup dialog setelah sukses
+      setOpen(false);
     } catch (error) {
       console.error("Error during confirmation:", error);
     } finally {
@@ -77,20 +75,45 @@ export function ConfirmationDialog({
     }
   };
 
-  // Clone trigger element jika ada
+  // Clone trigger element jika valid
   const triggerWithHandler = isValidElement(trigger)
-    ? cloneElement(trigger as React.ReactElement<any>, {
+    ? cloneElement(trigger, {
         onClick: (e: MouseEvent) => {
           e.preventDefault();
           e.stopPropagation();
-          onOpen(); // gunakan internal open
+          onOpen();
         },
       })
     : null;
 
+  // Fallback trigger jika bukan element valid
+  const fallbackTrigger =
+    !isValidElement(trigger) && trigger ? (
+      <button
+        type="button"
+        className="inline-block bg-transparent border-none p-0 m-0 cursor-pointer"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onOpen();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onOpen();
+          }
+        }}
+        tabIndex={0}
+        aria-label="Open confirmation dialog"
+      >
+        {trigger}
+      </button>
+    ) : null;
+
   return (
     <>
       {triggerWithHandler}
+      {fallbackTrigger}
 
       <Modal isOpen={isOpen} placement={placement} onOpenChange={setOpen}>
         <ModalContent>
