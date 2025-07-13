@@ -65,7 +65,7 @@ model User {
   suratSebagaiRT    Surat[]    @relation("RTVerifikasi")
 
   Surat    Surat[]
-  UserRole UserRole[]
+  // UserRole UserRole[]
 }
 
 model RTProfile {
@@ -110,17 +110,17 @@ model Warga {
   updatedAt DateTime @updatedAt
 }
 
-model UserRole {
-  id     String @id @default(uuid())
-  role   Role
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+// model UserRole {
+//   id     String @id @default(uuid())
+//   role   Role
+//   user   User   @relation(fields: [userId], references: [id])
+//   userId String
 
-  assignedBy String? // ID superadmin yang set
-  assignedAt DateTime @default(now())
+//   assignedBy String? // ID superadmin yang set
+//   assignedAt DateTime @default(now())
 
-  @@unique([userId, role])
-}
+//   @@unique([userId, role])
+// }
 
 model KartuKeluarga {
   id               String @id @default(uuid())
