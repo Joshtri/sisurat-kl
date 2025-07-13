@@ -11,7 +11,11 @@ import { Card, CardBody, CardHeader } from "@heroui/react";
 
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { checkSystemHealth } from "@/services/healthService";
+import {
+  BackupStatus,
+  checkSystemHealth,
+  DiskStatus,
+} from "@/services/healthService";
 import { showToast } from "@/utils/toastHelper";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -20,10 +24,10 @@ import {
 } from "@/services/maintenanceService";
 
 interface SystemOverviewProps {
-  serverStatus: string;
-  databaseStatus: string;
-  backupStatus: string;
-  diskStatus: string;
+  serverStatus: string | React.ReactNode;
+  databaseStatus: string | React.ReactNode;
+  backupStatus: string | React.ReactNode;
+  diskStatus: string | React.ReactNode;
 }
 
 export function SystemOverview({
