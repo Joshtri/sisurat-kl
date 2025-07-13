@@ -2,23 +2,30 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@heroui/react";
 import { DocumentTextIcon } from "@heroicons/react/24/outline";
+import { JenisSurat } from "@prisma/client";
 
-import { getAllJenisSurat } from "@/services/jenisSuratService";
+import {
+  deleteJenisSurat,
+  getAllJenisSurat,
+} from "@/services/jenisSuratService";
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
+import { showToast } from "@/utils/toastHelper";
 
 export default function JenisSuratPage() {
   const router = useRouter();
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  const { data = [], isLoading } = useQuery({
+  const { data = [], isLoading } = useQuery<JenisSurat[]>({
     queryKey: ["jenisSurat"],
     queryFn: getAllJenisSurat,
   });
+
+  const queryClient = useQueryClient();
 
   const columns = [
     { key: "kode", label: "KODE" },
@@ -37,7 +44,29 @@ export default function JenisSuratPage() {
     actions: (
       <TableActions
         onDelete={{
-          onConfirm: () => alert(`Hapus: ${item.nama}`),
+          title: "Hapus Jenis Surat",
+          message: `Apakah Anda yakin ingin menghapus jenis surat "${item.nama}"?`,
+          confirmLabel: "Hapus",
+          loadingText: "Menghapus...",
+          onConfirm: async () => {
+            try {
+              await deleteJenisSurat(item.id);
+              showToast({
+                title: "Berhasil",
+                description: "Jenis surat berhasil dihapus.",
+                color: "success",
+              });
+
+              queryClient.invalidateQueries({ queryKey: ["jenisSurat"] });
+            } catch (error) {
+              showToast({
+                title: "Gagal",
+                description: "Gagal menghapus pengguna.",
+                color: "error",
+              });
+            }
+          },
+          // onConfirm: () => alert(`Hapus: ${item.nama}`),
         }}
         onEdit={() => alert(`Edit: ${item.nama}`)}
         onView={() => alert(`Lihat: ${item.nama}`)}
