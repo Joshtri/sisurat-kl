@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('WARGA', 'RT', 'STAFF', 'LURAH', 'ADMIN');
+CREATE TYPE "Role" AS ENUM ('WARGA', 'RT', 'STAFF', 'LURAH', 'SUPERADMIN');
 
 -- CreateEnum
 CREATE TYPE "JenisKelamin" AS ENUM ('LAKI_LAKI', 'PEREMPUAN');

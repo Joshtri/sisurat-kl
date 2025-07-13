@@ -14,7 +14,7 @@ enum Role {
   RT
   STAFF
   LURAH
-  ADMIN
+  SUPERADMIN
 }
 
 enum JenisKelamin {
@@ -31,6 +31,8 @@ enum StatusSurat {
   DIAJUKAN
   DIVERIFIKASI_STAFF
   DITOLAK_STAFF
+  DIVERIFIKASI_RT
+  DITOLAK_RT
   DIVERIFIKASI_LURAH
   DITOLAK_LURAH
   DITERBITKAN
@@ -44,22 +46,36 @@ enum PeranKeluarga {
   FAMILI_LAINNYA
 }
 
-
-
 model User {
-  id            String   @id @default(uuid())
-  username      String   @unique
-  email         String?  @unique
-  password      String
-  role          Role     @default(WARGA)
-  rememberToken String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id       String  @id @default(uuid())
+  username String  @unique
+  email    String? @unique
+  password String
+  role     Role    @default(WARGA)
 
+  rememberToken     String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  extraRoles        Role[]
   profil            Warga?
-  suratDiajukan     Surat[] @relation("PemohonSurat")
-  suratSebagaiStaff Surat[] @relation("StaffVerifikasi")
-  suratSebagaiLurah Surat[] @relation("LurahVerifikasi")
+  suratDiajukan     Surat[]    @relation("PemohonSurat")
+  suratSebagaiStaff Surat[]    @relation("StaffVerifikasi")
+  suratSebagaiLurah Surat[]    @relation("LurahVerifikasi")
+  RTProfile         RTProfile?
+  suratSebagaiRT    Surat[]    @relation("RTVerifikasi")
+
+  Surat    Surat[]
+  UserRole UserRole[]
+}
+
+model RTProfile {
+  id      String  @id @default(uuid())
+  userId  String  @unique
+  nik     String  @unique
+  user    User    @relation(fields: [userId], references: [id])
+  rt      String
+  rw      String?
+  wilayah String? // Optional untuk deskripsi area RT
 }
 
 model Warga {
@@ -67,18 +83,22 @@ model Warga {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
 
-  namaLengkap        String
-  nik                String       @unique
-  tempatTanggalLahir String?
-  jenisKelamin       JenisKelamin
-  pekerjaan          String?
-  agama              String?
-  noTelepon          String?
-  rt                 String?
-  rw                 String?
-  alamat             String?
-  foto               String?
-  statusHidup        StatusHidup  @default(HIDUP)
+  namaLengkap  String
+  nik          String       @unique
+  tempatLahir  String?
+  tanggalLahir DateTime?
+  jenisKelamin JenisKelamin
+  pekerjaan    String?
+  agama        String?
+  noTelepon    String?
+  rt           String?
+  rw           String?
+  alamat       String?
+  foto         String?
+  statusHidup  StatusHidup?  @default(HIDUP)
+
+  fileKtp String?
+  fileKk  String?
 
   kartuKeluargaId String?
   kartuKeluarga   KartuKeluarga? @relation("AnggotaKK", fields: [kartuKeluargaId], references: [id])
@@ -88,6 +108,18 @@ model Warga {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model UserRole {
+  id     String @id @default(uuid())
+  role   Role
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  assignedBy String? // ID superadmin yang set
+  assignedAt DateTime @default(now())
+
+  @@unique([userId, role])
 }
 
 model KartuKeluarga {
@@ -135,12 +167,18 @@ model Surat {
   fileKk                 String?
   noSuratPengantar       String?
   fileSuratPengantar     String?
+  rt                     User?        @relation("RTVerifikasi", fields: [idRT], references: [id])
+  idRT                   String?
+  tanggalVerifikasiRT    DateTime?
+  catatanPenolakanRT     String?
   createdAt              DateTime     @default(now())
   updatedAt              DateTime     @updatedAt
 
   detailUsaha     DetailSuratUsaha?
   detailKematian  DetailSuratKematian?
   detailAhliWaris DetailSuratAhliWaris?
+  User            User?                 @relation(fields: [userId], references: [id])
+  userId          String?
 }
 
 model JenisSurat {
@@ -190,4 +228,12 @@ model DetailSuratAhliWaris {
   fileKtpAhliWaris       Json?
   fileAktaLahirAhliWaris Json?
   fileKtpSaksi           Json?
+}
+
+
+model Setting {
+  id      String  @id @default("global") // singleton row
+  key     String  @unique
+  value   String
+  updatedAt DateTime @updatedAt
 }
