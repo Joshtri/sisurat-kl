@@ -10,6 +10,7 @@ import { getAllWarga } from "@/services/wargaService";
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
+import { formatDateIndo } from "@/utils/common";
 
 export default function WargaPage() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function WargaPage() {
     { key: "nik", label: "NIK" },
     { key: "namaLengkap", label: "Nama Lengkap" },
     { key: "jenisKelamin", label: "Jenis Kelamin" },
-    { key: "tempatTanggalLahir", label: "TTL" },
+    { key: "tempatTanggalLahir", label: "Tanggal Lahir" },
     { key: "pekerjaan", label: "Pekerjaan" },
     { key: "alamat", label: "Alamat" },
     { key: "rtrw", label: "RT/RW" },
@@ -44,7 +45,8 @@ export default function WargaPage() {
     nik: item.nik,
     namaLengkap: item.namaLengkap,
     jenisKelamin: formatJenisKelamin(item.jenisKelamin),
-    tempatTanggalLahir: item.tempatTanggalLahir || "-",
+    tempatTanggalLahir:
+      formatDateIndo(item.tanggalLahir ? String(item.tanggalLahir) : "") || "-",
     pekerjaan: item.pekerjaan || "-",
     alamat: item.alamat || "-",
     rtrw: `${item.rt || "-"} / ${item.rw || "-"}`,
@@ -55,8 +57,9 @@ export default function WargaPage() {
           onConfirm: () =>
             alert(`Hapus warga ${item.namaLengkap} (NIK: ${item.nik})`),
         }}
-        onEdit={() => alert(`Edit warga ${item.namaLengkap}`)}
-        onView={() => alert(`Lihat detail warga ${item.namaLengkap}`)}
+        onEdit={() => router.push(`/superadmin/warga/${item.id}/edit`)}
+        // onEdit={() => alert(`Edit warga ${item.namaLengkap}`)}
+        onView={() => router.push(`/superadmin/warga/${item.id}`)}
       />
     ),
   }));
@@ -72,7 +75,7 @@ export default function WargaPage() {
         </Button>
       }
       breadcrumbs={[
-        { label: "Dashboard", href: "/dashboard" },
+        { label: "Dashboard", href: "/superadmin/dashboard" },
         { label: "Warga" },
       ]}
       columns={columns}
