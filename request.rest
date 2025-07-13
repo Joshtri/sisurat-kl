@@ -1,0 +1,56 @@
+### Tambahkan semua jenis surat sekaligus
+POST http://localhost:3000/api/jenis-surat/batch
+Content-Type: application/json
+
+[
+  {
+    "kode": "SKTM",
+    "nama": "Surat Keterangan Tidak Mampu",
+    "deskripsi": "KTP, KK, surat keterangan RT, akta kematian suami/istri"
+  },
+  {
+    "kode": "DOMISILI",
+    "nama": "Surat Keterangan Domisili",
+    "deskripsi": "KTP, KK, surat keterangan RT, akta kematian suami/istri"
+  },
+  {
+    "kode": "NIKAH",
+    "nama": "Surat Keterangan Untuk Menikah",
+    "deskripsi": "KTP, KK, surat keterangan RT, akta kematian suami/istri"
+  },
+  {
+    "kode": "BELUM_MENIKAH",
+    "nama": "Surat Keterangan Belum Menikah",
+    "deskripsi": "KTP, KK, surat keterangan RT, akta kematian suami/istri"
+  },
+  {
+    "kode": "AHLI_WARIS",
+    "nama": "Surat Keterangan Ahli Waris",
+    "deskripsi": "Suket RT, akta kematian, KTP semua ahli waris, akta nikah, akta lahir semua ahli waris, KTP saksi"
+  },
+  {
+    "kode": "KEMATIAN",
+    "nama": "Surat Keterangan Kematian",
+    "deskripsi": "KTP, KK, suket RT, laporan kematian dari RT"
+  },
+  {
+    "kode": "TIDAK_DI_TEMPAT",
+    "nama": "Surat Keterangan Tidak Berada di Tempat",
+    "deskripsi": "KTP, KK, suket RT, suket pribadi istri/suami"
+  },
+  {
+    "kode": "SUKET_ORTU",
+    "nama": "Surat Keterangan Orang Tua",
+    "deskripsi": "KTP ortu, surat nikah ortu, akta lahir anak, suket RT"
+  },    
+  {
+    "kode": "SUKET_USAHA",
+    "nama": "Surat Keterangan Usaha",
+    "deskripsi": "KTP, KK, pengantar RT, foto usaha"
+  },
+  {
+    "kode": "KELAHIRAN",
+    "nama": "Surat Keterangan Kelahiran",
+    "deskripsi": "KK, KTP ortu, suket RS, suket RT, KTP saksi"
+  }
+]
