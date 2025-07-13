@@ -13,9 +13,17 @@ import {
   PencilSquareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useState, ComponentType, SVGProps } from "react";
 
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
+
+interface CustomAction {
+  key: string;
+  label: string;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
+  onClick: () => void | Promise<void>;
+  danger?: boolean;
+}
 
 interface TableActionsProps {
   onView?: () => void;
@@ -27,11 +35,18 @@ interface TableActionsProps {
     loadingText?: string;
     onConfirm: () => Promise<void> | void;
   };
+  customActions?: CustomAction[];
+  customSection?: React.ReactNode; // ✅ Tambahan baru
 }
 
-export function TableActions({ onView, onEdit, onDelete }: TableActionsProps) {
+export function TableActions({
+  onView,
+  onEdit,
+  onDelete,
+  customActions = [],
+}: TableActionsProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const hasActions = onView || onEdit || onDelete;
+  const hasActions = onView || onEdit || onDelete || customActions.length > 0;
 
   if (!hasActions) return null;
 
@@ -46,6 +61,10 @@ export function TableActions({ onView, onEdit, onDelete }: TableActionsProps) {
       case "delete":
         setShowDeleteDialog(true);
         break;
+      default:
+        const customAction = customActions.find((item) => item.key === action);
+        if (customAction) customAction.onClick();
+        break;
     }
   };
 
@@ -57,6 +76,12 @@ export function TableActions({ onView, onEdit, onDelete }: TableActionsProps) {
     ...(onDelete
       ? [{ key: "delete", label: "Hapus", icon: TrashIcon, danger: true }]
       : []),
+    ...customActions.map((action) => ({
+      key: action.key,
+      label: action.label,
+      icon: action.icon,
+      danger: action.danger || false,
+    })),
   ];
 
   return (
@@ -90,12 +115,10 @@ export function TableActions({ onView, onEdit, onDelete }: TableActionsProps) {
         </DropdownMenu>
       </Dropdown>
 
-      {/* Custom Edit as ReactNode (outside menu) */}
       {onEdit && typeof onEdit !== "function" && (
         <div className="inline-block ml-2">{onEdit}</div>
       )}
 
-      {/* Confirmation Dialog */}
       {onDelete && (
         <ConfirmationDialog
           isOpen={showDeleteDialog}
