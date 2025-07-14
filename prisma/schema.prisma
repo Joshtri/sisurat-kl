@@ -110,17 +110,7 @@ model Warga {
   updatedAt DateTime @updatedAt
 }
 
-// model UserRole {
-//   id     String @id @default(uuid())
-//   role   Role
-//   user   User   @relation(fields: [userId], references: [id])
-//   userId String
 
-//   assignedBy String? // ID superadmin yang set
-//   assignedAt DateTime @default(now())
-
-//   @@unique([userId, role])
-// }
 
 model KartuKeluarga {
   id               String @id @default(uuid())

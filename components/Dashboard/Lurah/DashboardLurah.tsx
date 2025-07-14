@@ -4,11 +4,18 @@ import { Card, CardBody, CardHeader } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { SkeletonText } from "@/components/ui/skeleton/SkeletonText";
 import { getLurahDashboardStats } from "@/services/dashboardService";
+import NotificationGrid from "../Notification/NotificationGrid";
+import { getMe } from "@/services/authService";
 
 export default function DashboardLurah() {
   const { data, isLoading } = useQuery({
     queryKey: ["lurah-dashboard"],
     queryFn: getLurahDashboardStats,
+  });
+
+  const { data: user, isLoading: isLoadingUser } = useQuery({
+    queryKey: ["me"],
+    queryFn: getMe,
   });
 
   return (
@@ -121,6 +128,7 @@ export default function DashboardLurah() {
           </CardBody>
         </Card>
       </div>
+      <NotificationGrid getMeData={user} />
     </div>
   );
 }

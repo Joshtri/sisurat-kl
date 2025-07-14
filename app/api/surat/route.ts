@@ -3,15 +3,15 @@ import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const suratList = await prisma.surat.findMany({
       orderBy: { createdAt: "desc" },
       include: {
-        jenis: true, // JenisSurat
+        jenis: true,
         pemohon: {
           include: {
-            profil: true, // Warga
+            profil: true,
           },
         },
       },
@@ -19,22 +19,32 @@ export async function GET() {
 
     const formatted = suratList.map((surat) => ({
       id: surat.id,
-      noSurat: surat.noSurat,
-      jenisSurat: surat.jenis?.nama,
-      namaPemohon: surat.pemohon?.profil?.namaLengkap ?? surat.namaLengkap,
+      noSurat: surat.noSurat ?? "-",
+      jenisSurat: surat.jenis?.nama ?? "-", 
+      namaLengkap:
+        surat.pemohon?.profil?.namaLengkap ??
+        surat.namaLengkap ??
+        surat.pemohon?.username ??
+        "-",
       rt: surat.pemohon?.profil?.rt ?? "-",
       rw: surat.pemohon?.profil?.rw ?? "-",
       status: surat.status,
       tanggalPengajuan: surat.tanggalPengajuan,
     }));
 
-    return NextResponse.json({ data: formatted });
+    return NextResponse.json(formatted);
   } catch (error) {
     console.error("GET /api/surat error:", error);
 
     return NextResponse.json(
-      { message: "Gagal mengambil data surat" },
-      { status: 500 },
+      {
+        message: "Gagal mengambil data surat",
+        error:
+          typeof error === "object" && error !== null && "message" in error
+            ? (error as { message: string }).message
+            : String(error),
+      },
+      { status: 500 }
     );
   }
 }
@@ -117,7 +127,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       { message: "Terjadi kesalahan saat membuat surat" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

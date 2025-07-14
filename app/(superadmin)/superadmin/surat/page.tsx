@@ -33,7 +33,7 @@ export default function SuratPage() {
     key: item.id,
     noSurat: item.noSurat || "-",
     jenisSurat: item.jenisSurat,
-    pemohon: item.namaPemohon,
+    pemohon: item.namaLengkap,
     rtrw: `${item.rt || "-"} / ${item.rw || "-"}`,
     status: item.status.replaceAll("_", " "),
     tanggal: formatDateIndo(item.tanggalPengajuan),

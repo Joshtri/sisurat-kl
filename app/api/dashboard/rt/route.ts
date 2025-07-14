@@ -10,7 +10,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "Missing userId" }, { status: 400 });
     }
 
-    // ambil RT profile berdasarkan userId
     const rtProfile = await prisma.rTProfile.findUnique({
       where: { userId },
     });
@@ -22,23 +21,30 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const { rt } = rtProfile;
+
     const [totalWarga, totalSuratMasuk, totalSuratVerified] = await Promise.all(
       [
+        // ✅ ambil warga yang kartu keluarganya RT-nya sama
         prisma.warga.count({
           where: {
-            rt: rtProfile.rt,
+            kartuKeluarga: {
+              rt: rt,
+            },
           },
         }),
         prisma.surat.count({
           where: {
             idRT: userId,
-            status: "DIVERIFIKASI_RT",
+            status: "DIAJUKAN", // yang masih menunggu
           },
         }),
         prisma.surat.count({
           where: {
             idRT: userId,
-            NOT: { status: "DIVERIFIKASI_RT" },
+            status: {
+              in: ["DIVERIFIKASI_RT", "DITOLAK_RT"],
+            },
           },
         }),
       ]

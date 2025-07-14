@@ -1,78 +1,111 @@
 "use client";
 
-import { JenisSurat } from "@prisma/client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { z } from "zod";
+import { useRouter } from "next/navigation";
+import { JenisSurat } from "@prisma/client";
+import * as z from "zod";
 
-import { CardContainer } from "@/components/common/CardContainer";
 import { PageHeader } from "@/components/common/PageHeader";
-import { FormWrapper } from "@/components/FormWrapper";
-import { FormDetailAhliWaris } from "@/components/SuratPermohonan/FormDetailAhliWaris";
-import { FormDetailKematian } from "@/components/SuratPermohonan/FormDetailKematian";
-import { FormDetailUsaha } from "@/components/SuratPermohonan/FormDetailUsaha";
-import { AutoCompleteInput } from "@/components/ui/inputs/AutoCompleteInput";
+import { CardContainer } from "@/components/common/CardContainer";
 import { getAllJenisSurat } from "@/services/jenisSuratService";
-import FormAutofillFromWarga from "@/components/SuratPermohonan/FormAutofillFromWarga";
-import UserProfilPreview from "@/components/SuratPermohonan/UserProfilPreview";
-import { CreateOrEditButtons } from "@/components/ui/CreateOrEditButtons";
 import { createSurat } from "@/services/suratService";
+import { showToast } from "@/utils/toastHelper";
+import UserProfilPreview from "@/components/SuratPermohonan/UserProfilPreview";
+import { getMe } from "@/services/authService";
 
 const formSchema = z.object({
-  jenisSurat: z.string().min(1),
-  alasan: z.string().optional(),
-
-  // Tambahan dari Warga
-  namaLengkap: z.string(),
-  nik: z.string(),
-  tempatTanggalLahir: z.string(),
-  jenisKelamin: z.string(),
-  agama: z.string().optional(),
-  pekerjaan: z.string().optional(),
-  alamat: z.string().optional(),
-  noTelepon: z.string().optional(),
+  idJenisSurat: z.string().min(1, "Jenis surat wajib diisi"),
+  alasanPengajuan: z.string().min(5, "Alasan harus lebih dari 5 karakter"),
 });
 
-const jenisSuratWithFormMap: Record<
-  string,
-  "usaha" | "kematian" | "ahli_waris" | null
-> = {
-  SUKET_USAHA: "usaha",
-  KEMATIAN: "kematian",
-  AHLI_WARIS: "ahli_waris",
-};
-
 export default function CreateSuratPermohonanPage() {
-  const [selectedJenis, setSelectedJenis] = useState<string | null>(null);
+  const router = useRouter();
 
   const { data: jenisList = [], isLoading } = useQuery<JenisSurat[]>({
     queryKey: ["jenis-surat"],
     queryFn: getAllJenisSurat,
   });
+  const { data: user, isLoading: isLoadingUser } = useQuery({
+    queryKey: ["me"],
+    queryFn: getMe,
+  });
 
-  const {} = useMutation({});
+  const nonDetailSuratList = jenisList.filter(
+    (jenis) =>
+      !jenis.nama.toLowerCase().includes("usaha") &&
+      !jenis.nama.toLowerCase().includes("kematian") &&
+      !jenis.nama.toLowerCase().includes("ahli waris")
+  );
 
-  const handleSubmit = async (data: any) => {
-    try {
-      const payload = {
-        ...data,
-        idJenisSurat: data.jenisSurat, // asumsi ini id dari AutoCompleteInput
-        tanggalPengajuan: new Date().toISOString(),
-      };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+  });
 
-      const result = await createSurat(payload);
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: createSurat,
+    onSuccess: () => {
+      showToast({
+        title: "Berhasil mengajukan surat",
+        description: "Surat Anda telah berhasil diajukan.",
+        color: "success",
+      });
+      router.push("/warga/dashboard");
+    },
+    onError: () => {
+      showToast({
+        title: "Gagal mengajukan surat",
+        description:
+          "Terjadi kesalahan saat mengajukan surat. Silakan coba lagi.",
+        color: "error",
+      });
+    },
+  });
 
-      console.log("Surat berhasil diajukan:", result);
+  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+    if (!user) return;
 
-      // ✅ Tambahkan notifikasi atau redirect setelah berhasil
-      // showToast({ title: "Sukses", description: "Surat berhasil diajukan", color: "success" });
-    } catch (error: any) {
-      console.error("Gagal mengajukan surat:", error?.response || error);
-      // showToast({ title: "Gagal", description: "Periksa kembali data atau koneksi", color: "error" });
-    }
+    const {
+      id: idPemohon,
+      namaLengkap,
+      nik,
+      jenisKelamin,
+      tempatLahir,
+      tanggalLahir,
+      agama,
+      pekerjaan,
+      alamat,
+      noTelepon,
+    } = user;
+
+    const tempatTanggalLahir = `${tempatLahir}, ${new Date(
+      tanggalLahir
+    ).toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    })}`;
+
+    const payload = {
+      ...formData,
+      idPemohon,
+      namaLengkap,
+      nik,
+      jenisKelamin,
+      tempatTanggalLahir,
+      agama,
+      pekerjaan,
+      alamat,
+      noTelepon,
+    };
+
+    await mutateAsync(payload);
   };
-
-  console.log(selectedJenis, "selectedJenis");
 
   return (
     <>
@@ -87,54 +120,54 @@ export default function CreateSuratPermohonanPage() {
       />
 
       <CardContainer>
-        <UserProfilPreview />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <UserProfilPreview />
 
-        <FormWrapper
-          schema={formSchema}
-          defaultValues={{ jenisSurat: "", alasan: "" }}
-          onSubmit={handleSubmit}
-        >
-          <FormAutofillFromWarga />
-
-          <AutoCompleteInput
-            name="jenisSurat"
-            label="Jenis Surat"
-            placeholder="Cari jenis surat..."
-            isLoading={isLoading}
-            options={jenisList.map((jenis) => ({
-              label: jenis.nama,
-              value: jenis.id,
-            }))}
-            onChange={(val) => {
-              const selected = jenisList.find((j) => j.id === val);
-
-              console.log("Terpilih KODE:", selected?.kode);
-              setSelectedJenis(selected?.kode ?? null);
-            }}
-          />
-
-          {/* Tampilkan form tambahan berdasarkan jenis */}
-          {selectedJenis &&
-            jenisSuratWithFormMap[selectedJenis] === "usaha" && (
-              <FormDetailUsaha />
+          <div>
+            <label className="block text-sm font-medium">Jenis Surat</label>
+            <select
+              {...register("idJenisSurat")}
+              className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+            >
+              <option value="">Pilih jenis surat</option>
+              {nonDetailSuratList.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.nama}
+                </option>
+              ))}
+            </select>
+            {errors.idJenisSurat && (
+              <p className="text-sm text-red-600">
+                {errors.idJenisSurat.message}
+              </p>
             )}
-          {selectedJenis &&
-            jenisSuratWithFormMap[selectedJenis] === "kematian" && (
-              <FormDetailKematian />
-            )}
-          {selectedJenis &&
-            jenisSuratWithFormMap[selectedJenis] === "ahli_waris" && (
-              <FormDetailAhliWaris />
-            )}
+          </div>
 
-          <CreateOrEditButtons
-            // isEditMode={true}
-            cancelLabel="Batal"
-            showCancel
-            onCancel={() => console.log("Batal")}
-            // onSubmit={() => console.log("Simpan")}
-          />
-        </FormWrapper>
+          <div>
+            <label className="block text-sm font-medium">
+              Alasan Pengajuan
+            </label>
+            <textarea
+              {...register("alasanPengajuan")}
+              className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+              rows={3}
+              placeholder="Contoh: Keperluan administrasi"
+            />
+            {errors.alasanPengajuan && (
+              <p className="text-sm text-red-600">
+                {errors.alasanPengajuan.message}
+              </p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={isPending}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          >
+            {isPending ? "Mengirim..." : "Ajukan Surat"}
+          </button>
+        </form>
       </CardContainer>
     </>
   );

@@ -14,7 +14,7 @@ export async function GET() {
     const pending = await prisma.surat.count({
       where: {
         status: {
-          in: ["DIVERIFIKASI_LURAH"],
+          in: ["DIVERIFIKASI_STAFF"],
         },
       },
     });

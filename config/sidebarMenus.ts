@@ -71,36 +71,43 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       icon: HomeIcon,
       iconSolid: HomeSolidIcon,
     },
+
     {
-      title: "Manajemen Surat",
-      href: "/staff/surat",
+      title: "Permohonan Masuk",
+      href: "/staff/pengajuan",
       icon: DocumentTextIcon,
       iconSolid: DocumentSolidIcon,
-      badge: "12",
-      submenu: [
-        { title: "Permohonan Masuk", href: "/staff/surat/masuk" },
-        { title: "Dalam Proses", href: "/staff/surat/proses" },
-        { title: "Selesai", href: "/staff/surat/selesai" },
-      ],
     },
-    {
-      title: "Cetak Surat",
-      href: "/staff/cetak",
-      icon: PrinterIcon,
-      iconSolid: PrinterIcon,
-    },
+    // {
+    //   title: "Manajemen Surat",
+    //   href: "/staff/surat",
+    //   icon: DocumentTextIcon,
+    //   iconSolid: DocumentSolidIcon,
+    //   badge: "12",
+    //   submenu: [
+    //     { title: "Permohonan Masuk", href: "/staff/surat/masuk" },
+    //     { title: "Dalam Proses", href: "/staff/surat/proses" },
+    //     { title: "Selesai", href: "/staff/surat/selesai" },
+    //   ],
+    // },
+    // {
+    //   title: "Cetak Surat",
+    //   href: "/staff/cetak",
+    //   icon: PrinterIcon,
+    //   iconSolid: PrinterIcon,
+    // },
     {
       title: "Data Warga",
       href: "/staff/warga",
       icon: UserGroupIcon,
       iconSolid: UserGroupSolidIcon,
     },
-    {
-      title: "Template Surat",
-      href: "/staff/template",
-      icon: DocumentDuplicateIcon,
-      iconSolid: DocumentDuplicateIcon,
-    },
+    // {
+    //   title: "Template Surat",
+    //   href: "/staff/template",
+    //   icon: DocumentDuplicateIcon,
+    //   iconSolid: DocumentDuplicateIcon,
+    // },
   ],
   LURAH: [
     {
@@ -109,17 +116,37 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       icon: HomeIcon,
       iconSolid: HomeSolidIcon,
     },
-    {
-      title: "Laporan",
-      href: "/lurah/laporan",
-      icon: ChartBarIcon,
-      iconSolid: ChartSolidIcon,
-      submenu: [
-        { title: "Laporan Harian", href: "/lurah/laporan/harian" },
-        { title: "Laporan Bulanan", href: "/lurah/laporan/bulanan" },
-        { title: "Laporan Tahunan", href: "/lurah/laporan/tahunan" },
-      ],
-    },
+    // {
+    //   title: "Laporan",
+    //   href: "/lurah/laporan",
+    //   icon: ChartBarIcon,
+    //   iconSolid: ChartSolidIcon,
+    //   submenu: [
+    //     { title: "Laporan Harian", href: "/lurah/laporan/harian" },
+    //     { title: "Laporan Bulanan", href: "/lurah/laporan/bulanan" },
+    //     { title: "Laporan Tahunan", href: "/lurah/laporan/tahunan" },
+    //   ],
+    // },
+    // {
+    //   title: "Persetujuan Surat",
+    //   href: "/lurah/persetujuan",
+    //   icon: ShieldCheckIcon,
+    //   iconSolid: ShieldCheckIcon,
+    //   badge: "5",
+    // },
+    // {
+    //   title: "Manajemen Staff",
+    //   href: "/lurah/staff",
+    //   icon: UsersIcon,
+    //   iconSolid: UsersIcon,
+    // },
+    // {
+    //   title: "Arsip",
+    //   href: "/lurah/arsip",
+    //   icon: ArchiveBoxIcon,
+    //   iconSolid: ArchiveBoxIcon,
+    // },4
+
     {
       title: "Persetujuan Surat",
       href: "/lurah/persetujuan",
@@ -127,17 +154,19 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       iconSolid: ShieldCheckIcon,
       badge: "5",
     },
+
     {
-      title: "Manajemen Staff",
-      href: "/lurah/staff",
-      icon: UsersIcon,
-      iconSolid: UsersIcon,
-    },
-    {
-      title: "Arsip",
-      href: "/lurah/arsip",
+      title: "Riwayat Surat",
+      href: "/lurah/riwayat",
       icon: ArchiveBoxIcon,
       iconSolid: ArchiveBoxIcon,
+    },
+
+    {
+      title: "Profile Anda",
+      href: "/warga/profile",
+      icon: UserIcon,
+      iconSolid: UserIcon,
     },
   ],
   SUPERADMIN: [
@@ -214,16 +243,30 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       iconSolid: HomeSolidIcon,
     },
     {
-      title: "Pengajuan",
+      title: "Pengajuan Surat",
       href: "/rt/pengajuan",
       icon: DocumentTextIcon,
       iconSolid: DocumentSolidIcon,
     },
+
+    {
+      title: "Data Warga",
+      href: "/rt/warga",
+      icon: UserGroupIcon,
+      iconSolid: UserGroupSolidIcon,
+    },
+
     {
       title: "Riwayat",
       href: "/rt/riwayat",
       icon: ArchiveBoxIcon,
       iconSolid: ArchiveBoxIcon,
+    },
+    {
+      title: "Profile Anda",
+      href: "/warga/profile",
+      icon: UserIcon,
+      iconSolid: UserIcon,
     },
   ],
 };

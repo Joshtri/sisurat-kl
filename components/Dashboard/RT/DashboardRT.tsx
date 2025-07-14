@@ -9,6 +9,7 @@ import { StatsCard } from "@/components/ui/StatsCard";
 import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 import { getRTDashboardStats } from "@/services/dashboardService";
 import { getMe } from "@/services/authService";
+import NotificationGrid from "../Notification/NotificationGrid";
 
 export default function DashboardRT() {
   const router = useRouter();
@@ -65,7 +66,7 @@ export default function DashboardRT() {
                 <Button
                   size="sm"
                   color="success"
-                  onPress={() => router.push("/rt/surat")}
+                  onPress={() => router.push("/rt/pengajuan")}
                 >
                   Lihat Surat
                 </Button>
@@ -81,7 +82,7 @@ export default function DashboardRT() {
                 <Button
                   size="sm"
                   color="warning"
-                  onPress={() => router.push("/rt/surat?filter=verified")}
+                  onPress={() => router.push("/rt/pengajuan")}
                 >
                   Lihat Hasil
                 </Button>
@@ -89,6 +90,11 @@ export default function DashboardRT() {
             />
           </>
         )}
+      </div>
+
+      {/* 🔔 Panggil komponen NotificationGrid di bawah statistik */}
+      <div className="mt-6">
+        <NotificationGrid getMeData={user} />
       </div>
     </>
   );

@@ -32,3 +32,18 @@ export async function deleteWarga(id: string) {
 
   return res.data;
 }
+
+export async function getWargaByRT() {
+  const token = localStorage.getItem("token");
+  const res = await fetch("/api/warga/by-rt", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Gagal mengambil data warga RT");
+  }
+
+  return res.json();
+}

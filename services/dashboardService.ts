@@ -35,3 +35,9 @@ export async function getWargaDashboardStats(userId: string) {
 
   return res.json();
 }
+
+export async function getStaffDashboardStats(userId: string) {
+  const res = await axios.get(`/api/dashboard/staff?userId=${userId}`);
+
+  return res.data;
+}

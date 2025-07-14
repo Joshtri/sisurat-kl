@@ -18,6 +18,7 @@ import {
   StatusHidupEnum,
 } from "@/constants/enums";
 import { enumToSelectOptions } from "@/utils/enumHelpers";
+import { CreateOrEditButtons } from "../ui/CreateOrEditButtons";
 
 export function EditWargaDialog({
   open,
@@ -121,7 +122,14 @@ export function EditWargaDialog({
             </ModalBody>
 
             <ModalFooter className="flex justify-end space-x-2 pt-4">
-              <button
+              <CreateOrEditButtons
+                onCancel={onClose}
+                isEditMode={true}
+                isLoading={false}
+                showCancel={true}
+                submitType="submit"
+              />
+              {/* <button
                 type="button"
                 onClick={onClose}
                 className="text-gray-600 px-4 py-2"
@@ -133,7 +141,7 @@ export function EditWargaDialog({
                 className="bg-blue-600 text-white px-4 py-2 rounded"
               >
                 Simpan
-              </button>
+              </button> */}
             </ModalFooter>
           </form>
         </FormProvider>

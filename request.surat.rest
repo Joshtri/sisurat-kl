@@ -1,0 +1,17 @@
+POST http://localhost:3000/api/surat
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjZDI2NzJmNi02NjQ4LTRhOWEtODZkOS01ZWMwMTllYmM2MzAiLCJ1c2VybmFtZSI6Inlvc3RyaWxlbmdndSIsInJvbGUiOiJXQVJHQSIsImlhdCI6MTc1MjQyMTQ2MCwiZXhwIjoxNzUyNTA3ODYwfQ.-P5n9pqN8Inx9HVAyMCRCHiwEJHNbsV4uMwcwFtZRKs
+
+{
+  "idJenisSurat": "c9f96df3-03a2-4771-9dcc-40716db7ac62",
+  "idPemohon": "cd2672f6-6648-4a9a-86d9-5ec019ebc630",
+  "noTelepon": "085792487218",
+  "namaLengkap": "Arpa Josh",
+  "jenisKelamin": "LAKI_LAKI",
+  "tempatTanggalLahir": "Blitar, 17 Juli 2025",
+  "nik": "1234141414141414",
+  "agama": "LAINNYA",
+  "pekerjaan": "LAINNYA",
+  "alamat": "Maulafa Street",
+  "alasanPengajuan": "Keperluan administrasi"
+}
