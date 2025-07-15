@@ -96,6 +96,13 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
     //   icon: PrinterIcon,
     //   iconSolid: PrinterIcon,
     // },
+
+    {
+      title: "Riwayat Surat",
+      href: "/staff/riwayat",
+      icon: ArchiveBoxIcon,
+      iconSolid: ArchiveBoxIcon,
+    },
     {
       title: "Data Warga",
       href: "/staff/warga",
