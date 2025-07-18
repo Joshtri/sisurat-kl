@@ -11,7 +11,9 @@ import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 
 async function getRTDetail(id: string) {
   const res = await fetch(`/api/rt/${id}`);
+
   if (!res.ok) throw new Error("Gagal memuat detail RT");
+
   return res.json();
 }
 
