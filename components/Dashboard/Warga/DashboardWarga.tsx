@@ -1,5 +1,18 @@
 "use client";
 
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
+
 import { DocumentTextIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -7,9 +20,7 @@ import { useRouter } from "next/navigation";
 
 import { StatsCard } from "@/components/ui/StatsCard";
 import { getMe } from "@/services/authService";
-import {
-    getWargaDashboardStats
-} from "@/services/dashboardService";
+import { getWargaDashboardStats } from "@/services/dashboardService";
 
 export default function DashboardWarga() {
   const router = useRouter();
@@ -26,8 +37,8 @@ export default function DashboardWarga() {
   });
 
   return (
-    <>
-      <div className="flex flex-col gap-2">
+    <div className="space-y-6">
+      <div>
         <h1 className="text-3xl font-bold">Dashboard Warga</h1>
         {user && (
           <p className="text-default-600">
@@ -47,45 +58,71 @@ export default function DashboardWarga() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+      {/* Statistik singkat */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatsCard
           title="Surat Diajukan"
           value={stats?.totalSuratMasuk || 0}
           isLoading={isLoading}
           icon={<DocumentTextIcon className="w-6 h-6 text-success" />}
           color="success"
-          action={
-            !isLoading && (
-              <Button
-                size="sm"
-                color="success"
-                onPress={() => router.push("/warga/surat")}
-              >
-                Lihat Surat
-              </Button>
-            )
-          }
         />
-
         <StatsCard
           title="Surat Diverifikasi"
           value={stats?.totalSuratVerified || 0}
           isLoading={isLoading}
           icon={<DocumentTextIcon className="w-6 h-6 text-warning" />}
           color="warning"
-          action={
-            !isLoading && (
-              <Button
-                size="sm"
-                color="warning"
-                onPress={() => router.push("/warga/surat?filter=verified")}
-              >
-                Lihat Hasil
-              </Button>
-            )
-          }
+        />
+        <StatsCard
+          title="Surat Ditolak"
+          value={stats?.totalSuratRejected || 0}
+          isLoading={isLoading}
+          icon={<DocumentTextIcon className="w-6 h-6 text-danger" />}
+          color="danger"
         />
       </div>
-    </>
+
+      {/* Chart Status */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow p-4">
+          <h2 className="text-lg font-semibold mb-2">
+            Distribusi Surat per Status
+          </h2>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={stats?.chartData?.byStatus || []}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="status" />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#8884d8" name="Jumlah" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Chart Per Bulan */}
+        <div className="bg-white rounded-xl shadow p-4">
+          <h2 className="text-lg font-semibold mb-2">
+            Jumlah Surat Diajukan per Bulan
+          </h2>
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={stats?.chartData?.perMonth || []}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="count"
+                stroke="#82ca9d"
+                name="Jumlah"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
   );
 }
