@@ -1,75 +1,74 @@
 "use client";
 
-import { Card, CardHeader, CardBody } from "@heroui/react";
-import { Button } from "@heroui/button";
-import {
-  TrashIcon,
-  UserGroupIcon,
-  DocumentTextIcon,
-  ServerStackIcon,
-} from "@heroicons/react/24/outline";
+import { Badge, Card, CardBody, CardHeader, Chip } from "@heroui/react";
+// import { Badge } ";
 
-import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
+interface RecentActivity {
+  id: string;
+  jenis: string;
+  nama: string;
+  status: string;
+  waktu: string;
+}
 
-export function RecentActivities() {
-  const activities = [
-    {
-      icon: <UserGroupIcon className="w-4 h-4 text-blue-500" />,
-      title: "New user registered",
-      time: "5 minutes ago",
-    },
-    {
-      icon: <DocumentTextIcon className="w-4 h-4 text-green-500" />,
-      title: "System backup completed",
-      time: "2 hours ago",
-    },
-    {
-      icon: <ServerStackIcon className="w-4 h-4 text-orange-500" />,
-      title: "Database maintenance",
-      time: "1 day ago",
-    },
-  ];
+interface RecentActivitiesProps {
+  data: RecentActivity[];
+}
 
+export function RecentActivities({ data }: RecentActivitiesProps) {
   return (
     <Card>
-      <CardHeader className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Recent Activities</h3>
-        <ConfirmationDialog
-          confirmColor="danger"
-          confirmLabel="DELETE ALL LOGS"
-          icon={<TrashIcon className="w-6 h-6 text-danger" />}
-          loadingText="Deleting logs..."
-          message="This will permanently delete ALL system logs and activity history. This action is IRREVERSIBLE and may affect system debugging capabilities. Are you absolutely sure?"
-          title="⚠️ Dangerous Action"
-          trigger={
-            <Button
-              color="danger"
-              size="sm"
-              startContent={<TrashIcon className="w-4 h-4" />}
-              variant="flat"
-            >
-              Clear Logs
-            </Button>
-          }
-          onConfirm={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-            console.log("All logs deleted successfully");
-          }}
-        />
+      <CardHeader>
+        <h2 className="text-lg font-semibold text-gray-800">
+          Aktivitas Terbaru
+        </h2>
       </CardHeader>
-      <CardBody className="space-y-3">
-        {activities.map((activity, index) => (
-          <div key={index} className="flex justify-between items-center">
-            <div>
-              <div className="font-medium flex items-center gap-2">
-                {activity.icon}
-                {activity.title}
-              </div>
-              <div className="text-sm text-default-600">{activity.time}</div>
-            </div>
-          </div>
-        ))}
+      <CardBody>
+        <ul className="space-y-4">
+          {data.length === 0 ? (
+            <li className="text-sm text-gray-500">Belum ada aktivitas.</li>
+          ) : (
+            data.map((activity) => (
+              <li
+                key={activity.id}
+                className="border-b border-gray-100 pb-3 last:border-none last:pb-0"
+              >
+                <div className="text-sm text-gray-800">
+                  <span className="font-semibold">{activity.nama}</span>{" "}
+                  mengajukan{" "}
+                  <span className="font-medium text-primary">
+                    {activity.jenis}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                  <Chip
+                    size="sm"
+                    variant="flat"
+                    // variant="subtle"
+                    color={getStatusColor(activity.status)}
+                  >
+                    {activity.status.replaceAll("_", " ").toLowerCase()}
+                  </Chip>
+                  <span className="text-xs text-gray-400">
+                    • {activity.waktu}
+                  </span>
+                </div>
+              </li>
+            ))
+          )}
+        </ul>
       </CardBody>
     </Card>
   );
+}
+
+// Fungsi untuk menentukan warna badge berdasarkan status
+function getStatusColor(
+  status: string
+): "success" | "danger" | "warning" | "primary" {
+  if (status.startsWith("DITOLAK")) return "danger";
+  if (status === "DIAJUKAN") return "warning";
+  if (status.startsWith("DIVERIFIKASI")) return "primary";
+  if (status === "DITERBITKAN") return "success";
+  return "primary";
 }
