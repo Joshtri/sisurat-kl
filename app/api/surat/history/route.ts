@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
 
@@ -32,9 +33,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(history);
   } catch (error) {
     console.error("[HISTORY_SURAT_ERROR]", error);
+
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
