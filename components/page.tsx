@@ -161,10 +161,12 @@ export default function CreateSuratPermohonanPage() {
   const handleJenisChange = (val: string) => {
     const selected = jenisList.find((j) => j.id === val);
     const selectedKode = selected?.kode ?? null;
+
     setSelectedJenis(selectedKode);
 
     // Update schema based on selected type
     let newSchema = baseFormSchema;
+
     if (selectedKode === "SUKET_USAHA") {
       newSchema = newSchema.extend({ detailUsaha: usahaSchema });
     } else if (selectedKode === "KEMATIAN") {
