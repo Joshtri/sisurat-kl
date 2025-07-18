@@ -11,10 +11,17 @@ export function FormDetailKematian() {
       <DateInput
         name="detailKematian.tanggalKematian"
         label="Tanggal Kematian"
-        
       />
-      <TextInput name="detailKematian.tempatKematian" label="Tempat Kematian" required />
-      <TextInput name="detailKematian.sebabKematian" label="Sebab Kematian" required />
+      <TextInput
+        name="detailKematian.tempatKematian"
+        label="Tempat Kematian"
+        required
+      />
+      <TextInput
+        name="detailKematian.sebabKematian"
+        label="Sebab Kematian"
+        required
+      />
       <FileInput
         name="detailKematian.fileSuratKematian"
         label="Surat Kematian (opsional)"
