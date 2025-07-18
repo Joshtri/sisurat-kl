@@ -14,19 +14,22 @@ export async function createRTProfile(data: {
   wilayah?: string;
 }): Promise<any> {
   const res = await axios.post("/api/rt/profile", data);
+
   return res.data;
 }
 
 export async function getRTProfileByUserId(userId: string): Promise<any> {
   const res = await axios.get(`/api/rt/profile?userId=${userId}`);
+
   return res.data;
 }
 
 export async function updateRTProfile(
   userId: string,
-  data: { nik?: string; rt?: string; rw?: string; wilayah?: string }
+  data: { nik?: string; rt?: string; rw?: string; wilayah?: string },
 ): Promise<any> {
   const res = await axios.patch(`/api/rt/profile?userId=${userId}`, data);
+
   return res.data;
 }
 
