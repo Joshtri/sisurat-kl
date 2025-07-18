@@ -4,12 +4,13 @@ import { Button } from "@heroui/react";
 import { UsersIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { KartuKeluarga } from "@prisma/client";
+// import { KartuKeluarga } from "@prisma/client";
 
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
 import { getKartuKeluarga } from "@/services/kartuKeluargaService";
+import { KartuKeluarga } from "@/interfaces/kartu-keluarga";
 
 export default function KartuKeluargaPage() {
   const router = useRouter();
@@ -50,7 +51,8 @@ export default function KartuKeluargaPage() {
     actions: (
       <TableActions
         onDelete={{ onConfirm: () => alert(`Hapus KK ${item.nomorKK}`) }}
-        onEdit={() => alert(`Edit KK ${item.nomorKK}`)}
+        // onEdit={() => alert(`Edit KK ${item.nomorKK}`)}
+        onEdit={() => router.push(`/superadmin/kartu-keluarga/${item.id}/edit`)}
         onView={() => router.push(`/superadmin/kartu-keluarga/${item.id}`)}
       />
     ),
@@ -85,6 +87,10 @@ export default function KartuKeluargaPage() {
       loading={isLoading}
       pageSize={5}
       rows={rows}
+      onSearch={(search) => {
+        // Implement search functionality if needed
+        console.log("Search:", search);
+      }}
       title="Data Kartu Keluarga"
     />
   );
