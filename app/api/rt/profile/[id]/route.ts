@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma"; // sesuaikan dengan path project kamu
 
 // GET: Ambil profil RT berdasarkan userId
@@ -8,7 +9,7 @@ export async function GET(req: NextRequest) {
   if (!userId) {
     return NextResponse.json(
       { message: "Parameter userId wajib diisi." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -20,16 +21,17 @@ export async function GET(req: NextRequest) {
     if (!profile) {
       return NextResponse.json(
         { message: "Profil RT tidak ditemukan." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json(profile);
   } catch (error) {
     console.error("GET RT profile error:", error);
+
     return NextResponse.json(
       { message: "Terjadi kesalahan saat mengambil data." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -43,7 +45,7 @@ export async function PATCH(req: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { message: "Field userId wajib diisi." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -54,7 +56,7 @@ export async function PATCH(req: NextRequest) {
     if (!existingProfile) {
       return NextResponse.json(
         { message: "Profil RT tidak ditemukan." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -71,9 +73,10 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json(updated);
   } catch (error) {
     console.error("PATCH RT profile error:", error);
+
     return NextResponse.json(
       { message: "Gagal memperbarui profil RT." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
