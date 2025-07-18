@@ -3,8 +3,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@heroui/react";
-import { UserIcon } from "@heroicons/react/24/outline";
 
 import { getAllWarga } from "@/services/wargaService";
 import { ListGrid } from "@/components/ui/ListGrid";
