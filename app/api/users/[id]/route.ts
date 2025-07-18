@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import z from "zod";
+import { Role } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import { userSchema } from "@/validations/userSchema";
-import { Role } from "@prisma/client";
 
 export async function GET(req: Request, context: { params: { id: string } }) {
   // ambil id dari context (TIDAK langsung destructuring di parameter fungsi!)
@@ -26,7 +26,7 @@ export async function GET(req: Request, context: { params: { id: string } }) {
     if (!user) {
       return NextResponse.json(
         { message: "User tidak ditemukan" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -36,14 +36,14 @@ export async function GET(req: Request, context: { params: { id: string } }) {
 
     return NextResponse.json(
       { message: "Gagal mengambil detail user", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     await prisma.user.delete({
@@ -56,14 +56,14 @@ export async function DELETE(
 
     return NextResponse.json(
       { message: "Gagal menghapus user", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const body = await req.json();
@@ -93,7 +93,7 @@ export async function PATCH(
 
     return NextResponse.json(
       { message: "Gagal mengubah user", error: error.message },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }
