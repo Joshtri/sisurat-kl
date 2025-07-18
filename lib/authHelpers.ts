@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+
 import { verifyToken, TokenPayload } from "@/lib/auth";
 
 export function getAuthUserFromRequest(req: NextRequest): {
