@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth"; // pastikan fungsi ini ada
 
@@ -46,9 +47,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ data: formatted });
   } catch (error) {
     console.error("[API] /api/lurah/surat", error);
+
     return NextResponse.json(
       { message: "Gagal mengambil data surat untuk lurah" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
