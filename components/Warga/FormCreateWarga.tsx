@@ -44,6 +44,7 @@ export default function FormCreateWarga({
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
     const uid = sp.get("userId");
+
     if (uid) setUserIdFromQuery(uid);
   }, []);
   const queryClient = useQueryClient();
