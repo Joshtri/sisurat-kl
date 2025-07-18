@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
@@ -9,7 +10,7 @@ export async function POST(req: NextRequest) {
     if (!userId || !nik || !rt || !rw) {
       return NextResponse.json(
         { message: "Field userId, nik, rt, dan rw wajib diisi" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
     if (existingProfile) {
       return NextResponse.json(
         { message: "User ini sudah memiliki profil RT" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -38,9 +39,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(newProfile, { status: 201 });
   } catch (error) {
     console.error("Error creating RTProfile:", error);
+
     return NextResponse.json(
       { message: "Terjadi kesalahan saat membuat profil RT" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -61,7 +63,7 @@ export async function PATCH(req: NextRequest) {
   if (!userId) {
     return NextResponse.json(
       { message: "Parameter userId wajib diisi." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -77,7 +79,7 @@ export async function PATCH(req: NextRequest) {
     if (!existingProfile) {
       return NextResponse.json(
         { message: "Profil RT tidak ditemukan." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -95,9 +97,10 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json(updatedProfile);
   } catch (error: any) {
     console.error("PATCH RTProfile error:", error);
+
     return NextResponse.json(
       { message: "Gagal memperbarui profil RT", error: error.message },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }
