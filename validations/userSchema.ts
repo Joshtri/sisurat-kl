@@ -6,6 +6,7 @@ const userBaseSchema = z.object({
   email: z.string().email("Email tidak valid"),
   password: z.string().min(6, "Password minimal 6 karakter"),
   confirmPassword: z.string(),
+  extraRoles: z.array(z.nativeEnum(Role)).optional(), // Tambahkan extraRoles sebagai array enum Role
   role: z.nativeEnum(Role),
   // phone: z.string().optional(),
   // address: z.string().optional(),
