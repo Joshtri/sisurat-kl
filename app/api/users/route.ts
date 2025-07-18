@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { message: "Gagal membuat user", error: error.message },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }
@@ -40,6 +40,7 @@ export async function GET() {
         username: true,
         email: true,
         role: true,
+        extraRoles: true, // Ambil extraRoles
         createdAt: true,
         updatedAt: true,
         profil: {
@@ -63,7 +64,7 @@ export async function GET() {
 
     return NextResponse.json(
       { message: "Gagal mengambil data user", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
