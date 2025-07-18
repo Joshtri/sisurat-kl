@@ -14,6 +14,7 @@ export async function middleware(request: NextRequest) {
   if (token) {
     try {
       const decoded = jwtDecode<DecodedToken>(token);
+
       userRole = decoded.role;
     } catch (err) {
       console.error("Failed to decode token:", err);
@@ -23,11 +24,12 @@ export async function middleware(request: NextRequest) {
   // Always allow static files and API
   const isApi = pathname.startsWith("/api");
   const isStatic = pathname.includes(".");
+
   if (isApi || isStatic) return NextResponse.next();
 
   // Check current maintenance status
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/maintenance`
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/maintenance`,
   );
   const { isMaintenance } = await res.json();
 
