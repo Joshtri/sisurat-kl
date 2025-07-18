@@ -14,6 +14,8 @@ export async function GET() {
       suratDiterbitkan,
       suratHariIni,
       usersPerRole,
+      recentActivities,
+      suratByJenis,
     ] = await Promise.all([
       prisma.user.count(),
 
@@ -41,7 +43,7 @@ export async function GET() {
       }),
 
       prisma.surat.count({
-        where: { status: "DITERBITKAN" },
+        where: { status: "DIVERIFIKASI_LURAH" }, // surat yang sudah diterbitkan
       }),
 
       prisma.surat.count({
@@ -54,36 +56,69 @@ export async function GET() {
 
       prisma.user.groupBy({
         by: ["role"],
-        _count: {
-          role: true,
-        },
+        _count: { role: true },
+      }),
+
+      prisma.surat.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        include: { jenis: true },
+      }),
+
+      prisma.surat.groupBy({
+        by: ["idJenisSurat"],
+        _count: { _all: true },
       }),
     ]);
 
-    const roleBreakdown: Record<string, number> = {};
-    usersPerRole.forEach((item) => {
-      roleBreakdown[item.role] = item._count.role;
-    });
+    const roleBreakdown = Object.fromEntries(
+      usersPerRole.map((item) => [item.role, item._count.role])
+    );
 
-    const result = {
-      totalUsers,
-      totalSurat,
-      pendingReview: suratDalamTinjauan,
-      rejected: suratDitolak,
-      published: suratDiterbitkan,
-      submittedToday: suratHariIni,
-      usersPerRole: roleBreakdown,
-    };
+    const jenisLookup = await prisma.jenisSurat.findMany();
+    const jenisMap = Object.fromEntries(jenisLookup.map((j) => [j.id, j.nama]));
 
-    return NextResponse.json(result, { status: 200 });
-  } catch (error: any) {
-    console.error("[API] Dashboard error:", error);
-    return NextResponse.json(
-      {
-        message: "Gagal mengambil data dashboard",
-        error: error.message,
+    return NextResponse.json({
+      stats: {
+        totalUsers,
+        totalSurat,
+        pendingReview: suratDalamTinjauan,
+        rejected: suratDitolak,
+        published: suratDiterbitkan,
+        submittedToday: suratHariIni,
+        usersPerRole: roleBreakdown,
       },
+      recentActivities: recentActivities.map((s) => ({
+        id: s.id,
+        jenis: s.jenis?.nama ?? "-",
+        nama: s.namaLengkap,
+        status: s.status,
+        waktu: timeAgo(s.createdAt),
+      })),
+      chartData: suratByJenis.map((item) => ({
+        label: jenisMap[item.idJenisSurat] ?? "Lainnya",
+        value: item._count._all,
+      })),
+    });
+  } catch (error) {
+    console.error("Dashboard Superadmin Error:", error);
+    return NextResponse.json(
+      { message: "Gagal mengambil data dashboard", error: `${error}` },
       { status: 500 }
     );
   }
+}
+
+// Helper: Format waktu relatif
+function timeAgo(date: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+
+  if (diffMin < 1) return "Baru saja";
+  if (diffMin < 60) return `${diffMin} menit lalu`;
+  const diffJam = Math.floor(diffMin / 60);
+  if (diffJam < 24) return `${diffJam} jam lalu`;
+  const diffHari = Math.floor(diffJam / 24);
+  return `${diffHari} hari lalu`;
 }
