@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   WrenchScrewdriverIcon,
   ClockIcon,
@@ -10,6 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { Button } from "@heroui/button";
+
 import { showToast } from "@/utils/toastHelper";
 
 export default function MaintenancePage() {
@@ -87,7 +88,7 @@ export default function MaintenancePage() {
               >
                 SISURAT Kelurahan Liliba Sedang Ditingkatkan
               </motion.h1>
-              <div className="w-16 h-1 bg-orange-500 mx-auto rounded-full"></div>
+              <div className="w-16 h-1 bg-orange-500 mx-auto rounded-full" />
             </div>
 
             <motion.p
