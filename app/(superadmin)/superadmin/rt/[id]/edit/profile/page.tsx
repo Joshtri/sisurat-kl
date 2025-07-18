@@ -2,7 +2,6 @@
 
 import { useRouter, useParams } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
 import * as z from "zod";
 
 import { PageHeader } from "@/components/common/PageHeader";
@@ -21,12 +20,15 @@ const rtProfileSchema = z.object({
   rw: z.string().min(1, "RW wajib diisi"),
   wilayah: z.string().optional(),
 });
+
 type RTProfileSchema = z.infer<typeof rtProfileSchema>;
 
 // ✅ get detail gabungan dari /api/rt/[id]
 async function getRTDetail(id: string) {
   const res = await fetch(`/api/rt/${id}`);
+
   if (!res.ok) throw new Error("Gagal memuat detail RT");
+
   return res.json();
 }
 
