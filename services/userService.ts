@@ -31,3 +31,16 @@ export async function updateUser(data: Partial<Users> & { id: string }) {
 
   return res.data;
 }
+
+export async function updateUserRoles(userId: string, extraRoles: string[]) {
+  try {
+    const response = await axios.patch(`/api/users/${userId}/update-roles`, {
+      extraRoles,
+    });
+    return response.data; // { message, user }
+  } catch (error: any) {
+    const message =
+      error.response?.data?.error || "Gagal memperbarui role pengguna.";
+    throw new Error(message);
+  }
+}
