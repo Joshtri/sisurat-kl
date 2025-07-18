@@ -1,6 +1,7 @@
+import React from "react";
+
 import { PageHeader } from "@/components/common/PageHeader";
 import ProfileGrid from "@/components/Profile/ProfileGrid";
-import React from "react";
 
 export default function ProfilePage() {
   return (
