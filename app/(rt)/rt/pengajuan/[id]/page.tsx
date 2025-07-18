@@ -2,10 +2,11 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { PageHeader } from "@/components/common/PageHeader";
 import { Button } from "@heroui/button";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { Card } from "@heroui/react";
+
+import { PageHeader } from "@/components/common/PageHeader";
 import { getSuratDetailByRT, verifySuratByRT } from "@/services/suratService";
 import { formatDateIndo } from "@/utils/common";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
@@ -159,6 +160,7 @@ export default function DetailSuratRTPage() {
               loadingText="Menolak..."
               onConfirm={async () => {
                 const alasan = prompt("Masukkan alasan penolakan:");
+
                 if (alasan) {
                   await tolakSurat(alasan);
                 } else {
