@@ -8,8 +8,10 @@ import { DocumentIcon } from "@heroicons/react/24/outline";
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
-import { getAllSurat } from "@/services/suratService";
+import { getAllSurat, previewSuratPdf } from "@/services/suratService";
+import { getMe } from "@/services/authService";
 import { formatDateIndo } from "@/utils/common";
+import { TableActionsInline } from "@/components/common/TableActionsInline";
 
 export default function RiwayatPage() {
   const router = useRouter();
@@ -17,6 +19,11 @@ export default function RiwayatPage() {
   const { data = [], isLoading } = useQuery({
     queryKey: ["surat"],
     queryFn: getAllSurat,
+  });
+
+  const { data: user } = useQuery({
+    queryKey: ["me"],
+    queryFn: getMe,
   });
 
   const columns = [
@@ -29,23 +36,55 @@ export default function RiwayatPage() {
     { key: "actions", label: "", align: "end" as const },
   ];
 
-  const rows = data.map((item) => ({
-    key: item.id,
-    noSurat: item.noSurat || "-",
-    jenisSurat: item.jenisSurat,
-    pemohon: item.namaLengkap,
-    rtrw: `${item.rt || "-"} / ${item.rw || "-"}`,
-    status: item.status.replaceAll("_", " "),
-    tanggal: formatDateIndo(item.tanggalPengajuan),
-    actions: (
-      <TableActions
-        onView={() => router.push(`/lurah/surat/${item.id}`)}
-        // onDelete={{
-        //   onConfirm: () => alert(`Hapus surat ${item.noSurat}`),
-        // }}
-      />
-    ),
-  }));
+  const rows = data.map((item) => {
+    const showPreview =
+      user?.role === "LURAH" ||
+      (user?.role === "STAFF" && item.idStaff === user.id) ||
+      (user?.role === "RT" && item.idRT === user.id);
+
+    return {
+      key: item.id,
+      noSurat: item.noSurat || "-",
+      jenisSurat: item.jenisSurat,
+      pemohon: item.namaLengkap,
+      rtrw: `${item.rt || "-"} / ${item.rw || "-"}`,
+      status: item.status.replaceAll("_", " "),
+      tanggal: formatDateIndo(item.tanggalPengajuan),
+      actions: (
+        <>
+          <div className="flex items-center gap-2">
+            {showPreview && (
+              <TableActionsInline
+                customActions={[
+                  {
+                    key: "preview",
+                    label: "Preview PDF",
+                    icon: DocumentIcon,
+                    onClick: async () => {
+                      try {
+                        const blob = await previewSuratPdf(item.id);
+                        const url = URL.createObjectURL(blob);
+
+                        window.open(url, "_blank");
+                      } catch (error: any) {
+                        alert(
+                          error.message ||
+                            "Terjadi kesalahan saat preview PDF.",
+                        );
+                      }
+                    },
+                  },
+                ]}
+              />
+            )}
+            <TableActions
+              onView={() => router.push(`/lurah/surat/${item.id}`)}
+            />
+          </div>
+        </>
+      ),
+    };
+  });
 
   return (
     <ListGrid
