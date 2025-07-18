@@ -46,24 +46,24 @@ export default function Footer({
 
     const roleLinks = {
       warga: [
-        { label: "Bantuan", href: "/warga/bantuan" },
-        { label: "Kontak", href: "/warga/kontak" },
+        // { label: "Bantuan", href: "/warga/bantuan" },
+        // { label: "Kontak", href: "/warga/kontak" },
       ],
       staff: [
-        { label: "Bantuan", href: "/staff/bantuan" },
-        { label: "Panduan", href: "/staff/panduan" },
+        // { label: "Bantuan", href: "/staff/bantuan" },
+        // { label: "Panduan", href: "/staff/panduan" },
       ],
       lurah: [
-        { label: "Bantuan", href: "/lurah/bantuan" },
-        { label: "Kontak", href: "/lurah/kontak" },
+        // { label: "Bantuan", href: "/lurah/bantuan" },
+        // { label: "Kontak", href: "/lurah/kontak" },
       ],
       superadmin: [
-        { label: "Help", href: "/superadmin/help" },
-        { label: "Settings", href: "/superadmin/settings" },
+        // { label: "Help", href: "/superadmin/help" },
+        // { label: "Settings", href: "/superadmin/settings" },
       ],
       rt: [
-        { label: "Bantuan", href: "/rt/bantuan" },
-        { label: "Kontak", href: "/rt/kontak" },
+        // { label: "Bantuan", href: "/rt/bantuan" },
+        // { label: "Kontak", href: "/rt/kontak" },
       ],
     };
 
@@ -145,10 +145,20 @@ export default function Footer({
                 </span>
               </div>
               <div className="flex items-center gap-4">
-                <Link className="text-default-500" href="/privacy" size="sm">
+                <Link
+                  className="text-default-500"
+                  href="/privacy"
+                  size="sm"
+                  target="_blank"
+                >
                   Privacy Policy
                 </Link>
-                <Link className="text-default-500" href="/terms" size="sm">
+                <Link
+                  className="text-default-500"
+                  href="/terms"
+                  size="sm"
+                  target="_blank"
+                >
                   Terms of Service
                 </Link>
               </div>
