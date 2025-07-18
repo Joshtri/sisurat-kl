@@ -63,6 +63,7 @@ export function TableActions({
         break;
       default:
         const customAction = customActions.find((item) => item.key === action);
+
         if (customAction) customAction.onClick();
         break;
     }
