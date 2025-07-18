@@ -5,9 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import ProfileSkeleton from "./ProfileSkeleton";
 import { UserProfileSection } from "./UserProfileSection";
 import { WargaProfileSection } from "./WargaProfileSection";
+import { RTProfileSection } from "./RTProfileSection";
 
 import { getMe } from "@/services/authService";
-import { RTProfileSection } from "./RTProfileSection";
 
 export default function ProfileGrid() {
   const {
