@@ -2,9 +2,20 @@
 
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  LabelList,
+} from "recharts";
+
+import NotificationGrid from "../Notification/NotificationGrid";
+
 import { SkeletonText } from "@/components/ui/skeleton/SkeletonText";
 import { getLurahDashboardStats } from "@/services/dashboardService";
-import NotificationGrid from "../Notification/NotificationGrid";
 import { getMe } from "@/services/authService";
 
 export default function DashboardLurah() {
@@ -13,7 +24,7 @@ export default function DashboardLurah() {
     queryFn: getLurahDashboardStats,
   });
 
-  const { data: user, isLoading: isLoadingUser } = useQuery({
+  const { data: user } = useQuery({
     queryKey: ["me"],
     queryFn: getMe,
   });
@@ -32,7 +43,7 @@ export default function DashboardLurah() {
         <Card>
           <CardBody className="text-center">
             <div className="text-2xl font-bold text-warning">
-              {isLoading ? <SkeletonText /> : (data?.menungguPersetujuan ?? 0)}
+              {isLoading ? <SkeletonText /> : (data?.pending ?? 0)}
             </div>
             <div className="text-sm text-default-600">Menunggu Persetujuan</div>
           </CardBody>
@@ -41,7 +52,7 @@ export default function DashboardLurah() {
         <Card>
           <CardBody className="text-center">
             <div className="text-2xl font-bold text-success">
-              {isLoading ? <SkeletonText /> : (data?.disetujuiHariIni ?? 0)}
+              {isLoading ? <SkeletonText /> : (data?.approvedToday ?? 0)}
             </div>
             <div className="text-sm text-default-600">Disetujui Hari Ini</div>
           </CardBody>
@@ -50,7 +61,7 @@ export default function DashboardLurah() {
         <Card>
           <CardBody className="text-center">
             <div className="text-2xl font-bold text-primary">
-              {isLoading ? <SkeletonText /> : (data?.totalBulanIni ?? 0)}
+              {isLoading ? <SkeletonText /> : (data?.totalMonth ?? 0)}
             </div>
             <div className="text-sm text-default-600">Total Bulan Ini</div>
           </CardBody>
@@ -59,7 +70,7 @@ export default function DashboardLurah() {
         <Card>
           <CardBody className="text-center">
             <div className="text-2xl font-bold text-default-500">
-              {isLoading ? <SkeletonText /> : (data?.totalTahunIni ?? 0)}
+              {isLoading ? <SkeletonText /> : (data?.totalYear ?? 0)}
             </div>
             <div className="text-sm text-default-600">Total Tahun Ini</div>
           </CardBody>
@@ -80,7 +91,7 @@ export default function DashboardLurah() {
                     className="h-16 bg-default-100 rounded-lg animate-pulse"
                   />
                 ))
-              : data?.suratMenunggu?.map((item, i) => (
+              : data?.pendingSurat?.map((item, i) => (
                   <div
                     key={i}
                     className="flex justify-between items-center p-3 border rounded-lg"
@@ -120,7 +131,6 @@ export default function DashboardLurah() {
                       <span>{label}</span>
                       <div className="text-right">
                         <div className="font-bold">{jumlah}</div>
-                        {/* Persentase bisa ditambahkan jika backend menyediakannya */}
                       </div>
                     </div>
                   )
@@ -128,6 +138,45 @@ export default function DashboardLurah() {
           </CardBody>
         </Card>
       </div>
+
+      {/* 📊 Chart per jenis surat */}
+      <Card>
+        <CardHeader>
+          <h3 className="text-lg font-semibold">
+            Statistik Jenis Surat (dengan tren)
+          </h3>
+        </CardHeader>
+        <CardBody>
+          {isLoading ? (
+            <div className="h-64 bg-default-100 animate-pulse rounded-xl" />
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={data?.statPerJenis || []}>
+                <XAxis dataKey="jenis" />
+                <YAxis />
+                <Tooltip
+                  formatter={(value: any, name: any, props: any) => [
+                    `${value}`,
+                    "Jumlah",
+                  ]}
+                />
+                <Bar dataKey="total" fill="#3b82f6">
+                  <LabelList
+                    dataKey="trend"
+                    position="top"
+                    formatter={(value: number) =>
+                      `${value >= 0 ? "+" : ""}${value}%`
+                    }
+                    style={{ fill: "#10b981", fontWeight: 600 }}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </CardBody>
+      </Card>
+
+      {/* 🔔 Notifikasi */}
       <NotificationGrid getMeData={user} />
     </div>
   );
