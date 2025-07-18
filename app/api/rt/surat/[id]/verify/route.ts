@@ -1,10 +1,11 @@
-import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+
+import { prisma } from "@/lib/prisma";
 import { getAuthUserFromRequest } from "@/lib/authHelpers";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const { user, error, status } = getAuthUserFromRequest(req);
 
@@ -39,9 +40,10 @@ export async function PATCH(
     return NextResponse.json(result);
   } catch (error) {
     console.error("RT_VERIFIKASI_ERROR", error);
+
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
