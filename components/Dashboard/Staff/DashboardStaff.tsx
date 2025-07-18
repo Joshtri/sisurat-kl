@@ -1,15 +1,34 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardBody, CardHeader, Button } from "@heroui/react";
-import { UserGroupIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
+import { Button } from "@heroui/react";
+import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
+
+import NotificationGrid from "../Notification/NotificationGrid";
 import { getMe } from "@/services/authService";
 import { getStaffDashboardStats } from "@/services/dashboardService";
 import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 import { StatsCard } from "@/components/ui/StatsCard";
-import NotificationGrid from "../Notification/NotificationGrid";
+
+const STATUS_COLORS: Record<string, string> = {
+  DITERBITKAN: "#22c55e",
+  DITOLAK_LURAH: "#ef4444",
+  DIVERIFIKASI_LURAH: "#3b82f6",
+};
 
 export default function DashboardStaff() {
   const router = useRouter();
@@ -27,7 +46,6 @@ export default function DashboardStaff() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold">Dashboard Staff</h1>
         {user && (
@@ -38,7 +56,6 @@ export default function DashboardStaff() {
         )}
       </div>
 
-      {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {isLoading ? (
           <SkeletonCard rows={3} />
@@ -53,7 +70,7 @@ export default function DashboardStaff() {
                 <Button
                   size="sm"
                   color="warning"
-                  onPress={() => router.push("/staff/surat")}
+                  onPress={() => router.push("/staff/pengajuan")}
                 >
                   Tinjau
                 </Button>
@@ -68,7 +85,7 @@ export default function DashboardStaff() {
                 <Button
                   size="sm"
                   color="primary"
-                  onPress={() => router.push("/staff/surat")}
+                  onPress={() => router.push("/staff/pengajuan")}
                 >
                   Proses
                 </Button>
@@ -83,7 +100,7 @@ export default function DashboardStaff() {
                 <Button
                   size="sm"
                   color="success"
-                  onPress={() => router.push("/staff/surat")}
+                  onPress={() => router.push("/staff/pengajuan")}
                 >
                   Lihat Semua
                 </Button>
@@ -93,7 +110,55 @@ export default function DashboardStaff() {
         )}
       </div>
 
-      {/* 🔔 Notifikasi */}
+      {/* 📊 Charts Section */}
+      {!isLoading && stats?.chartData && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          {/* Pie Chart by Status */}
+          <div className="bg-white rounded-lg shadow p-4">
+            <h2 className="text-lg font-semibold mb-4">
+              Distribusi Status Surat
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={stats.chartData.byStatus}
+                  dataKey="count"
+                  nameKey="status"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  label
+                >
+                  {stats.chartData.byStatus.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={STATUS_COLORS[entry.status] || "#8884d8"}
+                    />
+                  ))}
+                </Pie>
+                <Legend />
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Bar Chart per Month */}
+          <div className="bg-white rounded-lg shadow p-4">
+            <h2 className="text-lg font-semibold mb-4">
+              Jumlah Surat per Bulan
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={stats.chartData.perMonth}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="count" fill="#3b82f6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
       <div className="mt-6">
         <NotificationGrid getMeData={user} />
       </div>
