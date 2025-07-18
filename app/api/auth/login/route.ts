@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 import {
   verifyPassword,
@@ -36,6 +37,7 @@ export async function POST(req: NextRequest) {
     }
 
     const isValid = await verifyPassword(password, user.password);
+
     if (!isValid) {
       return NextResponse.json({ message: "Password salah." }, { status: 401 });
     }
@@ -66,6 +68,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("Login error:", error);
+
     return NextResponse.json(
       { message: "Terjadi kesalahan pada server" },
       { status: 500 },
