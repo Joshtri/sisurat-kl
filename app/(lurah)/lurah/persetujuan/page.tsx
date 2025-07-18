@@ -8,7 +8,7 @@ import { DocumentIcon } from "@heroicons/react/24/outline";
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
-import { getAllSurat, getSuratForLurah } from "@/services/suratService";
+import { getSuratForLurah } from "@/services/suratService";
 import { formatDateIndo } from "@/utils/common";
 
 export default function PersetujuanPage() {
