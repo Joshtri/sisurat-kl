@@ -9,4 +9,5 @@ export interface Users {
     id: string;
   } | null;
   isWarga: boolean; // Pastikan properti ini ada
+  extraRoles: ("WARGA" | "RT" | "STAFF" | "LURAH" | "SUPERADMIN")[];
 }
