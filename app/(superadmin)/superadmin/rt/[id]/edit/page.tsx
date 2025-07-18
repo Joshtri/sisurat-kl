@@ -19,6 +19,7 @@ const userUpdateSchema = z.object({
   email: z.string().email("Email tidak valid"),
   //   role: z.literal("RT"),
 });
+
 type UserUpdateSchema = z.infer<typeof userUpdateSchema>;
 
 export default function EditRTPage() {
