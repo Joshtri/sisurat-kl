@@ -5,11 +5,12 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@heroui/button";
 import { useRouter } from "next/navigation";
 
+import NotificationGrid from "../Notification/NotificationGrid";
+
 import { StatsCard } from "@/components/ui/StatsCard";
 import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 import { getRTDashboardStats } from "@/services/dashboardService";
 import { getMe } from "@/services/authService";
-import NotificationGrid from "../Notification/NotificationGrid";
 
 export default function DashboardRT() {
   const router = useRouter();
