@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     const formatted = suratList.map((surat) => ({
       id: surat.id,
       noSurat: surat.noSurat ?? "-",
-      jenisSurat: surat.jenis?.nama ?? "-", 
+      jenisSurat: surat.jenis?.nama ?? "-",
       namaLengkap:
         surat.pemohon?.profil?.namaLengkap ??
         surat.namaLengkap ??
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
             ? (error as { message: string }).message
             : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       { message: "Terjadi kesalahan saat membuat surat" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
