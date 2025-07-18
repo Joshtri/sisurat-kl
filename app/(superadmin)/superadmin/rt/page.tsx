@@ -2,12 +2,9 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import {
-  EyeIcon,
-  PencilSquareIcon,
-  UserIcon,
-} from "@heroicons/react/24/outline";
+import { PencilSquareIcon, UserIcon } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/button";
+import Link from "next/link";
 
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
@@ -15,8 +12,6 @@ import { ListGrid } from "@/components/ui/ListGrid";
 import { getAllRT } from "@/services/rtService";
 import { deleteUser } from "@/services/userService";
 import { showToast } from "@/utils/toastHelper";
-import Link from "next/link";
-import { Divider } from "@heroui/react";
 
 export default function RTPage() {
   const router = useRouter();
