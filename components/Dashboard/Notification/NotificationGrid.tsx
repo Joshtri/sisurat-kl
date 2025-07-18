@@ -3,11 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { BellIcon } from "@heroicons/react/24/outline";
 import { Card, CardHeader, CardBody, Button } from "@heroui/react";
+import Link from "next/link";
+
 import { showToast } from "@/utils/toastHelper";
 import { formatDateIndo } from "@/utils/common";
-import { getMe } from "@/services/authService";
 import { getSuratByRT, getNotificationByRole } from "@/services/suratService";
-import Link from "next/link";
 
 interface NotificationGridProps {
   getMeData?: any; // Optional prop to pass user data
@@ -25,6 +25,7 @@ export default function NotificationGrid({ getMeData }: NotificationGridProps) {
     queryKey: ["notifikasi-surat", user?.role],
     queryFn: async () => {
       if (user?.role === "RT") return getSuratByRT();
+
       return getNotificationByRole(user?.role);
     },
     enabled,
@@ -58,7 +59,7 @@ export default function NotificationGrid({ getMeData }: NotificationGridProps) {
       case "RT":
         return `/rt/pengajuan/${id}`;
       case "STAFF":
-        return `/staff/surat/${id}`;
+        return `/staff/pengajuan/${id}`;
       case "LURAH":
         return `/lurah/surat/${id}`;
       case "WARGA":
