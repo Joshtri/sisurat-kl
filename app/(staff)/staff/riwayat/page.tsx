@@ -1,15 +1,16 @@
 "use client";
 
-import React from "react";
-import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { DocumentIcon } from "@heroicons/react/24/outline";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
-import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
-import { getAllSurat } from "@/services/suratService";
+import { TableActionsInline } from "@/components/common/TableActionsInline";
+import { ListGrid } from "@/components/ui/ListGrid";
+import { getAllSurat, previewSuratPdf } from "@/services/suratService";
 import { formatDateIndo } from "@/utils/common";
+import { showToast } from "@/utils/toastHelper";
 
 export default function RiwayatPage() {
   const router = useRouter();
@@ -38,12 +39,35 @@ export default function RiwayatPage() {
     status: item.status.replaceAll("_", " "),
     tanggal: formatDateIndo(item.tanggalPengajuan),
     actions: (
-      <TableActions
-        onView={() => router.push(`/superadmin/surat/${item.id}`)}
-        onDelete={{
-          onConfirm: () => alert(`Hapus surat ${item.noSurat}`),
-        }}
-      />
+      <div className="flex items-center gap-2">
+        <TableActionsInline
+          customActions={[
+            {
+              key: "preview",
+              label: "Preview PDF",
+              icon: DocumentIcon,
+              onClick: async () => {
+                try {
+                  await previewSuratPdf(item.id);
+                } catch (err: any) {
+                  showToast({
+                    title: "Gagal Preview",
+                    description: err.message,
+                    color: "error",
+                  });
+                }
+              },
+            },
+          ]}
+        />
+
+        <TableActions
+          onView={() => router.push(`/superadmin/surat/${item.id}`)}
+          // onDelete={{
+          //   onConfirm: () => alert(`Hapus surat ${item.noSurat}`),
+          // }}
+        />
+      </div>
     ),
   }));
 
