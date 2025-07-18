@@ -1,3 +1,4 @@
+import { QueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 interface LoginPayload {
@@ -29,7 +30,11 @@ export async function getMe() {
   return res.data;
 }
 
+export const queryClient = new QueryClient();
+
+
 export async function logout(): Promise<void> {
   await axios.post("/api/auth/logout");
   localStorage.removeItem("token");
+  queryClient.clear(); // 🚨 PENTING agar dashboard lama tidak nyangkut
 }
