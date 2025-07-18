@@ -7,14 +7,13 @@ import {
 } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/button";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-import { QuickActions } from "./QuickActions";
 import { RecentActivities } from "./RecentActivities";
 import { StatsCard } from "./StatsCard";
 import { SystemOverview } from "./SystemOverview";
 import { TableActionsDemo } from "./TableActionsDemo";
-import { useRouter } from "next/navigation";
+
 import {
   DatabaseStatus,
   getBackupStatus,
@@ -24,6 +23,7 @@ import {
 } from "@/services/healthService";
 import { SkeletonText } from "@/components/ui/skeleton/SkeletonText";
 import { getDashboardStats } from "@/services/dashboardService";
+import { DashboardStatsChart } from "./DashboardStatsChart";
 
 export default function DashboardSuperAdmin() {
   const { data: serverStatusData, isLoading: serverLoading } = useQuery({
@@ -154,11 +154,19 @@ export default function DashboardSuperAdmin() {
           backupStatus={backupStatus}
           diskStatus={diskStatus}
         />
-        <RecentActivities />
+        <RecentActivities data={stats?.recentActivities ?? []} />
       </div>
 
       {/* <QuickActions /> */}
-      <TableActionsDemo />
+      <TableActionsDemo data={stats?.recentActions ?? []} />
+
+      {stats && (
+        <DashboardStatsChart
+          submittedToday={stats.submittedToday ?? 0}
+          published={stats.published ?? 0}
+          usersPerRole={stats.usersPerRole ?? {}}
+        />
+      )}
     </div>
   );
 }
