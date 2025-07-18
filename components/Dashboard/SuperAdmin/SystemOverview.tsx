@@ -8,16 +8,12 @@ import {
 } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import {
-  BackupStatus,
-  checkSystemHealth,
-  DiskStatus,
-} from "@/services/healthService";
+import { checkSystemHealth } from "@/services/healthService";
 import { showToast } from "@/utils/toastHelper";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getMaintenanceStatus,
   setMaintenanceStatus,
