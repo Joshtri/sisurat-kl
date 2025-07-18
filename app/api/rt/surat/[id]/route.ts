@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const authHeader = req.headers.get("authorization");
   const token = authHeader?.replace("Bearer ", "");
@@ -45,16 +46,17 @@ export async function GET(
     if (!surat) {
       return NextResponse.json(
         { message: "Surat tidak ditemukan" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json(surat);
   } catch (error) {
     console.error("GET_SURAT_DETAIL_ERROR", error);
+
     return NextResponse.json(
       { message: "Terjadi kesalahan server" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
