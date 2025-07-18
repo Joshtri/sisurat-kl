@@ -32,6 +32,7 @@ export async function getAllSurat(): Promise<any[]> {
   }
 
   const json = await res.json();
+
   return Array.isArray(json.data) ? json.data : json;
 }
 
@@ -54,10 +55,18 @@ export async function getSuratHistoryById(id: string) {
   return res.data;
 }
 
-export async function getSuratByRT() {
+export async function getSuratByRT(params?: {
+  startDate?: string;
+  endDate?: string;
+}) {
   const token = localStorage.getItem("token");
 
-  const res = await fetch("/api/rt/surat", {
+  const query = new URLSearchParams();
+
+  if (params?.startDate) query.append("startDate", params.startDate);
+  if (params?.endDate) query.append("endDate", params.endDate);
+
+  const res = await fetch(`/api/rt/surat?${query.toString()}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -125,6 +134,7 @@ export async function getSuratForStaff(): Promise<any[]> {
 
 export async function verifySuratByStaff(id: string, payload: any) {
   const res = await axios.patch(`/api/staff/surat/${id}/verify`, payload);
+
   return res.data;
 }
 
@@ -134,16 +144,68 @@ export async function getSuratForLurah() {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
+
   return res.data.data;
 }
 
 export async function getSuratDetailByLurah(id: string) {
   const res = await axios.get(`/api/lurah/surat/${id}`);
+
   return res.data.data;
 }
 
 // PATCH surat oleh LURAH
 export async function verifySuratByLurah(id: string, data: any) {
   const res = await axios.patch(`/api/lurah/surat/${id}/verify`, data);
+
   return res.data;
+}
+
+export async function previewSuratPdf(id: string): Promise<Blob> {
+  const token = localStorage.getItem("token");
+
+  if (!token) throw new Error("Token tidak ditemukan. Silakan login ulang.");
+
+  const res = await fetch(`/api/surat/history/${id}/preview`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+
+    throw new Error(err.message || "Gagal mengambil PDF surat");
+  }
+
+  return res.blob(); // <--- penting, bukan res.json()
+}
+
+export async function downloadSuratPdf(id: string): Promise<void> {
+  const token = localStorage.getItem("token");
+
+  if (!token) throw new Error("Token tidak ditemukan");
+
+  const res = await fetch(`/api/surat/history/${id}/preview`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+
+    throw new Error(err.message || "Gagal mendownload PDF");
+  }
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = `surat-${id}.pdf`;
+  link.click();
+
+  URL.revokeObjectURL(url);
 }
