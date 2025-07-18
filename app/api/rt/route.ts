@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma"; // pastikan ini mengarah ke prisma client
 
 export async function GET() {
@@ -18,9 +19,10 @@ export async function GET() {
     return NextResponse.json(rtAccounts);
   } catch (error) {
     console.error("Error fetching RT accounts:", error);
+
     return NextResponse.json(
       { message: "Failed to fetch RT accounts" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
