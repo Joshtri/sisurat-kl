@@ -20,6 +20,7 @@ export interface BackupStatus {
 export async function getServerStatus(): Promise<HealthStatus> {
   try {
     const res = await axios.get("/api/health/server");
+
     return res.data;
   } catch (err) {
     return { status: "Error", timestamp: new Date().toISOString() };
@@ -29,6 +30,7 @@ export async function getServerStatus(): Promise<HealthStatus> {
 export async function getDatabaseStatus(): Promise<DatabaseStatus> {
   try {
     const res = await axios.get("/api/health/database");
+
     return res.data;
   } catch (err) {
     return { database: "Error" };
@@ -38,6 +40,7 @@ export async function getDatabaseStatus(): Promise<DatabaseStatus> {
 export async function getBackupStatus(): Promise<BackupStatus> {
   try {
     const res = await axios.get("/api/health/backup");
+
     return res.data;
   } catch (err) {
     return { lastBackup: "Unavailable" };
@@ -48,7 +51,7 @@ export async function getDiskStatus(): Promise<DiskStatus> {
   try {
     const res = await fetch("/api/disk");
 
-  if (!res.ok) throw new Error("Disk status failed");
+    if (!res.ok) throw new Error("Disk status failed");
     const data = await res.json();
 
     return {
@@ -65,6 +68,7 @@ export async function checkSystemHealth(): Promise<{
 }> {
   try {
     const res = await axios.get("/api/health/check");
+
     return res.data;
   } catch (err) {
     return {
