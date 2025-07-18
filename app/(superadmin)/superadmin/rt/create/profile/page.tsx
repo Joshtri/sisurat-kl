@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import * as z from "zod";
 
 import { CardContainer } from "@/components/common/CardContainer";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -11,8 +12,6 @@ import { CreateOrEditButtons } from "@/components/ui/CreateOrEditButtons";
 import { TextInput } from "@/components/ui/inputs/TextInput";
 import { createRTProfile } from "@/services/rtService";
 import { showToast } from "@/utils/toastHelper";
-
-import * as z from "zod";
 
 const rtProfileSchema = z.object({
   nik: z.string().min(16, "NIK harus 16 digit"),
@@ -25,7 +24,7 @@ type RTProfileSchema = z.infer<typeof rtProfileSchema>;
 
 export default function CreateProfileRTPage() {
   const router = useRouter();
-   // const userId = searchParams.get("userId");
+  // const userId = searchParams.get("userId");
 
   const { mutate, isPending } = useMutation({
     mutationFn: createRTProfile,
@@ -53,6 +52,7 @@ export default function CreateProfileRTPage() {
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
     const uid = sp.get("userId");
+
     setUserId(uid);
 
     if (!uid) {
