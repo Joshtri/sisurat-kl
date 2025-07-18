@@ -66,10 +66,9 @@ export default function JenisSuratPage() {
               });
             }
           },
-          // onConfirm: () => alert(`Hapus: ${item.nama}`),
         }}
-        onEdit={() => alert(`Edit: ${item.nama}`)}
-        onView={() => alert(`Lihat: ${item.nama}`)}
+        onEdit={() => router.push(`/superadmin/jenis-surat/${item.id}/edit`)}
+        onView={() => router.push(`/superadmin/jenis-surat/${item.id}`)}
       />
     ),
   }));
