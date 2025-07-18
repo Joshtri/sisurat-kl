@@ -1,5 +1,6 @@
-import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+
+import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth"; // atau apapun yang kamu pakai untuk decode token
 
 export async function GET(req: NextRequest) {
@@ -25,7 +26,7 @@ export async function GET(req: NextRequest) {
     if (!rtProfile || !rtProfile.rt) {
       return NextResponse.json(
         { message: "RT tidak ditemukan" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -59,9 +60,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(wargaList);
   } catch (error) {
     console.error("[GET_WARGA_BY_RT_ERROR]", error);
+
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
