@@ -1,9 +1,10 @@
-import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+
+import { prisma } from "@/lib/prisma";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const { id } = params;
 
@@ -46,16 +47,17 @@ export async function GET(
     if (!surat) {
       return NextResponse.json(
         { message: "Surat tidak ditemukan" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json(surat);
   } catch (error) {
     console.error("[GET_SURAT_DETAIL_ERROR]", error);
+
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
