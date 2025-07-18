@@ -4,7 +4,8 @@ import { z } from "zod";
 import { isValidNIK, isValidRTRW } from "@/utils/common";
 
 export const wargaSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: z.string().optional(), // ✅ tambahkan ini
+
   userId: z.string().uuid(),
   namaLengkap: z.string().min(3, "Nama lengkap minimal 3 karakter"),
 
@@ -20,7 +21,7 @@ export const wargaSchema = z.object({
 
       return date instanceof Date && !isNaN(date.getTime());
     },
-    { message: "Tanggal lahir tidak valid" },
+    { message: "Tanggal lahir tidak valid" }
   ),
 
   jenisKelamin: z.enum(["LAKI_LAKI", "PEREMPUAN"]),
@@ -65,11 +66,11 @@ export const wargaSchema = z.object({
   }),
 
   alamat: z.string().optional(),
-  foto: z.string().optional(),
+  foto: z.string().nullable().optional(),
 
   statusHidup: z.enum(["HIDUP", "MENINGGAL"]).default("HIDUP"),
 
-  kartuKeluargaId: z.string().uuid().optional(),
+  kartuKeluargaId: z.string().uuid().nullable().optional(),
 
   peranDalamKK: z
     .enum(["KEPALA_KELUARGA", "ISTRI", "ANAK", "ORANG_TUA", "FAMILI_LAINNYA"])

@@ -29,3 +29,9 @@ export async function getKartuKeluargaAnggota(
 
   return res.data;
 }
+
+export async function updateKartuKeluarga(id: string, data: any) {
+  const res = await axios.patch(`/api/kartu-keluarga/${id}`, data);
+
+  return res.data;
+}

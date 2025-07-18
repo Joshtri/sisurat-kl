@@ -302,24 +302,6 @@ export default function CreateSuratPermohonanPage() {
           </CardBody>
         </Card>
 
-        {/* Additional Info */}
-        {/* <Card className="bg-default-50">
-          <CardBody>
-            <div className="text-center">
-              <h4 className="font-semibold text-default-700 mb-2">
-                Informasi Penting
-              </h4>
-              <p className="text-sm text-default-600">
-                Setelah mengajukan permohonan, Anda dapat memantau status
-                permohonan melalui halaman{" "}
-                <span className="font-medium text-primary">
-                  Riwayat Permohonan
-                </span>
-                . Proses verifikasi memerlukan waktu 1-3 hari kerja.
-              </p>
-            </div>
-          </CardBody>
-        </Card> */}
       </div>
     </>
   );
