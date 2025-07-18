@@ -13,7 +13,7 @@ export interface RTDashboardStats {
 }
 
 export async function getRTDashboardStats(
-  userId: string
+  userId: string,
 ): Promise<RTDashboardStats> {
   const res = await axios.get(`/api/dashboard/rt?userId=${userId}`);
 
