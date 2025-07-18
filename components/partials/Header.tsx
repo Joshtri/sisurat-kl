@@ -97,6 +97,7 @@ export default function Header({
   const handleLogout = async () => {
     await logout();
     router.push("/"); // Redirect to home or login page
+    router.refresh(); // opsional untuk jaga-jaga agar halaman benar-benar reload state
   };
 
   return (
