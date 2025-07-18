@@ -6,11 +6,7 @@ import {
   ChartBarIcon,
   UserIcon,
   ShieldCheckIcon,
-  ClipboardDocumentListIcon,
-  PrinterIcon,
   ArchiveBoxIcon,
-  UsersIcon,
-  DocumentDuplicateIcon,
 } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeSolidIcon,
@@ -52,12 +48,6 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       ],
     },
     {
-      title: "Status Surat",
-      href: "/warga/status",
-      icon: ClipboardDocumentListIcon,
-      iconSolid: ClipboardDocumentListIcon,
-    },
-    {
       title: "Profile",
       href: "/warga/profile",
       icon: UserIcon,
@@ -78,24 +68,6 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       icon: DocumentTextIcon,
       iconSolid: DocumentSolidIcon,
     },
-    // {
-    //   title: "Manajemen Surat",
-    //   href: "/staff/surat",
-    //   icon: DocumentTextIcon,
-    //   iconSolid: DocumentSolidIcon,
-    //   badge: "12",
-    //   submenu: [
-    //     { title: "Permohonan Masuk", href: "/staff/surat/masuk" },
-    //     { title: "Dalam Proses", href: "/staff/surat/proses" },
-    //     { title: "Selesai", href: "/staff/surat/selesai" },
-    //   ],
-    // },
-    // {
-    //   title: "Cetak Surat",
-    //   href: "/staff/cetak",
-    //   icon: PrinterIcon,
-    //   iconSolid: PrinterIcon,
-    // },
 
     {
       title: "Riwayat Surat",
@@ -215,6 +187,13 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       href: "/superadmin/warga",
       icon: UserGroupIcon,
       iconSolid: UserGroupSolidIcon,
+    },
+
+    {
+      title: "Manajemen Multi Role",
+      href: "/superadmin/multi-role",
+      icon: DocumentTextIcon,
+      iconSolid: DocumentSolidIcon,
     },
 
     {
