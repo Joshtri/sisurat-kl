@@ -18,6 +18,10 @@ export async function PATCH(
       dataToUpdate.catatanPenolakan = body.catatanPenolakan;
     }
 
+    if (body.noSurat) {
+      dataToUpdate.noSurat = body.noSurat;
+    }
+
     const updated = await prisma.surat.update({
       where: { id },
       data: dataToUpdate,
@@ -29,6 +33,7 @@ export async function PATCH(
     });
   } catch (error) {
     console.error("PATCH /api/staff/surat/[id]/verify error:", error);
+
     return NextResponse.json(
       { message: "Gagal memproses surat", error: error.message },
       { status: 500 }
