@@ -2,17 +2,15 @@
 
 import type { MenuItem } from "@/config/sidebarMenus";
 
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ShieldCheckIcon,
-} from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Link } from "@heroui/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 import { sidebarMenus } from "@/config/sidebarMenus";
+
 interface SidebarProps {
   userRole: "WARGA" | "STAFF" | "LURAH" | "SUPERADMIN" | "RT";
   isCollapsed?: boolean;
@@ -26,7 +24,7 @@ export default function Sidebar({
   onToggleCollapse,
   className = "",
 }: SidebarProps) {
-  const [activeMenu, setActiveMenu] = useState("dashboard");
+  const pathname = usePathname();
   const [expandedSubmenus, setExpandedSubmenus] = useState<string[]>([]);
 
   const toggleSubmenu = (menuTitle: string) => {
@@ -38,6 +36,52 @@ export default function Sidebar({
   };
 
   const menuItems: MenuItem[] = sidebarMenus[userRole] ?? [];
+
+  // Function to check if a menu item is active
+  const isMenuItemActive = (item: MenuItem): boolean => {
+    // Check if current path matches the item's href
+    if (item.href && pathname === item.href) {
+      return true;
+    }
+
+    // Check if current path matches any submenu item
+    if (item.submenu && item.submenu.length > 0) {
+      return item.submenu.some((subItem) => pathname === subItem.href);
+    }
+
+    // Special case for dashboard - if pathname is exactly the dashboard route
+    if (
+      item.title.toLowerCase() === "dashboard" &&
+      (pathname === "/warga/dashboard" ||
+        pathname === "/staff/dashboard" ||
+        pathname === "/lurah/dashboard" ||
+        pathname === "/superadmin/dashboard" ||
+        pathname === "/rt/dashboard")
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
+  // Function to check if a submenu item is active
+  const isSubmenuItemActive = (href: string): boolean => {
+    return pathname === href;
+  };
+
+  // Auto-expand submenu if it contains active item
+  useEffect(() => {
+    menuItems.forEach((item) => {
+      if (
+        item.submenu &&
+        item.submenu.some((subItem) => pathname === subItem.href)
+      ) {
+        setExpandedSubmenus((prev) =>
+          prev.includes(item.title) ? prev : [...prev, item.title]
+        );
+      }
+    });
+  }, [pathname, menuItems]);
 
   return (
     <aside
@@ -75,7 +119,7 @@ export default function Sidebar({
       <nav className="flex-1 p-2 overflow-y-auto">
         <ul className="space-y-2">
           {menuItems.map((item, index) => {
-            const isActive = activeMenu === item.title.toLowerCase();
+            const isActive = isMenuItemActive(item);
             const hasSubmenu = item.submenu && item.submenu.length > 0;
             const isSubmenuExpanded = expandedSubmenus.includes(item.title);
 
@@ -162,7 +206,6 @@ export default function Sidebar({
                           : "text-blue-100 hover:bg-gradient-to-r hover:from-blue-700/50 hover:to-blue-600/50 hover:text-white hover:shadow-md"
                       }`}
                       href={item.href}
-                      onClick={() => setActiveMenu(item.title.toLowerCase())}
                     >
                       <div className="relative">
                         <item.icon
@@ -219,36 +262,58 @@ export default function Sidebar({
                     }`}
                   >
                     <ul className="mt-2 ml-8 space-y-1">
-                      {item.submenu!.map((subItem, subIndex) => (
-                        <li
-                          key={subItem.title}
-                          className={`transform transition-all duration-300 ${
-                            isSubmenuExpanded
-                              ? "translate-x-0 opacity-100"
-                              : "-translate-x-4 opacity-0"
-                          }`}
-                          style={{
-                            transitionDelay: isSubmenuExpanded
-                              ? `${subIndex * 100}ms`
-                              : "0ms",
-                          }}
-                        >
-                          <Link
-                            className="flex items-center p-2 text-sm text-blue-200 rounded-md hover:bg-gradient-to-r hover:from-blue-600/50 hover:to-blue-500/50 hover:text-white transition-all duration-300 transform hover:scale-105 hover:translate-x-2 group/sublink relative"
-                            href={subItem.href}
-                          >
-                            <div className="w-2 h-2 bg-blue-300 rounded-full mr-3 transition-all duration-300 group/sublink-hover:bg-blue-100 group/sublink-hover:scale-125" />
-                            <span className="transition-all duration-300">
-                              {subItem.title}
-                            </span>
+                      {item.submenu!.map((subItem, subIndex) => {
+                        const isSubItemActive = isSubmenuItemActive(
+                          subItem.href
+                        );
 
-                            {/* Submenu hover indicator */}
-                            <div className="absolute right-2 opacity-0 group/sublink-hover:opacity-100 transition-all duration-300 transform translate-x-2 group/sublink-hover:translate-x-0">
-                              <div className="w-1 h-4 bg-blue-300 rounded-full" />
-                            </div>
-                          </Link>
-                        </li>
-                      ))}
+                        return (
+                          <li
+                            key={subItem.title}
+                            className={`transform transition-all duration-300 ${
+                              isSubmenuExpanded
+                                ? "translate-x-0 opacity-100"
+                                : "-translate-x-4 opacity-0"
+                            }`}
+                            style={{
+                              transitionDelay: isSubmenuExpanded
+                                ? `${subIndex * 100}ms`
+                                : "0ms",
+                            }}
+                          >
+                            <Link
+                              className={`flex items-center p-2 text-sm rounded-md transition-all duration-300 transform hover:scale-105 hover:translate-x-2 group/sublink relative ${
+                                isSubItemActive
+                                  ? "bg-gradient-to-r from-blue-600/70 to-blue-500/70 text-white"
+                                  : "text-blue-200 hover:bg-gradient-to-r hover:from-blue-600/50 hover:to-blue-500/50 hover:text-white"
+                              }`}
+                              href={subItem.href}
+                            >
+                              <div
+                                className={`w-2 h-2 rounded-full mr-3 transition-all duration-300 ${
+                                  isSubItemActive
+                                    ? "bg-blue-100 scale-125"
+                                    : "bg-blue-300 group/sublink-hover:bg-blue-100 group/sublink-hover:scale-125"
+                                }`}
+                              />
+                              <span className="transition-all duration-300">
+                                {subItem.title}
+                              </span>
+
+                              {/* Submenu hover indicator */}
+                              <div
+                                className={`absolute right-2 transition-all duration-300 transform ${
+                                  isSubItemActive
+                                    ? "opacity-100 translate-x-0"
+                                    : "opacity-0 translate-x-2 group/sublink-hover:opacity-100 group/sublink-hover:translate-x-0"
+                                }`}
+                              >
+                                <div className="w-1 h-4 bg-blue-300 rounded-full" />
+                              </div>
+                            </Link>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 )}
