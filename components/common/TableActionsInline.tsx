@@ -8,6 +8,7 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useState, ComponentType, SVGProps } from "react";
+
 import { ConfirmationDialog } from "./ConfirmationDialog";
 
 interface CustomAction {
@@ -108,7 +109,7 @@ export function TableActionsInline({
           >
             {action.label}
           </Button>
-        )
+        ),
       )}
     </div>
   );
