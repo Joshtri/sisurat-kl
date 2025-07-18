@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest) {
     if (!rtProfile) {
       return NextResponse.json(
         { message: "RT profile not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -47,7 +48,7 @@ export async function GET(req: NextRequest) {
             },
           },
         }),
-      ]
+      ],
     );
 
     return NextResponse.json({
@@ -57,9 +58,10 @@ export async function GET(req: NextRequest) {
     });
   } catch (error: any) {
     console.error("[API] Dashboard RT error:", error);
+
     return NextResponse.json(
       { message: "Gagal mengambil data dashboard RT", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
