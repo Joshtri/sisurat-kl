@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
     const now = new Date();
     const startOfToday = new Date(now);
+
     startOfToday.setHours(0, 0, 0, 0);
 
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -22,7 +24,7 @@ export async function GET() {
     // 2. Jumlah surat disetujui lurah hari ini
     const approvedToday = await prisma.surat.count({
       where: {
-        status: "DITERBITKAN",
+        status: "DIVERIFIKASI_LURAH",
         tanggalVerifikasiLurah: {
           gte: startOfToday,
         },
@@ -50,7 +52,7 @@ export async function GET() {
     // 5. Daftar 5 surat menunggu verifikasi lurah
     const pendingSurat = await prisma.surat.findMany({
       where: {
-        status: "DIVERIFIKASI_LURAH",
+        status: "DIVERIFIKASI_STAFF", // surat yang menunggu verifikasi dari Lurah
       },
       take: 5,
       orderBy: {
@@ -94,9 +96,10 @@ export async function GET() {
     });
   } catch (error) {
     console.error("[API] Lurah Dashboard error:", error);
+
     return NextResponse.json(
       { message: "Gagal memuat dashboard lurah", error: `${error}` },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -110,7 +113,9 @@ function timeAgo(date: Date): string {
   if (diffMin < 1) return "Baru saja";
   if (diffMin < 60) return `${diffMin} menit lalu`;
   const diffJam = Math.floor(diffMin / 60);
+
   if (diffJam < 24) return `${diffJam} jam lalu`;
   const diffHari = Math.floor(diffJam / 24);
+
   return `${diffHari} hari lalu`;
 }
