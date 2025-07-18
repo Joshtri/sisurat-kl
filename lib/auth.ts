@@ -32,7 +32,7 @@ export function generateToken(user: User) {
       role: user.role,
     },
     JWT_SECRET,
-    { expiresIn: "1d" }
+    { expiresIn: "1d" },
   );
 }
 
