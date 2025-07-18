@@ -8,16 +8,20 @@ import {
   CheckCircleIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
+import { Button } from "@heroui/button";
 
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
 import { TableActionsInline } from "@/components/common/TableActionsInline";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
-import { getSuratForStaff, verifySuratByStaff } from "@/services/suratService";
+import {
+  getSuratForStaff,
+  previewSuratPdf,
+  verifySuratByStaff,
+} from "@/services/suratService";
 import { formatDateIndo } from "@/utils/common";
 import { showToast } from "@/utils/toastHelper";
-import { Button } from "@heroui/button";
 
 export default function PengajuanSuratPage() {
   const router = useRouter();
@@ -29,8 +33,8 @@ export default function PengajuanSuratPage() {
   });
 
   const { mutateAsync: verifikasiSurat, isPending: isVerifying } = useMutation({
-    mutationFn: (id: string) =>
-      verifySuratByStaff(id, { status: "DIVERIFIKASI_STAFF" }),
+    mutationFn: ({ id, noSurat }: { id: string; noSurat: string }) =>
+      verifySuratByStaff(id, { status: "DIVERIFIKASI_STAFF", noSurat }),
     onSuccess: () => {
       showToast({
         title: "Berhasil",
@@ -86,6 +90,7 @@ export default function PengajuanSuratPage() {
         const sudahDiproses = ["DIVERIFIKASI_STAFF", "DITOLAK_STAFF"].includes(
           item.status
         );
+
         return {
           key: item.id,
           noSurat: item.noSurat || "-",
@@ -114,7 +119,20 @@ export default function PengajuanSuratPage() {
                           confirmLabel="Verifikasi"
                           confirmColor="success"
                           loadingText="Memverifikasi..."
-                          onConfirm={async () => await verifikasiSurat(item.id)}
+                          onConfirm={async () => {
+                            const noSurat = prompt("Masukkan Nomor Surat:");
+
+                            if (!noSurat) {
+                              showToast({
+                                title: "Dibatalkan",
+                                description: "Nomor surat wajib diisi.",
+                                color: "warning",
+                              });
+                              return;
+                            }
+
+                            await verifikasiSurat({ id: item.id, noSurat });
+                          }}
                           trigger={
                             <Button
                               size="sm"
@@ -145,6 +163,7 @@ export default function PengajuanSuratPage() {
                           loadingText="Menolak..."
                           onConfirm={async () => {
                             const alasan = prompt("Masukkan alasan penolakan:");
+
                             if (alasan) {
                               await tolakSurat({ id: item.id, alasan });
                             } else {
@@ -172,6 +191,27 @@ export default function PengajuanSuratPage() {
                   ]}
                 />
               )}
+
+              <TableActionsInline
+                customActions={[
+                  {
+                    key: "preview",
+                    label: "Preview PDF",
+                    icon: DocumentIcon,
+                    onClick: async () => {
+                      try {
+                        await previewSuratPdf(item.id);
+                      } catch (err: any) {
+                        showToast({
+                          title: "Gagal Preview",
+                          description: err.message,
+                          color: "error",
+                        });
+                      }
+                    },
+                  },
+                ]}
+              />
             </div>
           ),
         };
