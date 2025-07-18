@@ -1,5 +1,6 @@
 // /app/api/staff/surat/route.ts
 import { NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
@@ -33,9 +34,10 @@ export async function GET() {
     return NextResponse.json({ data: formatted });
   } catch (error) {
     console.error("GET /api/staff/surat error:", error);
+
     return NextResponse.json(
       { message: "Gagal memuat surat untuk staff" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
