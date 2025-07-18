@@ -79,8 +79,7 @@ export default function DaftarPengajuanPage() {
   ];
 
   const rows = data.map((item: any) => {
-    const sudahDitangani =
-      item.status === "DIVERIFIKASI_RT" || item.status === "DITOLAK_RT";
+    const sudahDitangani = !["DIAJUKAN"].includes(item.status);
 
     return {
       key: item.id,
@@ -143,6 +142,7 @@ export default function DaftarPengajuanPage() {
                       message="Masukkan alasan penolakan dalam prompt yang akan muncul."
                       onConfirm={async () => {
                         const alasan = prompt("Masukkan alasan penolakan:");
+
                         if (alasan) {
                           await tolakSurat({ id: item.id, alasan });
                         } else {
