@@ -4,6 +4,10 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import { Button } from "@heroui/button";
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { Card } from "@heroui/react";
+
 import { PageHeader } from "@/components/common/PageHeader";
 import { formatDateIndo } from "@/utils/common";
 import {
@@ -12,9 +16,6 @@ import {
 } from "@/services/suratService";
 import { showToast } from "@/utils/toastHelper";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
-import { Button } from "@heroui/button";
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
-import { Card } from "@heroui/react";
 
 export default function DetailPersetujuanPage() {
   const { id } = useParams();
@@ -186,6 +187,7 @@ export default function DetailPersetujuanPage() {
               loadingText="Menolak..."
               onConfirm={async () => {
                 const alasan = prompt("Masukkan alasan penolakan:");
+
                 if (alasan) {
                   await tolakSurat(alasan);
                 } else {
