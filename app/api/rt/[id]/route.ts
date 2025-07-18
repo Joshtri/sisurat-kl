@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const userId = params.id;
@@ -19,7 +20,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json(
         { message: "User tidak ditemukan" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -28,7 +29,7 @@ export async function GET(
     if (!rtProfile) {
       return NextResponse.json(
         { message: "Profil RT tidak ditemukan" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -73,9 +74,10 @@ export async function GET(
     });
   } catch (error: any) {
     console.error("GET RT DETAIL ERROR:", error);
+
     return NextResponse.json(
       { message: "Terjadi kesalahan saat mengambil detail RT" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
