@@ -4,11 +4,7 @@ import Header from "@/components/partials/Header";
 import Footer from "@/components/partials/Footer";
 import Sidebar from "@/components/partials/Sidebar";
 
-export default function RTLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RTLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative flex min-h-screen bg-gray-50">
       {/* Sidebar khusus RT */}
