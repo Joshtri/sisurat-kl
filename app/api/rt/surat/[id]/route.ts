@@ -27,19 +27,12 @@ export async function GET(
             id: true,
             username: true,
             profil: {
-              select: {
-                namaLengkap: true,
-                nik: true,
-                alamat: true,
-                rt: true,
-                rw: true,
+              include: {
+                kartuKeluarga: true,
               },
             },
           },
         },
-        detailUsaha: true,
-        detailKematian: true,
-        detailAhliWaris: true,
       },
     });
 
