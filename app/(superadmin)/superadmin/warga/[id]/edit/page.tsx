@@ -4,13 +4,12 @@
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
+import { Input, Select, SelectItem } from "@heroui/react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { CardContainer } from "@/components/common/CardContainer";
 import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 import { CreateOrEditButtons } from "@/components/ui/CreateOrEditButtons";
-import { Input, Select, SelectItem } from "@heroui/react";
-
 import { getWargaById, updateWarga } from "@/services/wargaService";
 import { showToast } from "@/utils/toastHelper";
 import { Warga } from "@/interfaces/warga";
@@ -63,9 +62,10 @@ export default function EditWargaPage() {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
+
     setFormData((prev) => (prev ? { ...prev, [name]: value } : prev));
   };
 
@@ -126,7 +126,11 @@ export default function EditWargaPage() {
                 selectedKeys={new Set([formData.jenisKelamin])}
                 onSelectionChange={(keys) => {
                   const val = Array.from(keys)[0];
-                  setFormData((prev) => ({ ...prev!, jenisKelamin: val as string }));
+
+                  setFormData((prev) => ({
+                    ...prev!,
+                    jenisKelamin: val as string,
+                  }));
                 }}
               >
                 {Object.entries(JenisKelaminEnum).map(([key, val]) => (
@@ -140,7 +144,11 @@ export default function EditWargaPage() {
                 selectedKeys={new Set([formData.pekerjaan])}
                 onSelectionChange={(keys) => {
                   const val = Array.from(keys)[0];
-                  setFormData((prev) => ({ ...prev!, pekerjaan: val as string }));
+
+                  setFormData((prev) => ({
+                    ...prev!,
+                    pekerjaan: val as string,
+                  }));
                 }}
               >
                 {Object.entries(Pekerjaan).map(([key, val]) => (
@@ -154,6 +162,7 @@ export default function EditWargaPage() {
                 selectedKeys={new Set([formData.agama])}
                 onSelectionChange={(keys) => {
                   const val = Array.from(keys)[0];
+
                   setFormData((prev) => ({ ...prev!, agama: val as string }));
                 }}
               >
@@ -168,7 +177,7 @@ export default function EditWargaPage() {
                 onChange={handleChange}
                 placeholder="Masukkan No Telepon"
               />
-              <Input
+              {/* <Input
                 name="rt"
                 label="RT"
                 value={formData.rt}
@@ -188,7 +197,7 @@ export default function EditWargaPage() {
                 value={formData.alamat}
                 onChange={handleChange}
                 placeholder="Masukkan Alamat"
-              />
+              /> */}
               <Select
                 aria-label="statusHidup"
                 label="Status Hidup"
@@ -196,10 +205,14 @@ export default function EditWargaPage() {
                 selectedKeys={new Set([formData.statusHidup])}
                 onSelectionChange={(keys) => {
                   const val = Array.from(keys)[0];
-                  setFormData((prev) => ({ ...prev!, statusHidup: val as string }));
+
+                  setFormData((prev) => ({
+                    ...prev!,
+                    statusHidup: val as string,
+                  }));
                 }}
               >
-              {Object.entries(StatusHidupEnum).map(([key, val]) => (
+                {Object.entries(StatusHidupEnum).map(([key, val]) => (
                   <SelectItem key={val}>{val}</SelectItem>
                 ))}
               </Select>
