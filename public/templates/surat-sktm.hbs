@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        color: #000;
+        margin: 40px;
+      }
+
+      .kop {
+        text-align: center;
+        border-bottom: 3px double #000;
+        padding-bottom: 5px;
+        margin-bottom: 20px;
+      }
+
+      .kop .judul {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .kop .alamat {
+        font-size: 11px;
+      }
+
+      .title {
+        text-align: center;
+        margin: 20px 0 10px;
+        font-size: 14px;
+        font-weight: bold;
+        text-decoration: underline;
+      }
+
+      .nomor {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .isi {
+        line-height: 1.6;
+      }
+
+      .isi table {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .isi td {
+        vertical-align: top;
+        padding: 3px;
+      }
+
+      .footer {
+        margin-top: 40px;
+        width: 100%;
+      }
+
+      .ttd {
+        float: right;
+        text-align: center;
+      }
+
+      .qr {
+        margin-top: 10px;
+      }
+
+      .cap {
+        margin-top: 70px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="kop">
+      <div class="judul">PEMERINTAH KOTA KUPANG</div>
+      <div class="judul">KECAMATAN OEOBO</div>
+      <div class="judul">KELURAHAN LILIBA</div>
+      <div class="alamat">Jalan Tabean-Liliba Email: Anil.liliba@kupangkota.go.id</div>
+    </div>
+
+    <div class="title">SURAT KETERANGAN TIDAK MAMPU PENDIDIKAN</div>
+    <div class="nomor">Nomor: {{noSurat}}</div>
+
+    <div class="isi">
+      <p>
+        Yang bertanda tangan di bawah ini Lurah Liliba Kecamatan Oebobo Kota Kupang
+        menerangkan bahwa:
+      </p>
+
+      <table>
+        <tr>
+          <td width="30%">Nama</td>
+          <td width="2%">:</td>
+          <td>{{namaLengkap}}</td>
+        </tr>
+        <tr>
+          <td>Tempat/Tanggal Lahir</td>
+          <td>:</td>
+          <td>{{tempatLahir}}, {{tanggalLahir}}</td>
+        </tr>
+        <tr>
+          <td>N I K</td>
+          <td>:</td>
+          <td>{{nik}}</td>
+        </tr>
+        <tr>
+          <td>Alamat</td>
+          <td>:</td>
+          <td>RT.{{rt}} / RW.{{rw}} Kelurahan Liliba, Kecamatan Oebobo, Kota Kupang</td>
+        </tr>
+      </table>
+
+      <p>
+        Berdasarkan Surat Pengantar Ketua RT.{{rt}} RW.{{rw}} Nomor: {{noSuratPengantar}} tanggal
+        {{tanggalSuratPengantar}}, bahwa benar yang bersangkutan tergolong warga tidak mampu untuk
+        membiayai biaya pendidikan:
+      </p>
+
+      <table>
+        <tr>
+          <td width="30%">Nama</td>
+          <td width="2%">:</td>
+          <td>{{namaYangDinyatakanTidakMampu}}</td>
+        </tr>
+        <tr>
+          <td>Hubungan Keluarga</td>
+          <td>:</td>
+          <td>{{hubunganDenganPemohon}}</td>
+        </tr>
+        <tr>
+          <td>Keperluan</td>
+          <td>:</td>
+          <td>{{keperluan}}</td>
+        </tr>
+        {{#if keteranganTambahan}}
+        <tr>
+          <td>Keterangan Tambahan</td>
+          <td>:</td>
+          <td>{{keteranganTambahan}}</td>
+        </tr>
+        {{/if}}
+      </table>
+
+      <p>
+        Surat keterangan ini diberikan kepada yang bersangkutan untuk melengkapi berkas administrasi
+        Beasiswa KIP Kuliah di Universitas Nusa Cendana Kupang.
+      </p>
+
+      <p>
+        Demikian surat keterangan ini dibuat dengan sebenarnya untuk dipergunakan sebagaimana
+        perlunya.
+      </p>
+    </div>
+
+    <div class="footer">
+      <div class="ttd">
+        <div>Kupang, {{tanggalTerbit}}</div>
+        <div class="jabatan">An. Lurah Liliba<br />Kasie Pelmas</div>
+
+        <div class="qr">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
+            alt="QR Code"
+          />
+        </div>
+
+        <div style="margin-top: 5px;"><strong>{{namaLurah}}</strong></div>
+        <div>{{nipLurah}}</div>
+      </div>
+    </div>
+  </body>
+</html>
