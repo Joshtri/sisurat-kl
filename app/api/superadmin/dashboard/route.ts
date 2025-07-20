@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
     const today = new Date();
+
     today.setHours(0, 0, 0, 0);
 
     const [
@@ -72,7 +74,7 @@ export async function GET() {
     ]);
 
     const roleBreakdown = Object.fromEntries(
-      usersPerRole.map((item) => [item.role, item._count.role])
+      usersPerRole.map((item) => [item.role, item._count.role]),
     );
 
     const jenisLookup = await prisma.jenisSurat.findMany();
@@ -102,9 +104,10 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Dashboard Superadmin Error:", error);
+
     return NextResponse.json(
       { message: "Gagal mengambil data dashboard", error: `${error}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -118,7 +121,9 @@ function timeAgo(date: Date): string {
   if (diffMin < 1) return "Baru saja";
   if (diffMin < 60) return `${diffMin} menit lalu`;
   const diffJam = Math.floor(diffMin / 60);
+
   if (diffJam < 24) return `${diffJam} jam lalu`;
   const diffHari = Math.floor(diffJam / 24);
+
   return `${diffHari} hari lalu`;
 }
