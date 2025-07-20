@@ -63,6 +63,7 @@ export default function ProfileGrid() {
         <RTProfileSection
           rtProfile={{
             id: user.rtProfile.id,
+            namaLengkap: user.rtProfile.namaLengkap,
             nik: user.rtProfile.nik,
             rt: user.rtProfile.rt,
             rw: user.rtProfile.rw,
