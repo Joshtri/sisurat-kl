@@ -1,20 +1,18 @@
 "use client";
 
+import { UserIcon } from "@heroicons/react/24/outline";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Role } from "@prisma/client";
+
 import { EmptyState } from "@/components/common/EmptyState";
 import { PageHeader } from "@/components/common/PageHeader";
 import { ListGrid } from "@/components/ui/ListGrid";
-import { UserIcon } from "@heroicons/react/24/outline";
-import { Button } from "@heroui/react";
-import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-
 import { TableActionsInline } from "@/components/common/TableActionsInline";
 import { Users } from "@/interfaces/users";
 import { getUsers } from "@/services/userService";
 import AddRoleModal from "@/components/AddonsDialog/AddRoleDialog";
-import { useState } from "react";
-import { Role } from "@prisma/client";
-import { TableActions } from "@/components/common/TableActions";
 
 export default function MultiRolePage() {
   const router = useRouter();
