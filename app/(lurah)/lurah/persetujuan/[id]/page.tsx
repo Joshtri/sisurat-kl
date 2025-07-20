@@ -1,21 +1,25 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
-import { Button } from "@heroui/button";
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
-import { Card } from "@heroui/react";
+import { Button, Card, CardBody, Chip } from "@heroui/react";
+import {
+  CheckCircleIcon,
+  DocumentTextIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/outline";
 
 import { PageHeader } from "@/components/common/PageHeader";
-import { formatDateIndo } from "@/utils/common";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
+import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
 import {
   getSuratDetailByLurah,
+  previewSuratPengantar,
   verifySuratByLurah,
 } from "@/services/suratService";
 import { showToast } from "@/utils/toastHelper";
-import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
+import { formatDateIndo } from "@/utils/common";
 
 export default function DetailPersetujuanPage() {
   const { id } = useParams();
@@ -41,18 +45,19 @@ export default function DetailPersetujuanPage() {
     onSuccess: () => {
       showToast({
         title: "Berhasil",
-        description: "Surat diverifikasi.",
+        description: "Surat berhasil diverifikasi.",
         color: "success",
       });
       queryClient.invalidateQueries({ queryKey: ["surat-detail-lurah", id] });
       router.push("/lurah/persetujuan");
     },
-    onError: () =>
+    onError: () => {
       showToast({
         title: "Gagal",
-        description: "Verifikasi gagal.",
+        description: "Verifikasi surat gagal.",
         color: "error",
-      }),
+      });
+    },
   });
 
   const { mutateAsync: tolakSurat, isPending: isRejecting } = useMutation({
@@ -64,23 +69,40 @@ export default function DetailPersetujuanPage() {
     onSuccess: () => {
       showToast({
         title: "Ditolak",
-        description: "Surat ditolak.",
+        description: "Surat berhasil ditolak.",
         color: "success",
       });
       queryClient.invalidateQueries({ queryKey: ["surat-detail-lurah", id] });
       router.push("/lurah/persetujuan");
     },
-    onError: () =>
+    onError: () => {
       showToast({
         title: "Gagal",
-        description: "Penolakan gagal.",
+        description: "Penolakan surat gagal.",
         color: "error",
-      }),
+      });
+    },
   });
+
+  // Function to get status chip color
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "DIVERIFIKASI_LURAH":
+        return "success";
+      case "DITOLAK_LURAH":
+        return "danger";
+      case "MENUNGGU_VERIFIKASI_LURAH":
+        return "warning";
+      default:
+        return "default";
+    }
+  };
 
   if (isLoading) return <p className="p-4">Memuat data surat...</p>;
   if (isError || !surat)
     return <p className="p-4 text-red-500">Gagal memuat data surat.</p>;
+
+  const profil = surat.pemohon?.profil;
 
   return (
     <>
@@ -94,124 +116,168 @@ export default function DetailPersetujuanPage() {
         ]}
       />
 
-      <Card className="p-6 space-y-4 text-sm">
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Informasi Umum</h2>
-          <p>
-            <strong>Jenis Surat:</strong> {surat.jenis?.nama}
-          </p>
-          <p>
-            <strong>Nama Pemohon:</strong> {surat.namaLengkap}
-          </p>
-          <p>
-            <strong>NIK:</strong> {surat.nik}
-          </p>
-          <p>
-            <strong>Tempat & Tanggal Lahir:</strong> {surat.tempatTanggalLahir}
-          </p>
-          <p>
-            <strong>Jenis Kelamin:</strong> {surat.jenisKelamin}
-          </p>
-          <p>
-            <strong>Agama:</strong> {surat.agama}
-          </p>
-          <p>
-            <strong>Pekerjaan:</strong> {surat.pekerjaan}
-          </p>
-          <p>
-            <strong>Alamat:</strong> {surat.alamat}
-          </p>
-          <p>
-            <strong>RT/RW:</strong> {surat.pemohon?.profil?.rt} /{" "}
-            {surat.pemohon?.profil?.rw}
-          </p>
-          <p>
-            <strong>No Telepon:</strong> {surat.noTelepon}
-          </p>
-          <p>
-            <strong>Status:</strong> {surat.status.replaceAll("_", " ")}
-          </p>
-          <p>
-            <strong>Tanggal Pengajuan:</strong>{" "}
-            {formatDateIndo(surat.tanggalPengajuan)}
-          </p>
-        </div>
+      <div className="space-y-6">
+        {/* Informasi Surat */}
+        <Card>
+          <CardBody className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-gray-800">
+                Informasi Surat
+              </h2>
+              <Chip
+                color={getStatusColor(surat.status)}
+                variant="flat"
+                size="md"
+              >
+                {surat.status.replaceAll("_", " ")}
+              </Chip>
+            </div>
 
-        {surat.alasanPengajuan && (
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Alasan Pengajuan</h2>
-            <p>{surat.alasanPengajuan}</p>
-          </div>
-        )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ReadOnlyInput label="Jenis Surat" value={surat.jenis?.nama} />
+              <ReadOnlyInput
+                label="Tanggal Pengajuan"
+                value={formatDateIndo(surat.tanggalPengajuan)}
+              />
+            </div>
+          </CardBody>
+        </Card>
 
-        {surat.fileSuratPengantar && (
-          <div>
-            <h2 className="text-lg font-semibold mb-2">File Surat Pengantar</h2>
-            <a
-              href={`/uploads/${surat.fileSuratPengantar}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary underline"
-            >
-              Lihat Surat Pengantar
-            </a>
-          </div>
-        )}
+        {/* Informasi Pemohon */}
+        <Card>
+          <CardBody className="space-y-4">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              Informasi Pemohon
+            </h2>
 
-        {!sudahDitangani && (
-          <div className="flex gap-4 pt-4">
-            <ConfirmationDialog
-              confirmLabel="Verifikasi"
-              confirmColor="success"
-              title="Verifikasi Surat"
-              message="Yakin ingin memverifikasi surat ini?"
-              loadingText="Memverifikasi..."
-              onConfirm={async () => await verifikasiSurat()}
-              trigger={
-                <Button
-                  size="sm"
-                  color="success"
-                  isLoading={isVerifying}
-                  startContent={<CheckCircleIcon className="w-5 h-5" />}
-                >
-                  Verifikasi
-                </Button>
-              }
-            />
-
-            <ConfirmationDialog
-              confirmLabel="Tolak"
-              confirmColor="danger"
-              title="Tolak Surat"
-              message="Masukkan alasan penolakan di prompt yang muncul"
-              loadingText="Menolak..."
-              onConfirm={async () => {
-                const alasan = prompt("Masukkan alasan penolakan:");
-
-                if (alasan) {
-                  await tolakSurat(alasan);
-                } else {
-                  showToast({
-                    title: "Dibatalkan",
-                    description: "Alasan penolakan tidak diisi.",
-                    color: "warning",
-                  });
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ReadOnlyInput label="Nama Lengkap" value={profil?.namaLengkap} />
+              <ReadOnlyInput label="NIK" value={profil?.nik} />
+              <ReadOnlyInput label="Tempat Lahir" value={profil?.tempatLahir} />
+              <ReadOnlyInput
+                label="Tanggal Lahir"
+                value={
+                  profil?.tanggalLahir && formatDateIndo(profil?.tanggalLahir)
                 }
-              }}
-              trigger={
-                <Button
-                  size="sm"
-                  color="danger"
-                  isLoading={isRejecting}
-                  startContent={<XCircleIcon className="w-5 h-5" />}
-                >
-                  Tolak
-                </Button>
-              }
+              />
+              <ReadOnlyInput
+                label="Jenis Kelamin"
+                value={profil?.jenisKelamin}
+              />
+              <ReadOnlyInput label="Agama" value={profil?.agama} />
+              <ReadOnlyInput label="Pekerjaan" value={profil?.pekerjaan} />
+              <ReadOnlyInput
+                label="RT/RW"
+                value={`${profil?.kartuKeluarga?.rt} / ${profil?.kartuKeluarga?.rw}`}
+              />
+            </div>
+
+            <ReadOnlyInput
+              label="Alamat"
+              value={profil?.kartuKeluarga?.alamat}
+              className="col-span-full"
             />
-          </div>
+          </CardBody>
+        </Card>
+
+        {/* Alasan Pengajuan */}
+        {surat.alasanPengajuan && (
+          <Card>
+            <CardBody>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                Alasan Pengajuan
+              </h2>
+              <ReadOnlyInput value={surat.alasanPengajuan} />
+            </CardBody>
+          </Card>
         )}
-      </Card>
+
+        {/* Data Tambahan */}
+        {surat.dataSurat && Object.keys(surat.dataSurat).length > 0 && (
+          <Card>
+            <CardBody>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                Data Tambahan
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(surat.dataSurat).map(([key, value]) => (
+                  <ReadOnlyInput key={key} label={key} value={String(value)} />
+                ))}
+              </div>
+            </CardBody>
+          </Card>
+        )}
+
+        {/* Actions */}
+        <Card>
+          <CardBody>
+            <div className="flex flex-col sm:flex-row gap-4">
+              {surat.idRT && (
+                <Button
+                  onClick={() => previewSuratPengantar(surat.id)}
+                  variant="flat"
+                  color="warning"
+                  size="md"
+                  startContent={<DocumentTextIcon className="h-4 w-4" />}
+                >
+                  Lihat Surat Pengantar
+                </Button>
+              )}
+
+              {!sudahDitangani && (
+                <>
+                  <ConfirmationDialog
+                    confirmLabel="Verifikasi"
+                    confirmColor="success"
+                    title="Verifikasi Surat"
+                    message="Yakin ingin memverifikasi surat ini?"
+                    loadingText="Memverifikasi..."
+                    onConfirm={verifikasiSurat}
+                    trigger={
+                      <Button
+                        size="md"
+                        color="success"
+                        isLoading={isVerifying}
+                        startContent={<CheckCircleIcon className="w-5 h-5" />}
+                      >
+                        Verifikasi
+                      </Button>
+                    }
+                  />
+                  <ConfirmationDialog
+                    confirmLabel="Tolak"
+                    confirmColor="danger"
+                    title="Tolak Surat"
+                    message="Masukkan alasan penolakan di prompt yang muncul"
+                    loadingText="Menolak..."
+                    onConfirm={async () => {
+                      const alasan = prompt("Masukkan alasan penolakan:");
+
+                      if (alasan) await tolakSurat(alasan);
+                      else
+                        showToast({
+                          title: "Dibatalkan",
+                          description: "Alasan penolakan tidak diisi.",
+                          color: "warning",
+                        });
+                    }}
+                    trigger={
+                      <Button
+                        size="md"
+                        color="danger"
+                        isLoading={isRejecting}
+                        startContent={<XCircleIcon className="w-5 h-5" />}
+                      >
+                        Tolak
+                      </Button>
+                    }
+                  />
+                </>
+              )}
+            </div>
+          </CardBody>
+        </Card>
+      </div>
     </>
   );
 }
