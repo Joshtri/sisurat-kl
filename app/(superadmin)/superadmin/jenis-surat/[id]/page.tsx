@@ -1,15 +1,15 @@
 "use client";
 
 import React from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { Chip } from "@heroui/chip";
+
 import { PageHeader } from "@/components/common/PageHeader";
 import { CardContainer } from "@/components/common/CardContainer";
 import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
+import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
 import { getJenisSuratById } from "@/services/jenisSuratService";
-
-// import { Badge } from "@/components/ui/badge";
-import { Chip } from "@heroui/chip";
 
 export default function DetailJenisSuratPage() {
   const { id } = useParams();
@@ -35,23 +35,18 @@ export default function DetailJenisSuratPage() {
       <CardContainer isLoading={isLoading} skeleton={<SkeletonCard rows={5} />}>
         {data && (
           <div className="space-y-4">
+            <ReadOnlyInput label="Kode Surat" value={data.kode} />
+            <ReadOnlyInput label="Nama Jenis Surat" value={data.nama} />
+            <ReadOnlyInput label="Deskripsi" value={data.deskripsi} />
             <div>
-              <h3 className="text-sm text-gray-500">Kode Surat</h3>
-              <p className="text-base font-medium text-gray-800">{data.kode}</p>
-            </div>
-            <div>
-              <h3 className="text-sm text-gray-500">Nama Jenis Surat</h3>
-              <p className="text-base font-medium text-gray-800">{data.nama}</p>
-            </div>
-            <div>
-              <h3 className="text-sm text-gray-500">Deskripsi</h3>
-              <p className="text-base text-gray-700">{data.deskripsi || "-"}</p>
-            </div>
-            <div>
-              <h3 className="text-sm text-gray-500">Status Aktif</h3>
-              <Chip color={data.aktif ? "success" : "danger"}>
-                {data.aktif ? "Aktif" : "Tidak Aktif"}
-              </Chip>
+              <label className="text-sm font-medium text-gray-600">
+                Status Aktif
+              </label>
+              <div className="mt-1">
+                <Chip color={data.aktif ? "success" : "danger"}>
+                  {data.aktif ? "Aktif" : "Tidak Aktif"}
+                </Chip>
+              </div>
             </div>
           </div>
         )}
