@@ -34,7 +34,9 @@ export function SwitchInput({
   const error = errors[name]?.message as string | undefined;
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1 mt-2">
+      {" "}
+      {/* ✅ tambahkan mt-2 */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col">
           <label className="font-medium text-sm">{label}</label>
@@ -48,7 +50,6 @@ export function SwitchInput({
           color={color}
         />
       </div>
-
       {description && <p className="text-xs text-gray-500">{description}</p>}
     </div>
   );
