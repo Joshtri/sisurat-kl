@@ -11,6 +11,7 @@ import {
 } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Role } from "@prisma/client";
+
 import { showToast } from "@/utils/toastHelper";
 import { updateUserRoles } from "@/services/userService";
 
@@ -42,6 +43,7 @@ export default function AddRoleModal({
     try {
       setIsLoading(true);
       const roles = isSelected ? [ONLY_EXTRA_ROLE] : [];
+
       await updateUserRoles(userId, roles);
       showToast({
         title: "Berhasil",
