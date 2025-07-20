@@ -7,6 +7,12 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { getSuratHistoryById } from "@/services/suratService";
 import SuratProgress from "@/components/SuratPermohonan/SuratProgress";
 
+function formatLabel(key: string) {
+  return key
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase());
+}
+
 export default function DetailSuratPage() {
   const { id } = useParams();
   const {
@@ -31,7 +37,7 @@ export default function DetailSuratPage() {
         description="Informasi lengkap permohonan surat Anda."
         breadcrumbs={[
           { label: "Dashboard", href: "/warga/dashboard" },
-          { label: "Permohonan Surat", href: "/warga/permohonan" },
+          { label: "Permohonan Surat", href: "/warga/permohonan/history" },
           { label: "Detail" },
         ]}
       />
@@ -93,18 +99,17 @@ export default function DetailSuratPage() {
 
         <hr className="my-4" />
 
-        {surat.detailUsaha && (
+        {surat.dataSurat && (
           <>
-            <h3 className="font-semibold">Detail Usaha</h3>
-            <p>
-              <strong>Nama Usaha:</strong> {surat.detailUsaha.namaUsaha}
-            </p>
-            <p>
-              <strong>Jenis Usaha:</strong> {surat.detailUsaha.jenisUsaha}
-            </p>
-            <p>
-              <strong>Alamat Usaha:</strong> {surat.detailUsaha.alamatUsaha}
-            </p>
+            <hr className="my-4" />
+            <h3 className="font-semibold">Data Tambahan</h3>
+            <div className="space-y-2 text-sm">
+              {Object.entries(surat.dataSurat).map(([key, value]) => (
+                <p key={key}>
+                  <strong>{formatLabel(key)}:</strong> {value || "-"}
+                </p>
+              ))}
+            </div>
           </>
         )}
 
