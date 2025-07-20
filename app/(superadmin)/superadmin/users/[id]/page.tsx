@@ -45,6 +45,7 @@ export default function UsersDetailPage() {
           { label: "Pengguna", href: "/superadmin/users" },
           { label: "Detail Pengguna" },
         ]}
+        title={`Detail Pengguna ${user?.username || ""}`}
         actions={[]}
       />
 
