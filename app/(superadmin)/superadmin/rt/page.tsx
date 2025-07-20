@@ -78,7 +78,7 @@ export default function RTPage() {
             }
           },
         }}
-        onEdit={() => router.push(`/superadmin/rt/${user.RTProfile?.id}/edit`)}
+        onEdit={() => router.push(`/superadmin/rt/${user.id}/edit`)}
         onView={() => router.push(`/superadmin/rt/${user.id}`)}
         customActions={[
           {
