@@ -133,7 +133,7 @@ export default function DashboardLurah() {
                         <div className="font-bold">{jumlah}</div>
                       </div>
                     </div>
-                  )
+                  ),
                 )}
           </CardBody>
         </Card>
