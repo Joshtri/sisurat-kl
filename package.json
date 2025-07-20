@@ -39,6 +39,7 @@
     "bcryptjs": "^3.0.2",
     "clsx": "2.1.1",
     "framer-motion": "11.13.1",
+    "handlebars": "^4.7.8",
     "intl-messageformat": "10.7.16",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
@@ -52,6 +53,7 @@
     "react-datepicker": "^8.4.0",
     "react-dom": "18.3.1",
     "react-hook-form": "^7.60.0",
+    "react-responsive": "^10.0.1",
     "recharts": "^3.1.0",
     "zod": "^3.25.74"
   },
