@@ -31,7 +31,7 @@ export default function Sidebar({
     setExpandedSubmenus((prev) =>
       prev.includes(menuTitle)
         ? prev.filter((item) => item !== menuTitle)
-        : [...prev, menuTitle]
+        : [...prev, menuTitle],
     );
   };
 
@@ -77,7 +77,7 @@ export default function Sidebar({
         item.submenu.some((subItem) => pathname === subItem.href)
       ) {
         setExpandedSubmenus((prev) =>
-          prev.includes(item.title) ? prev : [...prev, item.title]
+          prev.includes(item.title) ? prev : [...prev, item.title],
         );
       }
     });
@@ -264,7 +264,7 @@ export default function Sidebar({
                     <ul className="mt-2 ml-8 space-y-1">
                       {item.submenu!.map((subItem, subIndex) => {
                         const isSubItemActive = isSubmenuItemActive(
-                          subItem.href
+                          subItem.href,
                         );
 
                         return (
