@@ -16,6 +16,7 @@ import {
 } from "@/services/jenisSuratService";
 import { CreateOrEditButtons } from "@/components/ui/CreateOrEditButtons";
 import { CardContainer } from "@/components/common/CardContainer";
+import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 
 // ✅ Schema Zod
 const jenisSuratSchema = z.object({
@@ -69,8 +70,8 @@ export default function EditJenisSuratPage() {
         ]}
       />
 
-      {data && (
-        <CardContainer>
+      <CardContainer isLoading={isLoading} skeleton={<SkeletonCard rows={5} />}>
+        {data && (
           <FormWrapper<JenisSuratSchema>
             schema={jenisSuratSchema}
             onSubmit={(values) => mutation.mutate(values)}
@@ -80,22 +81,21 @@ export default function EditJenisSuratPage() {
               deskripsi: data.deskripsi ?? "",
               aktif: data.aktif,
             }}
-            isLoading={isLoading || mutation.isPending}
+            isLoading={mutation.isPending}
           >
             <TextInput name="nama" label="Nama Jenis Surat" />
             <TextInput name="kode" label="Kode Surat" />
             <TextInput name="deskripsi" label="Deskripsi" />
             <SwitchInput name="aktif" label="Status Aktif" />
 
-            {/* Submit & Cancel handled by FormWrapper */}
-
             <CreateOrEditButtons
               isLoading={mutation.isPending}
               submitType="submit"
+              onCancel={() => router.push("/superadmin/jenis-surat")}
             />
           </FormWrapper>
-        </CardContainer>
-      )}
+        )}
+      </CardContainer>
     </>
   );
 }
