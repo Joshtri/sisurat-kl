@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const id = params.id;
@@ -36,7 +37,7 @@ export async function PATCH(
 
     return NextResponse.json(
       { message: "Gagal memproses surat", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
