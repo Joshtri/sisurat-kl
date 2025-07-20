@@ -1,0 +1,161 @@
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Surat Keterangan Ahli Waris</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        font-size: 12px;
+        line-height: 1.6;
+        padding: 40px;
+        color: #000;
+      }
+
+      .title {
+        text-align: center;
+        font-weight: bold;
+        font-size: 14pt;
+        margin-bottom: 24px;
+        text-transform: uppercase;
+        text-decoration: underline;
+      }
+
+      .content {
+        text-align: justify;
+        margin-bottom: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 6px 8px;
+        font-size: 12px;
+      }
+
+      th {
+        text-align: center;
+        background-color: #f2f2f2;
+      }
+
+      .ttd {
+        text-align: center;
+        margin-top: 40px;
+      }
+
+      .ttd-section {
+        margin-top: 40px;
+      }
+
+      .saksi {
+        margin-top: 8px;
+        padding-left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="title">SURAT KETERANGAN AHLI WARIS</div>
+
+    <div class="content">
+      Kami yang bertanda tangan di bawah ini adalah ahli waris yang sah dari
+      Almarhum
+      <strong>{{namaAlmarhum}}</strong>, dengan ini menyatakan dengan
+      sesungguhnya dan sanggup diangkat sumpah bahwa Almarhum telah meninggal
+      dunia pada tanggal
+      <strong>{{formatTanggal tanggalMeninggal}}</strong>
+      di
+      {{tempatMeninggal}}.
+    </div>
+
+    <div class="content">
+      Semasa hidup, Almarhum
+      <strong>{{namaAlmarhum}}</strong>
+      telah melangsungkan pernikahan dengan
+      <strong>{{namaPasangan}}</strong>. Dari pernikahan tersebut memiliki
+      {{dataSurat.daftarAnak.length}}
+      ({{terbilang dataSurat.daftarAnak.length}}) orang anak, yaitu:
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 5%;">No</th>
+          <th>Nama</th>
+          <th style="width: 10%;">JK</th>
+          <th style="width: 35%;">Tempat & Tanggal Lahir</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each dataSurat.daftarAnak}}
+          <tr>
+            <td style="text-align: center;">{{addOne @index}}</td>
+            <td>{{namaLengkap}}</td>
+            <td style="text-align: center;">{{jenisKelamin}}</td>
+            <td>{{tempatLahir}}, {{formatTanggal tanggalLahir}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <div class="content">
+      Dengan demikian, tidak ada lagi ahli waris lainnya kecuali kami ({{dataSurat.daftarAnak.length}})
+      orang tersebut di atas sebagai anak-anak yang sah dari Almarhum
+      <strong>{{namaAlmarhum}}</strong>. Demikian surat keterangan ini dibuat
+      dengan sebenarnya atas permintaan para ahli waris dan akan kami
+      pertanggungjawabkan baik secara langsung maupun di hadapan pihak yang
+      berwenang.
+    </div>
+
+    <div class="ttd">
+      Kupang,
+      {{formatTanggal tanggalSurat}}<br />
+      <strong>PARA AHLI WARIS</strong>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 5%;">No</th>
+          <th>Nama</th>
+          <th style="width: 35%;">Tanda Tangan</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each dataSurat.daftarAnak}}
+          <tr>
+            <td style="text-align: center;">{{addOne @index}}</td>
+            <td>{{namaLengkap}}</td>
+            <td style="height: 40px;"></td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <div class="ttd-section">
+      <p><strong>Saksi-Saksi:</strong></p>
+      <ol class="saksi">
+        <li>{{saksi1}}</li>
+        <li>{{saksi2}}</li>
+      </ol>
+    </div>
+
+    <div class="ttd">
+      <p>Mengetahui,</p>
+      <p>Lurah Kelurahan Liliba</p><br /><br /><br />
+      <strong>{{namaLurah}}</strong><br />
+      NIP.
+      {{nipLurah}}
+    </div>
+  </body>
+</html>
