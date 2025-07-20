@@ -11,10 +11,12 @@ import {
   Pagination,
 } from "@heroui/react";
 import { ReactNode, useEffect, useMemo, useState } from "react";
+import { useMediaQuery } from "react-responsive";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import SearchBar from "@/components/ui/SearchBar";
-import { SkeletonTable } from "@/components/ui/skeleton/SkeletonTable"; // ✅ sesuaikan path-nya
+import { SkeletonTable } from "@/components/ui/skeleton/SkeletonTable";
+import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 
 interface Column {
   key: string;
@@ -39,8 +41,9 @@ interface ListGridProps {
   loading?: boolean;
   empty?: ReactNode;
   onOptionsClick?: () => void;
-  pageSize?: number; // Tambahkan prop untuk ukuran halaman
-  showPagination?: boolean; // Tambahkan prop untuk mengontrol tampilan paginasi
+  pageSize?: number;
+  showPagination?: boolean;
+  isMobile?: boolean;
 }
 
 export function ListGrid({
@@ -55,13 +58,22 @@ export function ListGrid({
   loading = false,
   empty,
   onOptionsClick,
-  pageSize = 10, // Default 10 item per halaman
-  showPagination = true, // Default menampilkan paginasi
+  pageSize = 10,
+  showPagination = true,
+  isMobile: isMobileProp,
 }: ListGridProps) {
+  const isMobileDevice = useMediaQuery({ maxWidth: 768 });
+  const isMobile = isMobileProp ?? isMobileDevice;
+
   const [searchQuery, setSearchQuery] = useState("");
   const [sortKey, setSortKey] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Define onPageChange function properly
+  const onPageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const handleSort = (key: string) => {
     if (sortKey === key) {
@@ -70,7 +82,7 @@ export function ListGrid({
       setSortKey(key);
       setSortDirection("asc");
     }
-    setCurrentPage(1); // Reset ke halaman pertama saat sorting
+    setCurrentPage(1);
   };
 
   const filteredRows = useMemo(() => {
@@ -101,25 +113,46 @@ export function ListGrid({
     return filtered;
   }, [rows, searchQuery, sortKey, sortDirection]);
 
-  // Hitung total halaman
   const totalPages = Math.ceil(filteredRows.length / pageSize);
-
-  // Ambil data untuk halaman saat ini
   const paginatedRows = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
 
     return filteredRows.slice(startIndex, startIndex + pageSize);
   }, [filteredRows, currentPage, pageSize]);
 
-  // Handler untuk perubahan halaman
-  const onPageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  // Reset ke halaman pertama saat pencarian atau data berubah
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, rows]);
+
+  const renderMobileCard = (item: Row) => {
+    return (
+      <div
+        key={item.key}
+        className="mb-4 p-4 border rounded-lg shadow-sm bg-white"
+      >
+        {columns.map((column) => (
+          <div key={`${item.key}-${column.key}`} className="mb-2 last:mb-0">
+            <div className="text-sm font-medium text-gray-500">
+              {column.label}
+            </div>
+            <div className="text-sm text-gray-800">
+              {typeof item[column.key] === "object" && item[column.key] !== null
+                ? item[column.key]
+                : getKeyValue(item, column.key)}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderMobileSkeleton = () => (
+    <div className="space-y-4">
+      {Array.from({ length: pageSize }).map((_, index) => (
+        <SkeletonCard key={index} />
+      ))}
+    </div>
+  );
 
   return (
     <div className="p-6 space-y-6">
@@ -142,9 +175,37 @@ export function ListGrid({
       )}
 
       {loading ? (
-        <SkeletonTable rows={pageSize} columns={columns.length} />
+        isMobile ? (
+          renderMobileSkeleton()
+        ) : (
+          <SkeletonTable rows={pageSize} columns={columns.length} />
+        )
       ) : filteredRows.length === 0 ? (
         (empty ?? <div className="text-center text-gray-400">Data kosong.</div>)
+      ) : isMobile ? (
+        <>
+          <div className="space-y-3">
+            {paginatedRows.map((item) => renderMobileCard(item))}
+          </div>
+
+          {showPagination && totalPages > 1 && (
+            <div className="flex justify-center mt-4">
+              <Pagination
+                showControls
+                showShadow
+                classNames={{
+                  wrapper: "gap-2",
+                  item: "w-8 h-8 text-small",
+                  cursor: "font-bold",
+                }}
+                color="primary"
+                page={currentPage}
+                total={totalPages}
+                onChange={onPageChange}
+              />
+            </div>
+          )}
+        </>
       ) : (
         <>
           <Table aria-label="Tabel">
@@ -169,9 +230,8 @@ export function ListGrid({
                     <TableCell>
                       {typeof item[columnKey] === "object" &&
                       item[columnKey] !== null
-                        ? item[columnKey] // Kalau JSX, langsung render
-                        : getKeyValue(item, columnKey)}{" "}
-                      {/* Fallback ke string biasa */}
+                        ? item[columnKey]
+                        : getKeyValue(item, columnKey)}
                     </TableCell>
                   )}
                 </TableRow>
