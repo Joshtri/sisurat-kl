@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import * as z from "zod";
 
 import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { userId, nik, rt, rw, wilayah } = body;
+    const { namaLengkap, userId, nik, rt, rw, wilayah } = body;
 
-    if (!userId || !nik || !rt || !rw) {
+    if (!userId || !nik || !rt || !rw || !namaLengkap) {
       return NextResponse.json(
-        { message: "Field userId, nik, rt, dan rw wajib diisi" },
+        { message: "Field userId, nik, rt, rw, dan namaLengkap wajib diisi" },
         { status: 400 },
       );
     }
@@ -29,6 +30,7 @@ export async function POST(req: NextRequest) {
     const newProfile = await prisma.rTProfile.create({
       data: {
         userId,
+        namaLengkap,
         nik,
         rt,
         rw,
@@ -47,10 +49,9 @@ export async function POST(req: NextRequest) {
   }
 }
 
-import * as z from "zod";
-
 // Schema validasi body untuk PATCH
 const rtProfileSchema = z.object({
+  namaLengkap: z.string().min(1, "Nama lengkap wajib diisi"),
   nik: z.string().min(16, "NIK harus 16 digit"),
   rt: z.string().min(1, "RT wajib diisi"),
   rw: z.string().min(1, "RW wajib diisi"),
@@ -87,6 +88,7 @@ export async function PATCH(req: NextRequest) {
     const updatedProfile = await prisma.rTProfile.update({
       where: { userId },
       data: {
+        namaLengkap: parsed.namaLengkap,
         nik: parsed.nik,
         rt: parsed.rt,
         rw: parsed.rw,
