@@ -2,6 +2,9 @@
 
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "@heroui/button";
+import { useRouter } from "next/navigation";
+import { PencilIcon } from "@heroicons/react/24/outline";
 
 import { getKartuKeluargaById } from "@/services/kartuKeluargaService";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -12,6 +15,8 @@ import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
 
 export default function KartuKeluargaDetailPage() {
   const { id } = useParams();
+
+  const router = useRouter();
 
   const { data, isLoading } = useQuery<KartuKeluarga>({
     queryKey: ["kartuKeluarga", id],
@@ -28,7 +33,18 @@ export default function KartuKeluargaDetailPage() {
           { label: "Kartu Keluarga", href: "/superadmin/kartu-keluarga" },
           { label: "Detail" },
         ]}
-        // title="Detail Kartu Keluarga"
+        actions={
+          <Button
+            variant="flat"
+            onPress={() => router.push(`/superadmin/kartu-keluarga/${id}/edit`)}
+            startContent={<PencilIcon />}
+            size="md"
+          >
+            Edit
+          </Button>
+        }
+        title={`Detail Kartu Keluarga ${data?.kepalaKeluarga?.namaLengkap || ""}`}
+        description="Informasi detail mengenai Kartu Keluarga."
         // titleAlign="center"
       />
 
