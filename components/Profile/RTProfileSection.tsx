@@ -5,6 +5,7 @@ import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
 
 interface RTProfileSectionProps {
   rtProfile: {
+    namaLengkap?: string | null;
     id: string;
     nik: string;
     rt: string;
@@ -22,6 +23,10 @@ export function RTProfileSection({ rtProfile }: RTProfileSectionProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ReadOnlyInput label="NIK" value={rtProfile.nik} />
+        <ReadOnlyInput
+          label="Nama Lengkap"
+          value={rtProfile.namaLengkap ?? "-"}
+        />
         <ReadOnlyInput label="RT" value={rtProfile.rt} />
         <ReadOnlyInput label="RW" value={rtProfile.rw ?? "-"} />
         <ReadOnlyInput label="Wilayah" value={rtProfile.wilayah ?? "-"} />
