@@ -56,7 +56,9 @@ export function TextInput({
   const inputType = type === "password" && showPassword ? "text" : type;
 
   return (
-    <div className="space-y-1">
+    <div className={`space-y-2 mb-3`}>
+      {" "}
+      {/* ✅ Tambahkan mb-4 */}
       {label && (
         <label className="font-medium text-sm">
           {label}
@@ -93,11 +95,11 @@ export function TextInput({
             }
           }}
           className={`
-    w-full transition-all duration-150 rounded-xl
-    ${error ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500" : ""}
-    ${showPasswordToggle && type === "password" ? "pr-10" : ""}
-    ${className}
-  `}
+          w-full transition-all duration-150 rounded-xl
+          ${error ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500" : ""}
+          ${showPasswordToggle && type === "password" ? "pr-10" : ""}
+          ${className}
+        `}
           size="md"
           {...Object.fromEntries(
             Object.entries(rest).filter(
