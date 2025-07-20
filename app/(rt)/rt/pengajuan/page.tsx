@@ -188,6 +188,10 @@ export default function DaftarPengajuanPage() {
         title="Daftar Pengajuan Surat"
         columns={columns}
         rows={rows}
+        onSearch={(query) => {
+          // Implement search logic if needed
+        }}
+        empty="Tidak ada pengajuan surat yang ditemukan."
         loading={isLoading}
         pageSize={10}
         showPagination
