@@ -1,121 +1,118 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
+    <title>Surat Pengantar</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
-        font-size: 12px;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 12pt;
+        margin: 50px;
         color: #000;
-        margin: 40px;
       }
-
-      .kop {
+      .header {
         text-align: center;
-        border-bottom: 3px double #000;
-        padding-bottom: 5px;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
+        line-height: 1.5;
       }
-
-      .kop .judul {
-        font-size: 14px;
+      .logo-container {
+        position: absolute;
+        top: 50px;
+        left: 50px;
+      }
+      .logo {
+        width: 80px;
+      }
+      .judul {
+        text-align: center;
         font-weight: bold;
-      }
-
-      .kop .alamat {
-        font-size: 11px;
-      }
-
-      .title {
-        text-align: center;
+        text-transform: uppercase;
         margin: 20px 0 10px;
-        font-size: 14px;
-        font-weight: bold;
-        text-decoration: underline;
       }
-
       .nomor {
         text-align: center;
         margin-bottom: 20px;
       }
-
       .isi {
-        line-height: 1.6;
+        margin: 20px 0;
       }
-
-      .isi table {
-        width: 100%;
+      .paragraf {
+        text-align: justify;
+        margin: 10px 0;
       }
-
-      .isi td {
-        vertical-align: top;
-        padding: 3px;
-      }
-
-      .footer {
-        margin-top: 40px;
-        width: 100%;
-      }
-
       .ttd {
-        float: right;
-        text-align: center;
+        margin-top: 50px;
+        text-align: right;
       }
-
-      .qr img {
+      .ttd .jabatan {
+        text-transform: uppercase;
+        font-weight: bold;
+      }
+      .qr {
         margin-top: 10px;
-        width: 80px;
-        height: 80px;
       }
-
-      .qr p {
-        font-size: 10px;
-        color: #666;
-        margin-top: 2px;
+      table.info {
+        margin-left: 30px;
+      }
+      table.info td {
+        padding: 3px 5px;
+        vertical-align: top;
       }
     </style>
   </head>
-
   <body>
-    <div class="kop">
-      <div class="judul">PEMERINTAH KOTA KUPANG</div>
-      <div class="judul">KECAMATAN OEBEBO</div>
-      <div class="judul">KELURAHAN LILIBA</div>
-      <div class="alamat">Jl. Tabean Liliba, No. 100, 85232 – Kupang</div>
+    <div class="logo-container">
+      <img
+        src="https://sisurat-kl.vercel.app/img/kotakupanglogo.png"
+        class="logo"
+      />
     </div>
+    <div class="header">
+      <div>PEMERINTAH KOTA KUPANG</div>
+      <div>KECAMATAN OEBEBO</div>
+      <div>KELURAHAN LILIBA</div>
+      <div style="font-size: 10pt">Jl. Tabean Liliba, No. 100, 85232 – Kupang</div>
+    </div>
+    <hr />
 
-    <div class="title">SURAT PENGANTAR</div>
+    <div class="judul">SURAT PENGANTAR</div>
     <div class="nomor">Nomor: {{nomorSurat}}</div>
 
     <div class="isi">
-      <p>Yang bertanda tangan di bawah ini Ketua RT {{rt}} RW {{rw}}, Kelurahan Liliba, Kecamatan Oebobo, Kota Kupang menyatakan bahwa:</p>
+      <p class="paragraf">
+        Yang bertanda tangan di bawah ini Ketua RT
+        {{rt}}
+        RW
+        {{rw}}, Kelurahan Liliba, Kecamatan Oebobo, Kota Kupang, dengan ini
+        menyatakan bahwa:
+      </p>
 
-      <table>
+      <table class="info">
         <tr><td>Nama</td><td>:</td><td>{{nama}}</td></tr>
         <tr><td>NIK</td><td>:</td><td>{{nik}}</td></tr>
         <tr><td>Alamat</td><td>:</td><td>{{alamat}}</td></tr>
       </table>
 
-      <p>Benar merupakan warga kami dan surat ini digunakan untuk keperluan:</p>
-      <p><strong>{{alasanPengajuan}}</strong></p>
+      <p class="paragraf">
+        Benar merupakan warga kami dan surat ini digunakan untuk keperluan:
+      </p>
+      <p class="paragraf"><strong>{{alasanPengajuan}}</strong></p>
 
-      <p>Demikian surat ini dibuat agar dapat dipergunakan sebagaimana mestinya.</p>
+      <p class="paragraf">
+        Demikian surat ini dibuat agar dapat dipergunakan sebagaimana mestinya.
+      </p>
     </div>
 
-    <div class="footer">
-      <div class="ttd">
-        <div>RT {{rt}}, {{tanggal}}</div>
-        <div class="jabatan">Ketua RT {{rt}}</div>
-
-        <div class="qr">
-          <img
-            src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
-            alt="QR Code"
-          />
-          <p>Scan untuk verifikasi</p>
-        </div>
-
-        <div style="margin-top: 5px;"><strong>{{namaRT}}</strong></div>
+    <div class="ttd">
+      <div>Kupang, {{tanggal}}</div>
+      <div class="jabatan">Ketua RT {{rt}}</div>
+      <div class="qr">
+        <img
+          src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
+          alt="QR Code"
+        />
+        <div style="font-size: 10px; color: #666;">Scan untuk verifikasi</div>
       </div>
+      <div style="margin-top: 5px;"><strong>{{namaRT}}</strong></div>
     </div>
   </body>
 </html>

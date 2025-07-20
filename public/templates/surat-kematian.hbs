@@ -1,36 +1,47 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
+    <title>Surat Keterangan Kematian</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
-        font-size: 12px;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 12pt;
         color: #000;
         margin: 40px;
       }
 
+      .logo-container {
+        position: absolute;
+        top: 50px;
+        left: 50px;
+      }
+
+      .logo {
+        width: 80px;
+      }
+
       .kop {
         text-align: center;
+        line-height: 1.5;
         border-bottom: 3px double #000;
-        padding-bottom: 5px;
+        padding-bottom: 6px;
         margin-bottom: 20px;
       }
 
       .kop .judul {
-        font-size: 14px;
         font-weight: bold;
+        font-size: 14pt;
       }
 
       .kop .alamat {
-        font-size: 11px;
+        font-size: 10pt;
       }
 
       .title {
         text-align: center;
-        margin: 20px 0 10px;
-        font-size: 14px;
         font-weight: bold;
         text-decoration: underline;
+        margin-top: 20px;
       }
 
       .nomor {
@@ -39,38 +50,48 @@
       }
 
       .isi {
+        text-align: justify;
         line-height: 1.6;
       }
 
-      .isi table {
-        width: 100%;
+      table.data {
+        margin-left: 30px;
+        margin-top: 10px;
+        margin-bottom: 20px;
       }
 
-      .isi td {
+      table.data td {
         vertical-align: top;
-        padding: 3px;
+        padding: 4px 8px;
       }
 
       .footer {
         margin-top: 40px;
-        width: 100%;
+        text-align: right;
       }
 
-      .ttd {
-        float: right;
-        text-align: center;
+      .qr {
+        margin-top: 10px;
       }
 
-      .cap {
-        margin-top: 70px;
+      .qr small {
+        font-size: 10px;
+        color: #666;
       }
     </style>
   </head>
 
   <body>
+    <div class="logo-container">
+      <img
+        src="https://sisurat-kl.vercel.app/img/kotakupanglogo.png"
+        class="logo"
+      />
+    </div>
+
     <div class="kop">
       <div class="judul">PEMERINTAH KOTA KUPANG</div>
-      <div class="judul">KECAMATAN OEBELO</div>
+      <div class="judul">KECAMATAN OEBEBO</div>
       <div class="judul">KELURAHAN LILIBA</div>
       <div class="alamat">Jl. Tabean Liliba, No. 100, 85232 – Kupang</div>
     </div>
@@ -79,69 +100,25 @@
     <div class="nomor">Nomor: {{nomorSurat}}</div>
 
     <div class="isi">
-      <p>
-        Yang bertanda tangan di bawah ini Lurah Liliba Kecamatan Oebobo Kota
-        Kupang dengan ini menerangkan bahwa:
-      </p>
+      <p>Yang bertanda tangan di bawah ini Lurah Kelurahan Liliba Kecamatan
+        Oebobo Kota Kupang, dengan ini menerangkan bahwa:</p>
 
-      <table>
-        <tr>
-          <td>Nama</td>
-          <td>:</td>
-          <td>{{namaAlmarhum}}</td>
-          <!-- Ambil dari dataSurat -->
-        </tr>
-        <tr>
-          <td>Jenis Kelamin</td>
-          <td>:</td>
-          <td>{{jenisKelamin}}</td>
-        </tr>
-        <tr>
-          <td>Tempat dan Tanggal Lahir</td>
-          <td>:</td>
-          <td>{{tempatLahir}}, {{tanggalLahir}}</td>
-        </tr>
-        <tr>
-          <td>N I K</td>
-          <td>:</td>
-          <td>{{nikAlmarhum}}</td>
-        </tr>
-
-        <tr>
-          <td>Nama Ayah</td>
-          <td>:</td>
-          <td>{{namaAyah}}</td>
-        </tr>
-        <tr>
-          <td>Nama Ibu</td>
-          <td>:</td>
-          <td>{{namaIbu}}</td>
-        </tr>
-        <tr>
-          <td>Pekerjaan</td>
-          <td>:</td>
-          <td>{{pekerjaan}}</td>
-        </tr>
-        <tr>
-          <td>Alamat</td>
-          <td>:</td>
-          <td>{{alamat}}</td>
-        </tr>
-        <tr>
-          <td>Telah meninggal dunia pada</td>
-          <td>:</td>
-          <td>
-            {{hariMeninggal}},
+      <table class="data">
+        <tr><td>Nama</td><td>:</td><td>{{namaAlmarhum}}</td></tr>
+        <tr><td>Jenis Kelamin</td><td>:</td><td>{{jenisKelamin}}</td></tr>
+        <tr><td>Tempat / Tanggal Lahir</td><td>:</td><td>{{tempatLahir}},
+            {{tanggalLahir}}</td></tr>
+        <tr><td>NIK</td><td>:</td><td>{{nikAlmarhum}}</td></tr>
+        <tr><td>Nama Ayah</td><td>:</td><td>{{namaAyah}}</td></tr>
+        <tr><td>Nama Ibu</td><td>:</td><td>{{namaIbu}}</td></tr>
+        <tr><td>Pekerjaan</td><td>:</td><td>{{pekerjaan}}</td></tr>
+        <tr><td>Alamat</td><td>:</td><td>{{alamat}}</td></tr>
+        <tr><td>Tanggal Meninggal</td><td>:</td><td>{{hariMeninggal}},
             {{tanggalMeninggal}}
             di
-            {{tempatMeninggal}}
-          </td>
-        </tr>
-        <tr>
-          <td>Penyebab</td>
-          <td>:</td>
-          <td>{{penyebabKematian}}</td>
-        </tr>
+            {{tempatMeninggal}}</td></tr>
+        <tr><td>Penyebab Kematian</td><td>:</td><td
+          >{{penyebabKematian}}</td></tr>
       </table>
 
       <p>
@@ -149,25 +126,27 @@
         Kematian di Dinas Kependudukan dan Pencatatan Sipil Kota Kupang.
       </p>
 
-      <p>Demikian Surat Keterangan ini dibuat untuk dipergunakan sebagaimana
-        mestinya.</p>
+      <p>
+        Demikian surat keterangan ini dibuat untuk dipergunakan sebagaimana
+        mestinya.
+      </p>
     </div>
 
     <div class="footer">
-      <div class="ttd">
-        <div>Kupang, {{tanggalTerbit}}</div>
-        <div class="jabatan">An. Lurah Liliba<br />Kasie PMK</div>
+      <div>Kupang, {{tanggalTerbit}}</div>
+      <div><strong>an. LURAH LILIBA</strong></div>
+      <div>Kasie PMK</div>
 
-        <div class="qr">
-          <img
-            src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
-            alt="QR Code"
-          />
-        </div>
-
-        <div style="margin-top: 5px;"><strong>{{namaLurah}}</strong></div>
-        <div>{{nipLurah}}</div>
+      <div class="qr">
+        <img
+          src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
+          alt="QR Code"
+        />
+        <div><small>Scan untuk verifikasi</small></div>
       </div>
+
+      <div style="margin-top: 2px;"><strong>{{namaLurah}}</strong></div>
+      <div>{{nipLurah}}</div>
     </div>
   </body>
 </html>

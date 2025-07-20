@@ -1,37 +1,55 @@
-<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
+    <title>Surat Keterangan Tidak Mampu Pendidikan</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
-        font-size: 12px;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 12pt;
         color: #000;
-        margin: 40px;
+        margin: 30px;
       }
 
-      .kop {
+      .header {
+        position: relative;
         text-align: center;
-        border-bottom: 3px double #000;
-        padding-bottom: 5px;
         margin-bottom: 20px;
       }
 
-      .kop .judul {
-        font-size: 14px;
+      .logo-absolute {
+        position: absolute;
+        left: 30px;
+        top: -30px;
+        width: 90px;
+        height: auto;
+      }
+
+      .header-text {
+        display: inline-block;
+        padding-left: 20px;
+      }
+
+      .header-text .judul {
+        font-size: 14pt;
         font-weight: bold;
       }
 
-      .kop .alamat {
-        font-size: 11px;
+      .header-text .alamat {
+        font-size: 10pt;
+      }
+
+      hr {
+        border: 1.5px double #000;
+        margin-top: 10px;
+        margin-bottom: 20px;
       }
 
       .title {
         text-align: center;
-        margin: 20px 0 10px;
-        font-size: 14px;
         font-weight: bold;
         text-decoration: underline;
+        font-size: 14pt;
+        margin: 20px 0 10px;
       }
 
       .nomor {
@@ -63,31 +81,50 @@
         text-align: center;
       }
 
-      .qr {
-        margin-top: 10px;
+      .qr img {
+        width: 60px;
+        height: 60px;
       }
 
-      .cap {
-        margin-top: 70px;
+      .ttd-container {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        min-height: 150px;
+      }
+
+      @media print {  
+        .ttd-container {
+          page-break-inside: avoid !important;
+        }
       }
     </style>
   </head>
 
   <body>
-    <div class="kop">
-      <div class="judul">PEMERINTAH KOTA KUPANG</div>
-      <div class="judul">KECAMATAN OEOBO</div>
-      <div class="judul">KELURAHAN LILIBA</div>
-      <div class="alamat">Jalan Tabean-Liliba Email: Anil.liliba@kupangkota.go.id</div>
+    <div class="header">
+      <img
+        src="https://sisurat-kl.vercel.app/img/kotakupanglogo.png"
+        class="logo-absolute"
+      />
+      <div class="header-text">
+        <div class="judul">PEMERINTAH KOTA KUPANG</div>
+        <div class="judul">KECAMATAN OEOBO</div>
+        <div class="judul">KELURAHAN LILIBA</div>
+        <div class="alamat">
+          Jalan Tabean-Liliba Email: Anil.liliba@kupangkota.go.id
+        </div>
+      </div>
     </div>
+
+    <hr />
 
     <div class="title">SURAT KETERANGAN TIDAK MAMPU PENDIDIKAN</div>
     <div class="nomor">Nomor: {{noSurat}}</div>
 
     <div class="isi">
       <p>
-        Yang bertanda tangan di bawah ini Lurah Liliba Kecamatan Oebobo Kota Kupang
-        menerangkan bahwa:
+        Yang bertanda tangan di bawah ini, Lurah Kelurahan Liliba Kecamatan
+        Oebobo Kota Kupang menerangkan bahwa:
       </p>
 
       <table>
@@ -109,14 +146,22 @@
         <tr>
           <td>Alamat</td>
           <td>:</td>
-          <td>RT.{{rt}} / RW.{{rw}} Kelurahan Liliba, Kecamatan Oebobo, Kota Kupang</td>
+          <td>
+            RT.{{rt}}
+            / RW.{{rw}}
+            Kelurahan Liliba, Kecamatan Oebobo, Kota Kupang
+          </td>
         </tr>
       </table>
 
       <p>
-        Berdasarkan Surat Pengantar Ketua RT.{{rt}} RW.{{rw}} Nomor: {{noSuratPengantar}} tanggal
-        {{tanggalSuratPengantar}}, bahwa benar yang bersangkutan tergolong warga tidak mampu untuk
-        membiayai biaya pendidikan:
+        Berdasarkan Surat Pengantar Ketua RT.{{rt}}
+        RW.{{rw}}
+        Nomor:
+        {{noSuratPengantar}}
+        tanggal
+        {{tanggalSuratPengantar}}, bahwa benar yang bersangkutan tergolong warga
+        tidak mampu untuk membiayai biaya pendidikan:
       </p>
 
       <table>
@@ -136,40 +181,44 @@
           <td>{{keperluan}}</td>
         </tr>
         {{#if keteranganTambahan}}
-        <tr>
-          <td>Keterangan Tambahan</td>
-          <td>:</td>
-          <td>{{keteranganTambahan}}</td>
-        </tr>
+          <tr>
+            <td>Keterangan Tambahan</td>
+            <td>:</td>
+            <td>{{keteranganTambahan}}</td>
+          </tr>
         {{/if}}
       </table>
 
       <p>
-        Surat keterangan ini diberikan kepada yang bersangkutan untuk melengkapi berkas administrasi
-        Beasiswa KIP Kuliah di Universitas Nusa Cendana Kupang.
+        Surat keterangan ini diberikan kepada yang bersangkutan untuk melengkapi
+        berkas administrasi Beasiswa KIP Kuliah di Universitas Nusa Cendana
+        Kupang.
       </p>
 
       <p>
-        Demikian surat keterangan ini dibuat dengan sebenarnya untuk dipergunakan sebagaimana
-        perlunya.
+        Demikian surat keterangan ini dibuat dengan sebenarnya untuk
+        dipergunakan sebagaimana perlunya.
       </p>
     </div>
 
     <div class="footer">
-      <div class="ttd">
-        <div>Kupang, {{tanggalTerbit}}</div>
-        <div class="jabatan">An. Lurah Liliba<br />Kasie Pelmas</div>
+      <div class="ttd-container">
+        <div class="ttd">
+          <div>Kupang, {{tanggalTerbit}}</div>
+          <div class="jabatan">An. Lurah Liliba<br />Kasie Pelmas</div>
 
-        <div class="qr">
-          <img
-            src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
-            alt="QR Code"
-          />
+          <div class="qr">
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
+              alt="QR Code"
+            />
+          </div>
+
+          <div style="margin-top: 5px;"><strong>{{namaLurah}}</strong></div>
+          <div>{{nipLurah}}</div>
         </div>
-
-        <div style="margin-top: 5px;"><strong>{{namaLurah}}</strong></div>
-        <div>{{nipLurah}}</div>
       </div>
     </div>
+
   </body>
 </html>

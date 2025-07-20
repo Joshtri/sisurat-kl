@@ -15,6 +15,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/modal";
+import { Image } from "@heroui/react";
 
 interface WargaProfileSectionProps {
   warga: {
@@ -126,11 +127,12 @@ export function WargaProfileSection({ warga }: WargaProfileSectionProps) {
             <ModalBody>
               {previewFileUrl.endsWith(".pdf") ? (
                 <iframe
+                  title="Preview PDF"
                   src={previewFileUrl}
                   className="w-full h-[80vh] rounded-md"
                 />
               ) : (
-                <img
+                <Image
                   src={previewFileUrl}
                   alt="Preview Dokumen"
                   className="w-full max-h-[80vh] object-contain rounded-md"

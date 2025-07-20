@@ -203,23 +203,23 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       iconSolid: DocumentSolidIcon,
     },
 
-    {
-      title: "Sistem",
-      href: "/superadmin/sistem",
-      icon: CogIcon,
-      iconSolid: CogSolidIcon,
-      submenu: [
-        { title: "Pengaturan", href: "/superadmin/sistem/pengaturan" },
-        { title: "Backup", href: "/superadmin/sistem/backup" },
-        { title: "Log Aktivitas", href: "/superadmin/sistem/logs" },
-      ],
-    },
-    {
-      title: "Laporan Global",
-      href: "/superadmin/laporan-global",
-      icon: ChartBarIcon,
-      iconSolid: ChartSolidIcon,
-    },
+    // {
+    //   title: "Sistem",
+    //   href: "/superadmin/sistem",
+    //   icon: CogIcon,
+    //   iconSolid: CogSolidIcon,
+    //   submenu: [
+    //     { title: "Pengaturan", href: "/superadmin/sistem/pengaturan" },
+    //     { title: "Backup", href: "/superadmin/sistem/backup" },
+    //     { title: "Log Aktivitas", href: "/superadmin/sistem/logs" },
+    //   ],
+    // },
+    // {
+    //   title: "Laporan Global",
+    //   href: "/superadmin/laporan-global",
+    //   icon: ChartBarIcon,
+    //   iconSolid: ChartSolidIcon,
+    // },
   ],
   RT: [
     {

@@ -78,7 +78,7 @@ export default function RiwayatPage() {
               />
             )}
             <TableActions
-              onView={() => router.push(`/lurah/surat/${item.id}`)}
+              onView={() => router.push(`/lurah/riwayat/${item.id}`)}
             />
           </div>
         </>

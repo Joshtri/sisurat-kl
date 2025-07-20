@@ -3,7 +3,7 @@
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button, Card, CardBody, Chip } from "@heroui/react";
+import { Button, Card, CardBody, Chip, Image } from "@heroui/react";
 import {
   CheckCircleIcon,
   DocumentTextIcon,
@@ -225,7 +225,7 @@ export default function DetailPersetujuanPage() {
                                   <p className="text-sm font-semibold text-gray-600">
                                     {formatKeyLabel(key)}
                                   </p>
-                                  <img
+                                  <Image
                                     src={value}
                                     alt={formatKeyLabel(key)}
                                     className="max-w-xs rounded border"
@@ -273,7 +273,7 @@ export default function DetailPersetujuanPage() {
                           <p className="text-sm font-semibold text-gray-600 mb-2">
                             {formatKeyLabel(key)}
                           </p>
-                          <img
+                          <Image
                             src={value}
                             alt={formatKeyLabel(key)}
                             className="max-w-xs rounded border"

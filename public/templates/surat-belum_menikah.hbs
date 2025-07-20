@@ -1,31 +1,36 @@
-<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
     <title>Surat Keterangan Belum Menikah</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
-        font-size: 12px;
-        line-height: 1.6;
-        margin: 40px;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 12pt;
+        margin: 50px;
+        color: #000;
+      }
+
+      .logo-container {
+        position: absolute;
+        top: 50px;
+        left: 50px;
+      }
+
+      .logo {
+        width: 80px;
       }
 
       .header {
         text-align: center;
-        margin-bottom: 20px;
-      }
-
-      .header h3,
-      .header p {
-        margin: 2px 0;
+        line-height: 1.5;
+        margin-bottom: 6px;
       }
 
       .title {
         text-align: center;
         font-weight: bold;
         text-decoration: underline;
-        margin: 20px 0;
+        margin-top: 7px;
       }
 
       .nomor {
@@ -33,85 +38,122 @@
         margin-bottom: 20px;
       }
 
-      .content {
+      .paragraf {
         text-align: justify;
-      }
-
-      .field {
-        margin-left: 30px;
-        margin-bottom: 10px;
-      }
-
-      .footer {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 40px;
-      }
-
-      .ttd {
-        text-align: center;
-        width: 300px;
-      }
-
-      .qr {
         margin: 10px 0;
       }
 
-      .jabatan {
+      table.info {
+        margin-left: 30px;
+        margin-bottom: 15px;
+      }
+
+      table.info td {
+        padding: 4px 8px;
+        vertical-align: top;
+      }
+
+      .ttd {
+        margin-top: 50px;
+        text-align: right;
+      }
+
+      .qr {
         margin-top: 10px;
-        margin-bottom: 50px;
+      }
+
+      .qr small {
+        font-size: 10px;
+        color: #666;
+      }
+
+      hr {
+        border: none;
+        border-top: 2px solid black;
+        margin-top: 10px;
+        margin-bottom: 20px;
       }
     </style>
   </head>
+
   <body>
-    <div class="header">
-      <h3>PEMERINTAH KOTA KUPANG</h3>
-      <h3>KECAMATAN OEBUBO</h3>
-      <h3>KELURAHAN LILIBA</h3>
-      <p>Jalan Taebenu - Liliba, Email: kel.liliba@kupangkota.go.id</p>
+    <div class="logo-container">
+      <img
+        src="https://sisurat-kl.vercel.app/img/kotakupanglogo.png"
+        class="logo"
+      />
     </div>
+
+    <div class="header">
+      <div>PEMERINTAH KOTA KUPANG</div>
+      <div>KECAMATAN OEBEBO</div>
+      <div>KELURAHAN LILIBA</div>
+      <div style="font-size: 10pt">Jl. Tabean Liliba, No. 100, 85232 – Kupang</div>
+    </div>
+
+    <hr />
 
     <div class="title">SURAT KETERANGAN BELUM MENIKAH</div>
     <div class="nomor">Nomor: {{nomorSurat}}</div>
 
-    <div class="content">
-      <p>Yang bertanda tangan di bawah ini Lurah Liliba Kecamatan Oebobo Kota Kupang dengan ini menerangkan bahwa:</p>
-
-      <div class="field">
-        <p>Nama: {{namaLengkap}}</p>
-        <p>Jenis Kelamin: {{jenisKelamin}}</p>
-        <p>Tempat & Tanggal Lahir: {{tempatLahir}}, {{tanggalLahir}}</p>
-        <p>NIK: {{nik}}</p>
-        <p>Agama: {{agama}}</p>
-        <p>Status Perkawinan: Belum Menikah</p>
-        <p>Pekerjaan: {{pekerjaan}}</p>
-        <p>Alamat: RT. {{rt}} / RW. {{rw}}, {{alamat}}</p>
-      </div>
-
-      <p>
-        Berdasarkan Surat Pengantar Ketua RT. {{rt}} / RW. {{rw}} Nomor: {{nomorPengantar}} tanggal {{tanggalPengantar}} bahwa benar yang bersangkutan adalah warga Kelurahan Liliba Kecamatan Oebobo Kota Kupang yang berdomisili sesuai alamat tersebut dan sampai dengan saat surat ini dibuat masih berstatus <strong>Belum Menikah</strong>.
-        <br /><br />
-        Surat Keterangan ini diberikan kepada yang bersangkutan untuk keperluan administrasi {{keperluan}}.
-      </p>
-
-      <p>Demikian Surat Keterangan ini diberikan untuk dipergunakan sebagaimana mestinya.</p>
+    <div class="paragraf">
+      Yang bertanda tangan di bawah ini Lurah Kelurahan Liliba Kecamatan Oebobo
+      Kota Kupang, dengan ini menerangkan bahwa:
     </div>
 
-    <div class="footer">
-      <div class="ttd">
-        <div>Kupang, {{tanggalSurat}}</div>
-        <div class="jabatan">Lurah Liliba</div>
+    <table class="info">
+      <tr><td>Nama</td><td>:</td><td>{{namaLengkap}}</td></tr>
+      <tr><td>Jenis Kelamin</td><td>:</td><td>{{jenisKelamin}}</td></tr>
+      <tr><td>Tempat/Tanggal Lahir</td><td>:</td><td>{{tempatLahir}},
+          {{tanggalLahir}}</td></tr>
+      <tr><td>NIK</td><td>:</td><td>{{nik}}</td></tr>
+      <tr><td>Agama</td><td>:</td><td>{{agama}}</td></tr>
+      <tr><td>Status Perkawinan</td><td>:</td><td>Belum Menikah</td></tr>
+      <tr><td>Pekerjaan</td><td>:</td><td>{{pekerjaan}}</td></tr>
+      <tr><td>Alamat</td><td>:</td><td>RT
+          {{rt}}
+          / RW
+          {{rw}},
+          {{alamat}}</td></tr>
+    </table>
 
-        <div class="qr">
-          <img
-            src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
-            alt="QR Code"
-          />
-        </div>
+    <div class="paragraf">
+      Berdasarkan Surat Pengantar Ketua RT
+      {{rt}}
+      / RW
+      {{rw}}
+      Nomor:
+      {{nomorPengantar}}
+      tanggal
+      {{tanggalPengantar}}, bahwa benar yang bersangkutan adalah warga Kelurahan
+      Liliba Kecamatan Oebobo Kota Kupang yang berdomisili sesuai alamat
+      tersebut dan sampai dengan saat surat ini dibuat masih berstatus
+      <strong>Belum Menikah</strong>.
+    </div>
 
-        <div><strong>{{namaLurah}}</strong></div>
-        <div>{{nipLurah}}</div>
+    <div class="paragraf">
+      Surat ini diberikan kepada yang bersangkutan untuk keperluan administrasi
+      {{keperluan}}.
+    </div>
+
+    <div class="paragraf">
+      Demikian surat ini dibuat untuk dipergunakan sebagaimana mestinya.
+    </div>
+
+    <div class="ttd">
+      <div>Kupang, {{tanggalSurat}}</div>
+      <div style="font-weight: bold;">LURAH LILIBA</div>
+
+      <div class="qr">
+        <img
+          src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
+          alt="QR Code"
+        />
+        <div><small>Scan untuk verifikasi</small></div>
       </div>
+
+      <div style="margin-top: 5px;"><strong>{{namaLurah}}</strong></div>
+      <div>{{nipLurah}}</div>
     </div>
   </body>
 </html>

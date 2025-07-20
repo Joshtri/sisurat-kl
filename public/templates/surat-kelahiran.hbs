@@ -6,79 +6,119 @@
       body {
         font-family: "Times New Roman", Times, serif;
         font-size: 12pt;
-        margin: 50px;
         color: #000;
+        margin: 30px;
       }
+
       .header {
+        position: relative;
         text-align: center;
         margin-bottom: 10px;
       }
-      .logo-container {
+
+      .logo-absolute {
         position: absolute;
-        top: 50px;
-        left: 50px;
+        left: 30px;
+        top: -25px;
+        width: 90px;
+        height: auto;
       }
-      .logo {
-        width: 80px;
+
+      .header-text {
+        display: inline-block;
+        padding-left: 20px;
       }
+
       .judul {
         text-align: center;
         font-weight: bold;
         text-transform: uppercase;
         margin: 20px 0 10px;
+        font-size: 14pt;
+        text-decoration: underline;
       }
+
       .nomor {
         text-align: center;
         margin-bottom: 20px;
       }
+
       .isi {
-        margin: 20px 0;
+        line-height: 1.6;
       }
+
+      .isi table {
+        width: 100%;
+        margin: 10px 0 15px;
+      }
+
+      .isi td {
+        vertical-align: top;
+        padding: 2px 5px;
+      }
+
       .paragraf {
         text-align: justify;
         margin: 10px 0;
       }
+
+      .footer {
+        margin-top: 40px;
+        width: 100%;
+      }
+
+      .ttd-container {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        min-height: 150px;
+      }
+
       .ttd {
-        margin-top: 50px;
-        text-align: right;
+        float: right;
+        text-align: center;
       }
-      .ttd .jabatan {
-        text-transform: uppercase;
-        font-weight: bold;
-      }
+
       .qr {
         margin-top: 10px;
       }
-      table.info {
-        margin-left: 30px;
-      }
-      table.info td {
-        padding: 3px 5px;
-        vertical-align: top;
+
+      @media print {
+        .ttd-container {
+          page-break-inside: avoid !important;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="logo-container">
-      <img src="/public/img/kotakupanglogo.png" class="logo" />
-    </div>
     <div class="header">
-      <div>PEMERINTAH KOTA KUPANG</div>
-      <div>KECAMATAN OEBEBO</div>
-      <div>KELURAHAN LILIBA</div>
-      <div style="font-size: 10pt">Jalan Taebenu, RT. 001 / RW. 002</div>
+      <img
+        src="https://sisurat-kl.vercel.app/img/kotakupanglogo.png"
+        class="logo-absolute"
+      />
+      <div class="header-text">
+        <div><strong>PEMERINTAH KOTA KUPANG</strong></div>
+        <div><strong>KECAMATAN OEBEBO</strong></div>
+        <div><strong>KELURAHAN LILIBA</strong></div>
+        <div style="font-size: 10pt">
+          Jalan Taebenu, RT.001 / RW.002 Email: anil.liliba@kupangkota.go.id
+        </div>
+      </div>
     </div>
+
     <hr />
 
     <div class="judul">SURAT KETERANGAN KELAHIRAN</div>
     <div class="nomor">Nomor: {{noSurat}}</div>
 
     <div class="isi">
-      <p class="paragraf">Yang bertanda tangan di bawah ini Lurah Liliba
-        Kecamatan Oebobo Kota Kupang dengan ini menerangkan bahwa:</p>
+      <p class="paragraf">
+        Yang bertanda tangan di bawah ini, Lurah Kelurahan Liliba Kecamatan
+        Oebobo Kota Kupang dengan ini menerangkan bahwa:
+      </p>
 
-      <table class="info">
-        <tr><td>Nama</td><td>:</td><td>{{namaAnak}}</td></tr>
+      <table>
+        <tr><td width="30%">Nama</td><td width="2%">:</td><td
+          >{{namaAnak}}</td></tr>
         <tr><td>Jenis Kelamin</td><td>:</td><td>{{jenisKelaminAnak}}</td></tr>
         <tr><td>Agama</td><td>:</td><td>{{agama}}</td></tr>
         <tr><td>Nama Ayah</td><td>:</td><td>{{namaAyah}}</td></tr>
@@ -104,17 +144,23 @@
       </p>
     </div>
 
-    <div class="ttd">
-      <div>Kupang, {{tanggalTerbit}}</div>
-      <div class="jabatan">An. Lurah Liliba<br />Kasie PMK</div>
-      <div class="qr">
-        <img
-          src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
-          alt="QR Code"
-        />
+    <div class="footer">
+      <div class="ttd-container">
+        <div class="ttd">
+          <div>Kupang, {{tanggalTerbit}}</div>
+          <div class="jabatan">An. Lurah Liliba<br />Kasie PMK</div>
+
+          <div class="qr">
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=60x60"
+              alt="QR Code"
+            />
+          </div>
+
+          <div style="margin-top: 5px;"><strong>{{namaLurah}}</strong></div>
+          <div>{{nipLurah}}</div>
+        </div>
       </div>
-      <div style="margin-top: 5px;"><strong>{{namaLurah}}</strong></div>
-      <div>{{nipLurah}}</div>
     </div>
   </body>
 </html>

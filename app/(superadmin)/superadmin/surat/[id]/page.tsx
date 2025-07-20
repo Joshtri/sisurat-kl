@@ -2,12 +2,12 @@
 
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Card, CardBody, Chip } from "@heroui/react";
+import { Button, Card, CardBody, Chip, Image } from "@heroui/react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
 import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
-import { formatDateIndo } from "@/utils/common";
+import { formatDateIndo, formatKeyLabel } from "@/utils/common";
 import {
   downloadSuratPdf,
   getSuratHistoryById,
@@ -17,6 +17,7 @@ import {
   DocumentArrowDownIcon,
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
+import { useState } from "react";
 
 const statusColorMap: Record<
   string,
@@ -37,6 +38,8 @@ export default function DetailSuratSuperadminPage() {
   });
 
   const profil = surat?.pemohon?.profil;
+
+  const [previewFileUrl, setPreviewFileUrl] = useState<string | null>(null);
 
   const renderDataSuratTambahan = (dataSurat: any) => {
     return Object.entries(dataSurat).map(([key, value]) => {
@@ -65,6 +68,25 @@ export default function DetailSuratSuperadminPage() {
                 />
               </div>
             ))}
+          </div>
+        );
+      } else if (typeof value === "string" && value.startsWith("data:")) {
+        return (
+          <div key={key} className="col-span-full space-y-2">
+            <p className="font-semibold capitalize">{formatKeyLabel(key)}</p>
+            {value.includes("application/pdf") ? (
+              <iframe
+                src={value}
+                className="w-full h-[500px] rounded-md"
+                title={`Preview ${key}`}
+              />
+            ) : (
+              <Image
+                src={value}
+                alt={`Preview ${key}`}
+                className="max-h-96 rounded-md object-contain"
+              />
+            )}
           </div>
         );
       } else {
@@ -192,6 +214,31 @@ export default function DetailSuratSuperadminPage() {
                 value={profil?.kartuKeluarga?.alamat}
                 className="col-span-full"
               />
+
+              {surat.pemohon.profil.fileKtp && (
+                <Button
+                  size="sm"
+                  variant="flat"
+                  color="secondary"
+                  onPress={() =>
+                    setPreviewFileUrl(surat.pemohon.profil.fileKtp!)
+                  }
+                >
+                  Lihat File KTP
+                </Button>
+              )}
+              {surat.pemohon.profil.fileKk && (
+                <Button
+                  size="sm"
+                  variant="flat"
+                  color="secondary"
+                  onPress={() =>
+                    setPreviewFileUrl(surat.pemohon.profil.fileKk!)
+                  }
+                >
+                  Lihat File KK
+                </Button>
+              )}
             </CardBody>
           </Card>
 

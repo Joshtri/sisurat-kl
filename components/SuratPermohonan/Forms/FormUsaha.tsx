@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormContext } from "react-hook-form";
-import { Input } from "@heroui/react";
+import { Image, Input } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { convertFileToBase64 } from "@/utils/common";
 
@@ -119,7 +119,10 @@ export default function FormUsaha() {
       </h3>
 
       <div className="space-y-1">
-        <label htmlFor="fotoUsahaInput" className="text-sm font-medium text-gray-700">
+        <label
+          htmlFor="fotoUsahaInput"
+          className="text-sm font-medium text-gray-700"
+        >
           Foto Usaha <span className="text-gray-500">(gambar, max 1MB)</span>
         </label>
         <Input
@@ -138,7 +141,7 @@ export default function FormUsaha() {
         )}
 
         {previewUrl && (
-          <img
+          <Image
             src={previewUrl}
             alt="Preview Usaha"
             className="mt-2 w-60 rounded border"
