@@ -1,7 +1,6 @@
 "use client";
 
-import { Badge, Card, CardBody, CardHeader, Chip } from "@heroui/react";
-// import { Badge } ";
+import { Card, CardBody, CardHeader, Chip } from "@heroui/react";
 
 interface RecentActivity {
   id: string;
@@ -23,7 +22,7 @@ export function RecentActivities({ data }: RecentActivitiesProps) {
           Aktivitas Terbaru
         </h2>
       </CardHeader>
-      <CardBody>
+      <CardBody className="max-h-[300px] overflow-y-auto">
         <ul className="space-y-4">
           {data.length === 0 ? (
             <li className="text-sm text-gray-500">Belum ada aktivitas.</li>
@@ -44,7 +43,6 @@ export function RecentActivities({ data }: RecentActivitiesProps) {
                   <Chip
                     size="sm"
                     variant="flat"
-                    // variant="subtle"
                     color={getStatusColor(activity.status)}
                   >
                     {activity.status.replaceAll("_", " ").toLowerCase()}
@@ -62,13 +60,13 @@ export function RecentActivities({ data }: RecentActivitiesProps) {
   );
 }
 
-// Fungsi untuk menentukan warna badge berdasarkan status
 function getStatusColor(
-  status: string
+  status: string,
 ): "success" | "danger" | "warning" | "primary" {
   if (status.startsWith("DITOLAK")) return "danger";
   if (status === "DIAJUKAN") return "warning";
   if (status.startsWith("DIVERIFIKASI")) return "primary";
   if (status === "DITERBITKAN") return "success";
+
   return "primary";
 }
