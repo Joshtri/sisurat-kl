@@ -59,3 +59,22 @@ export async function getProfileKKAnak(userId: string) {
 
   return res.data;
 }
+
+export async function uploadWargaIdentity(
+  userId: string,
+  fileKtp?: File,
+  fileKk?: File
+) {
+  const formData = new FormData();
+  formData.append("userId", userId);
+  if (fileKtp) formData.append("fileKtp", fileKtp);
+  if (fileKk) formData.append("fileKk", fileKk);
+
+  const res = await axios.patch("/api/warga/upload-identity", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return res.data;
+}

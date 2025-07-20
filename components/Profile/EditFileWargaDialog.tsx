@@ -8,35 +8,60 @@ import {
   ModalFooter,
 } from "@heroui/modal";
 import { Input } from "@heroui/input";
-import { Button } from "@heroui/button"; // opsional
+import { Button } from "@heroui/button";
 import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { uploadWargaIdentity } from "@/services/wargaService";
 
 interface Props {
+  wargaId: string;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: FormData) => void;
-  isLoading?: boolean;
 }
 
 export default function EditFileWargaDialog({
   isOpen,
+  wargaId,
   onClose,
-  onSubmit,
-  isLoading = false,
 }: Props) {
   const { register, handleSubmit, reset } = useForm();
+  const queryClient = useQueryClient();
+
+  console.log(wargaId);
+
+  const { mutate: uploadFiles, isPending } = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const fileKtp = formData.get("fileKtp") as File | null;
+      const fileKk = formData.get("fileKk") as File | null;
+      return uploadWargaIdentity(
+        wargaId,
+        fileKtp ?? undefined,
+        fileKk ?? undefined
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["warga", wargaId] });
+      handleClose();
+    },
+    onError: (err) => {
+      console.error("Upload gagal:", err);
+      // optionally show toast
+    },
+  });
 
   const handleClose = () => {
     reset();
     onClose();
   };
 
-  const submitForm = (data: any) => {
+  const submitForm = async (data: any) => {
     const formData = new FormData();
 
-    if (data.fileKtp) formData.append("fileKtp", data.fileKtp[0]);
-    if (data.fileKk) formData.append("fileKk", data.fileKk[0]);
-    onSubmit(formData);
+    if (data.fileKtp?.[0]) formData.append("fileKtp", data.fileKtp[0]);
+    if (data.fileKk?.[0]) formData.append("fileKk", data.fileKk[0]);
+    formData.append("userId", wargaId);
+
+    uploadFiles(formData);
   };
 
   return (
@@ -76,7 +101,7 @@ export default function EditFileWargaDialog({
             <Button color="default" variant="light" onClick={handleClose}>
               Batal
             </Button>
-            <Button color="primary" type="submit" isLoading={isLoading}>
+            <Button color="primary" type="submit" isLoading={isPending}>
               Simpan
             </Button>
           </ModalFooter>

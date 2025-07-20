@@ -28,6 +28,7 @@ import { getAllJenisSurat } from "@/services/jenisSuratService";
 import { createSurat } from "@/services/suratService";
 import { showToast } from "@/utils/toastHelper";
 import DynamicSuratDetailForm from "@/components/SuratPermohonan/DynamicSuratDetailForm";
+import { mapDataSurat } from "@/utils/mapDataSurat";
 
 const formSchema = z
   .object({
@@ -41,7 +42,7 @@ export default function CreateSuratPermohonanPage() {
   const [selectedJenisSurat, setSelectedJenisSurat] =
     useState<JenisSurat | null>(null);
   const [detailSurat, setDetailSurat] = useState<Record<string, any> | null>(
-    null,
+    null
   );
 
   const { data: jenisList = [], isLoading } = useQuery({
@@ -99,31 +100,25 @@ export default function CreateSuratPermohonanPage() {
   });
 
   const onSubmit = async (formData: any) => {
-    const { idJenisSurat, alasanPengajuan, ...rest } = formData;
+    const { idJenisSurat, alasanPengajuan, dataSurat = {} } = formData;
+    const kode = selectedJenisSurat?.kode ?? "";
 
-    // Ambil hanya field dalam dataSurat yang valid
-    const dataSurat = rest?.dataSurat ?? {};
+    const filtered = mapDataSurat(dataSurat, kode);
 
-    const filteredDataSurat = Object.fromEntries(
-      Object.entries(dataSurat).filter(([_, v]) => v !== "" && v != null),
-    );
-
-    const statusPerkawinanOtomatis =
-      user?.jenisKelamin === "PEREMPUAN" ? "Janda" : "Duda";
-
-    if (selectedJenisSurat?.kode === "janda_duda") {
-      filteredDataSurat.statusPerkawinan = statusPerkawinanOtomatis;
+    // Untuk surat janda/duda yang auto isi statusPerkawinan
+    if (kode === "JANDA_DUDA") {
+      filtered.statusPerkawinan =
+        user?.jenisKelamin === "PEREMPUAN" ? "Janda" : "Duda";
     }
 
     const payload = {
       idJenisSurat,
       alasanPengajuan,
-      dataSurat: filteredDataSurat,
+      dataSurat: filtered,
     };
 
     await mutateAsync(payload);
   };
-
   const watchedValues = watch();
   const isFormValid =
     !!watchedValues.idJenisSurat &&
@@ -139,25 +134,6 @@ export default function CreateSuratPermohonanPage() {
     setSelectedJenisSurat(selected ?? null);
     console.log("Selected jenis surat:", selected);
   };
-
-  // Enhanced debugging
-  console.log("=== DEBUGGING INFO ===");
-  console.log("kartuKeluargaId", user?.kartuKeluargaId);
-  console.log("selectedJenisSurat?.kode", selectedJenisSurat?.kode);
-  console.log("user?.peranDalamKk", user?.peranDalamKk);
-  console.log("isBlockedOrtu", isBlockedOrtu);
-  console.log("watchedValues", watchedValues);
-  console.log("watchedValues.idJenisSurat", watchedValues.idJenisSurat);
-  console.log("!!watchedValues.idJenisSurat", !!watchedValues.idJenisSurat);
-  console.log("watchedValues.alasanPengajuan", watchedValues.alasanPengajuan);
-  console.log("alasanPengajuan length", watchedValues.alasanPengajuan?.length);
-  console.log(
-    "alasanPengajuan >= 5",
-    (watchedValues.alasanPengajuan?.length ?? 0) >= 5,
-  );
-  console.log("isFormValid", isFormValid);
-  console.log("form errors", errors);
-  console.log("=== END DEBUGGING ===");
 
   if (isLoadingUser) {
     return (

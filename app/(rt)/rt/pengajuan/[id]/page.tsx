@@ -8,16 +8,10 @@ import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { PageHeader } from "@/components/common/PageHeader";
 import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
 import { getSuratDetailByRT, verifySuratByRT } from "@/services/suratService";
-import { formatDateIndo } from "@/utils/common";
+import { formatDateIndo, formatKeyLabel } from "@/utils/common";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { showToast } from "@/utils/toastHelper";
 import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
-
-function formatKeyLabel(key: string): string {
-  return key
-    .replace(/([A-Z])/g, " $1") // ubah camelCase ke camel Case
-    .replace(/^./, (str) => str.toUpperCase()); // huruf pertama kapital
-}
 
 export default function DetailSuratRTPage() {
   const { id } = useParams();
@@ -196,25 +190,32 @@ export default function DetailSuratRTPage() {
         </Card>
 
         {/* Detail Tambahan Surat */}
-        {surat.dataSurat && Object.keys(surat.dataSurat).length > 0 && (
-          <Card>
-            <CardBody>
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                Detail Tambahan Surat
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(surat.dataSurat).map(([key, value]) => (
-                  <ReadOnlyInput
-                    key={key}
-                    label={formatKeyLabel(key)}
-                    value={String(value)}
-                  />
-                ))}
-              </div>
-            </CardBody>
-          </Card>
-        )}
+        {Object.entries(surat.dataSurat).map(([key, value]) => {
+          const isImageBase64 =
+            typeof value === "string" && value.startsWith("data:image/");
 
+          return (
+            <div key={key}>
+              {isImageBase64 ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {formatKeyLabel(key)}
+                  </label>
+                  <img
+                    src={value}
+                    alt={formatKeyLabel(key)}
+                    className="max-w-xs rounded-md border"
+                  />
+                </div>
+              ) : (
+                <ReadOnlyInput
+                  label={formatKeyLabel(key)}
+                  value={String(value)}
+                />
+              )}
+            </div>
+          );
+        })}
         {/* Actions */}
         {!sudahDitangani && (
           <Card>

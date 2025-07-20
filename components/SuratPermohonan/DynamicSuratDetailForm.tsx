@@ -10,6 +10,7 @@ import FormTidakDiTempat from "@/components/SuratPermohonan/Forms/FormTidakDiTem
 import FormBelumMenikah from "@/components/SuratPermohonan/Forms/FormBelumMenikah";
 import FormNikah from "@/components/SuratPermohonan/Forms/FormNikah";
 import FormUsaha from "@/components/SuratPermohonan/Forms/FormUsaha";
+import FormJandaDuda from "./Forms/FormJandaDuda";
 
 interface Props {
   kodeJenisSurat: string;
@@ -32,6 +33,7 @@ export default function DynamicSuratDetailForm({
         userId={userId ?? ""}
       />
     ),
+    JANDA_DUDA: <FormJandaDuda />,
     SUKET_ORTU: <FormOrangTua userId={userId ?? ""} />,
     TIDAK_DI_TEMPAT: (
       <FormTidakDiTempat kartuKeluargaId={kartuKeluargaId ?? ""} />

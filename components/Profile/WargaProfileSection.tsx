@@ -8,9 +8,17 @@ import { EditWargaDialog } from "./EditWargaDialog";
 import EditFileWargaDialog from "./EditFileWargaDialog";
 
 import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@heroui/modal";
 
 interface WargaProfileSectionProps {
   warga: {
+    id: string;
     namaLengkap: string;
     nik: string;
     tempatLahir?: string;
@@ -22,6 +30,8 @@ interface WargaProfileSectionProps {
     rt?: string;
     rw?: string;
     alamat?: string;
+    fileKtp?: string;
+    fileKk?: string;
     statusHidup: string;
     foto?: string;
   };
@@ -31,6 +41,7 @@ export function WargaProfileSection({ warga }: WargaProfileSectionProps) {
   const [open, setOpen] = useState(false);
 
   const [openFile, setOpenFile] = useState(false);
+  const [previewFileUrl, setPreviewFileUrl] = useState<string | null>(null);
 
   return (
     <div className="p-4 rounded-xl border bg-white shadow-sm space-y-4">
@@ -80,9 +91,63 @@ export function WargaProfileSection({ warga }: WargaProfileSectionProps) {
             Lengkapi Dokumen
           </Button>
         </div>
+
+        {warga.fileKtp && (
+          <Button
+            size="sm"
+            variant="flat"
+            color="secondary"
+            onPress={() => setPreviewFileUrl(warga.fileKtp!)}
+          >
+            Lihat File KTP
+          </Button>
+        )}
+        {warga.fileKk && (
+          <Button
+            size="sm"
+            variant="flat"
+            color="secondary"
+            onPress={() => setPreviewFileUrl(warga.fileKk!)}
+          >
+            Lihat File KK
+          </Button>
+        )}
       </div>
 
+      {previewFileUrl && (
+        <Modal
+          isOpen={!!previewFileUrl}
+          onClose={() => setPreviewFileUrl(null)}
+          size="3xl"
+          placement="center"
+        >
+          <ModalContent>
+            <ModalHeader>Pratinjau Dokumen</ModalHeader>
+            <ModalBody>
+              {previewFileUrl.endsWith(".pdf") ? (
+                <iframe
+                  src={previewFileUrl}
+                  className="w-full h-[80vh] rounded-md"
+                />
+              ) : (
+                <img
+                  src={previewFileUrl}
+                  alt="Preview Dokumen"
+                  className="w-full max-h-[80vh] object-contain rounded-md"
+                />
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Button color="primary" onPress={() => setPreviewFileUrl(null)}>
+                Tutup
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
+
       <EditFileWargaDialog
+        wargaId={warga.id}
         onSubmit={async (formData) => {
           // TODO: kirim ke API untuk update dokumen
           // await updateWargaFile(formData);

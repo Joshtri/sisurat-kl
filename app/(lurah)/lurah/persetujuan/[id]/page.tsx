@@ -19,7 +19,8 @@ import {
   verifySuratByLurah,
 } from "@/services/suratService";
 import { showToast } from "@/utils/toastHelper";
-import { formatDateIndo } from "@/utils/common";
+import { formatDateIndo, formatKeyLabel } from "@/utils/common";
+import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 
 export default function DetailPersetujuanPage() {
   const { id } = useParams();
@@ -98,7 +99,7 @@ export default function DetailPersetujuanPage() {
     }
   };
 
-  if (isLoading) return <p className="p-4">Memuat data surat...</p>;
+  if (isLoading) return <SkeletonCard rows={10} />;
   if (isError || !surat)
     return <p className="p-4 text-red-500">Gagal memuat data surat.</p>;
 
@@ -199,10 +200,114 @@ export default function DetailPersetujuanPage() {
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
                 Data Tambahan
               </h2>
+
+              {/* Jika ada daftar anak */}
+              {surat.dataSurat.daftarAnak && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-medium text-gray-700 mb-3">
+                    Daftar Anak
+                  </h3>
+                  <div className="space-y-4">
+                    {surat.dataSurat.daftarAnak.map((anak, index) => (
+                      <div
+                        key={index}
+                        className="border rounded-lg p-4 space-y-4"
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {Object.entries(anak).map(([key, value]) => {
+                            const isBase64Image =
+                              typeof value === "string" &&
+                              value.startsWith("data:image");
+
+                            if (isBase64Image) {
+                              return (
+                                <div key={key} className="space-y-2">
+                                  <p className="text-sm font-semibold text-gray-600">
+                                    {formatKeyLabel(key)}
+                                  </p>
+                                  <img
+                                    src={value}
+                                    alt={formatKeyLabel(key)}
+                                    className="max-w-xs rounded border"
+                                  />
+                                </div>
+                              );
+                            }
+
+                            return (
+                              <ReadOnlyInput
+                                key={key}
+                                label={formatKeyLabel(key)}
+                                value={
+                                  key === "tanggalLahir"
+                                    ? formatDateIndo(value)
+                                    : typeof value === "string"
+                                      ? value.replace("_", " ")
+                                      : String(value)
+                                }
+                              />
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Untuk field lain selain daftarAnak */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(surat.dataSurat).map(([key, value]) => (
-                  <ReadOnlyInput key={key} label={key} value={String(value)} />
-                ))}
+                {Object.entries(surat.dataSurat)
+                  .filter(([key]) => key !== "daftarAnak")
+                  .map(([key, value]) => {
+                    const isBase64Image =
+                      typeof value === "string" &&
+                      value.startsWith("data:image");
+                    const isBase64PDF =
+                      typeof value === "string" &&
+                      value.startsWith("data:application/pdf");
+
+                    if (isBase64Image) {
+                      return (
+                        <div key={key}>
+                          <p className="text-sm font-semibold text-gray-600 mb-2">
+                            {formatKeyLabel(key)}
+                          </p>
+                          <img
+                            src={value}
+                            alt={formatKeyLabel(key)}
+                            className="max-w-xs rounded border"
+                          />
+                        </div>
+                      );
+                    }
+
+                    if (isBase64PDF) {
+                      return (
+                        <div key={key}>
+                          <p className="text-sm font-semibold text-gray-600 mb-2">
+                            {formatKeyLabel(key)}
+                          </p>
+                          <a
+                            href={value}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center text-blue-600 underline text-sm"
+                          >
+                            📄 Lihat Dokumen PDF
+                          </a>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <ReadOnlyInput
+                        key={key}
+                        label={formatKeyLabel(key)}
+                        value={String(value)}
+                      />
+                    );
+                  })}
               </div>
             </CardBody>
           </Card>

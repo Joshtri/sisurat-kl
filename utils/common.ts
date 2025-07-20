@@ -64,3 +64,29 @@ export const getRoleColor = (role?: string) => {
 export const getGenderColor = (gender?: string) => {
   return gender === "LAKI_LAKI" ? "primary" : "secondary";
 };
+
+export function convertFileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file); // Hasilkan base64 dengan prefix data:...
+
+    reader.onload = () => {
+      const result = reader.result as string;
+      resolve(result); // langsung string base64
+    };
+
+    reader.onerror = (error) => {
+      reject(error);
+    };
+  });
+}
+
+export function formatKeyLabel(key: string): string {
+  return key
+    .replace(/Base64$/i, "") // buang akhiran "Base64"
+    .replace(/File$/i, "") // buang akhiran "File" juga kalau ada
+    .replace(/([A-Z])/g, " $1")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .trim();
+}

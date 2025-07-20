@@ -42,6 +42,7 @@ export default function ProfileGrid() {
       {user.role === "WARGA" && user.namaLengkap && (
         <WargaProfileSection
           warga={{
+            id: user.id,
             namaLengkap: user.namaLengkap,
             nik: user.nik,
             tempatLahir: user.tempatLahir,
@@ -54,6 +55,8 @@ export default function ProfileGrid() {
             rw: user.rw,
             alamat: user.alamat,
             statusHidup: user.statusHidup,
+            fileKk: user.fileKk,
+            fileKtp: user.fileKtp,
             foto: user.foto,
           }}
         />

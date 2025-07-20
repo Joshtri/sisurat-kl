@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
@@ -17,6 +17,8 @@ import {
   CalendarIcon,
   DocumentArrowDownIcon,
   EyeIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import { Surat, JenisSurat } from "@prisma/client";
 
@@ -32,14 +34,22 @@ type SuratWithJenis = Surat & { jenis: JenisSurat };
 
 const getStatusColor = (status: string) => {
   switch (status) {
+    case "DIAJUKAN":
+      return "default";
+    case "DIVERIFIKASI_STAFF":
+      return "primary";
+    case "DITOLAK_STAFF":
+      return "danger";
+    case "DIVERIFIKASI_RT":
+      return "primary";
+    case "DITOLAK_RT":
+      return "danger";
     case "DIVERIFIKASI_LURAH":
       return "success";
-    case "DIVERIFIKASI_KADES":
-      return "primary";
-    case "MENUNGGU_VERIFIKASI":
-      return "warning";
-    case "DITOLAK":
+    case "DITOLAK_LURAH":
       return "danger";
+    case "DITERBITKAN":
+      return "success";
     default:
       return "default";
   }
@@ -50,6 +60,16 @@ export default function HistorySuratPermohonanPage() {
     queryKey: ["riwayat-surat"],
     queryFn: getSuratHistory,
   });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const paginatedHistory = history.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(history.length / itemsPerPage);
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("id-ID", {
@@ -71,7 +91,7 @@ export default function HistorySuratPermohonanPage() {
         ]}
       />
 
-      <div className="mt-6 space-y-4">
+      <div className="space-y-4">
         {isLoading ? (
           <Card>
             <CardBody className="flex items-center justify-center py-8">
@@ -83,97 +103,126 @@ export default function HistorySuratPermohonanPage() {
           <Card>
             <CardBody className="text-center py-8">
               <DocumentTextIcon className="mx-auto h-12 w-12 text-default-300 mb-4" />
-              <p className="text-default-500">
-                Belum ada permohonan surat yang diajukan.
-              </p>
+              <p className="text-default-500">Belum ada permohonan surat.</p>
             </CardBody>
           </Card>
         ) : (
-          history.map((surat) => (
-            <Card key={surat.id} className="shadow-sm">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start w-full">
-                  <div className="flex items-center gap-3">
-                    <DocumentTextIcon className="h-6 w-6 text-primary" />
-                    <div>
-                      <h3 className="text-lg font-semibold">
-                        {surat.jenis.nama}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <CalendarIcon className="h-4 w-4 text-default-400" />
-                        <span className="text-sm text-default-500">
-                          {formatDate(surat.createdAt)}
-                        </span>
+          <>
+            {paginatedHistory.map((surat) => (
+              <Card key={surat.id} className="shadow-sm">
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-start w-full">
+                    <div className="flex items-center gap-3">
+                      <DocumentTextIcon className="h-6 w-6 text-primary" />
+                      <div>
+                        <h3 className="text-lg font-semibold">
+                          {surat.jenis.nama}
+                        </h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <CalendarIcon className="h-4 w-4 text-default-400" />
+                          <span className="text-sm text-default-500">
+                            {formatDate(surat.createdAt)}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <Chip
-                    color={getStatusColor(surat.status)}
-                    variant="flat"
-                    size="sm"
-                  >
-                    {surat.status}
-                  </Chip>
-                </div>
-              </CardHeader>
-
-              <Divider />
-
-              <CardBody className="pt-4">
-                <SuratProgress status={surat.status} />
-
-                {surat.noSurat && (
-                  <div className="mt-4 p-3 bg-default-50 rounded-lg">
-                    <p className="text-sm text-default-600">
-                      <span className="font-medium">No Surat:</span>{" "}
-                      {surat.noSurat}
-                    </p>
-                  </div>
-                )}
-
-                <div className="flex gap-2 mt-4">
-                  <Button
-                    as={Link}
-                    href={`/warga/permohonan/history/${surat.id}`}
-                    variant="flat"
-                    color="primary"
-                    size="sm"
-                    startContent={<EyeIcon className="h-4 w-4" />}
-                  >
-                    Lihat Detail
-                  </Button>
-
-                  {/* Tombol PDF utama jika surat sudah final */}
-                  {surat.status === "DIVERIFIKASI_LURAH" && (
-                    <Button
-                      onClick={() => downloadSuratPdf(surat.id)}
+                    <Chip
+                      color={getStatusColor(surat.status)}
                       variant="flat"
-                      color="success"
                       size="sm"
-                      startContent={
-                        <DocumentArrowDownIcon className="h-4 w-4" />
-                      }
                     >
-                      Unduh PDF
-                    </Button>
+                      {surat.status}
+                    </Chip>
+                  </div>
+                </CardHeader>
+
+                <Divider />
+
+                <CardBody className="pt-4">
+                  <SuratProgress status={surat.status} />
+
+                  {surat.noSurat && (
+                    <div className="mt-4 p-3 bg-default-50 rounded-lg">
+                      <p className="text-sm text-default-600">
+                        <span className="font-medium">No Surat:</span>{" "}
+                        {surat.noSurat}
+                      </p>
+                    </div>
                   )}
 
-                  {/* Tampilkan jika sudah diverifikasi RT */}
-                  {surat.idRT && (
+                  <div className="flex gap-2 mt-4">
                     <Button
-                      onClick={() => previewSuratPengantar(surat.id)}
+                      as={Link}
+                      href={`/warga/permohonan/history/${surat.id}`}
                       variant="flat"
-                      color="warning"
+                      color="primary"
                       size="sm"
-                      startContent={<DocumentTextIcon className="h-4 w-4" />}
+                      startContent={<EyeIcon className="h-4 w-4" />}
                     >
-                      Lihat Surat Pengantar
+                      Lihat Detail
                     </Button>
-                  )}
-                </div>
-              </CardBody>
-            </Card>
-          ))
+
+                    {surat.status === "DIVERIFIKASI_LURAH" && (
+                      <Button
+                        onClick={() => downloadSuratPdf(surat.id)}
+                        variant="flat"
+                        color="success"
+                        size="sm"
+                        startContent={
+                          <DocumentArrowDownIcon className="h-4 w-4" />
+                        }
+                      >
+                        Unduh PDF
+                      </Button>
+                    )}
+
+                    {surat.idRT && (
+                      <Button
+                        onClick={() => previewSuratPengantar(surat.id)}
+                        variant="flat"
+                        color="warning"
+                        size="sm"
+                        startContent={<DocumentTextIcon className="h-4 w-4" />}
+                      >
+                        Lihat Surat Pengantar
+                      </Button>
+                    )}
+                  </div>
+                </CardBody>
+              </Card>
+            ))}
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-6 gap-2">
+                <Button
+                  size="sm"
+                  variant="light"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  startContent={<ChevronLeftIcon className="w-4 h-4" />}
+                >
+                  Sebelumnya
+                </Button>
+                <span className="text-sm text-default-600 self-center">
+                  Halaman {currentPage} dari {totalPages}
+                </span>
+                <Button
+                  size="sm"
+                  variant="light"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                  endContent={<ChevronRightIcon className="w-4 h-4" />}
+                >
+                  Selanjutnya
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </>

@@ -8,10 +8,13 @@ export default function FormJandaDuda() {
 
   return (
     <div className="space-y-6">
+      <h3 className="text-lg font-semibold text-gray-800">Data Pendukung</h3>
+
       <Input
-        {...register("alasanPengajuan")}
-        label="Alasan Permohonan Surat"
-        placeholder="Contoh: Untuk keperluan bank"
+        {...register("dataSurat.aktaKematianSuamiIstri")}
+        label="Upload Akta Kematian Suami/Istri"
+        type="file"
+        accept="application/pdf,image/*"
         radius="md"
         size="lg"
         variant="bordered"

@@ -30,13 +30,43 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.json(history);
+    const cleanedHistory = history.map((surat) => {
+      const dataSurat = surat.dataSurat;
+
+      let filteredDataSurat = dataSurat;
+
+      if (dataSurat && typeof dataSurat === "object") {
+        filteredDataSurat = Object.fromEntries(
+          Object.entries(dataSurat).filter(([key, value]) => {
+            const isBase64 =
+              typeof value === "string" &&
+              (value.startsWith("data:image") ||
+                value.startsWith("data:application/pdf"));
+
+            const blacklist = [
+              "fotoUsahaBase64",
+              "fotoAnakBase64",
+              "buktiBase64",
+              "lampiranPdf",
+            ];
+            return !isBase64 && !blacklist.includes(key);
+          })
+        );
+      }
+
+      return {
+        ...surat,
+        dataSurat: filteredDataSurat,
+      };
+    });
+
+    return NextResponse.json(cleanedHistory);
   } catch (error) {
     console.error("[HISTORY_SURAT_ERROR]", error);
 
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

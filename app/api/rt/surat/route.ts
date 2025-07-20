@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   if (!rtProfile?.rt) {
     return NextResponse.json(
       { message: "RT tidak ditemukan" },
-      { status: 404 },
+      { status: 404 }
     );
   }
 
@@ -93,5 +93,41 @@ export async function GET(req: NextRequest) {
     orderBy: { createdAt: "desc" },
   });
 
-  return NextResponse.json(suratList);
+  // return NextResponse.json(suratList);
+
+  const cleanedSuratList = suratList.map((surat) => {
+    const dataSurat = surat.dataSurat;
+
+    let filteredDataSurat = dataSurat;
+
+    if (dataSurat && typeof dataSurat === "object") {
+      filteredDataSurat = Object.fromEntries(
+        Object.entries(dataSurat).filter(([key, value]) => {
+          // Exclude jika:
+          // 1. Value adalah base64 image/pdf
+          // 2. Atau key-nya dalam daftar blacklist
+          const isBase64 =
+            typeof value === "string" &&
+            (value.startsWith("data:image") ||
+              value.startsWith("data:application/pdf"));
+
+          const blacklist = [
+            "fotoUsahaBase64",
+            "fotoAnakBase64",
+            "buktiBase64",
+            "lampiranPdf",
+          ];
+
+          return !isBase64 && !blacklist.includes(key);
+        })
+      );
+    }
+
+    return {
+      ...surat,
+      dataSurat: filteredDataSurat,
+    };
+  });
+
+  return NextResponse.json(cleanedSuratList);
 }

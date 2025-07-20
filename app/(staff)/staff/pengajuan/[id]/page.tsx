@@ -12,7 +12,7 @@ import {
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
-import { formatDateIndo } from "@/utils/common";
+import { formatDateIndo, formatKeyLabel } from "@/utils/common";
 import { showToast } from "@/utils/toastHelper";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import {
@@ -243,7 +243,6 @@ export default function DetailPengajuanStaffPage() {
                 Data Tambahan
               </h2>
 
-              {/* Khusus untuk daftarAnak */}
               {surat.dataSurat.daftarAnak && (
                 <div className="mb-6">
                   <h3 className="text-lg font-medium text-gray-700 mb-3">
@@ -251,24 +250,45 @@ export default function DetailPengajuanStaffPage() {
                   </h3>
                   <div className="space-y-4">
                     {surat.dataSurat.daftarAnak.map((anak, index) => (
-                      <div key={index} className="border rounded-lg p-4">
+                      <div
+                        key={index}
+                        className="border rounded-lg p-4 space-y-4"
+                      >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <ReadOnlyInput
-                            label="Nama Lengkap"
-                            value={anak.namaLengkap}
-                          />
-                          <ReadOnlyInput
-                            label="Jenis Kelamin"
-                            value={anak.jenisKelamin.replace("_", " ")}
-                          />
-                          <ReadOnlyInput
-                            label="Tempat Lahir"
-                            value={anak.tempatLahir}
-                          />
-                          <ReadOnlyInput
-                            label="Tanggal Lahir"
-                            value={formatDateIndo(anak.tanggalLahir)}
-                          />
+                          {Object.entries(anak).map(([key, value]) => {
+                            const isBase64Image =
+                              typeof value === "string" &&
+                              value.startsWith("data:image");
+
+                            if (isBase64Image) {
+                              return (
+                                <div key={key} className="space-y-2">
+                                  <p className="text-sm font-semibold text-gray-600">
+                                    {formatKeyLabel(key)}
+                                  </p>
+                                  <img
+                                    src={value}
+                                    alt={formatKeyLabel(key)}
+                                    className="max-w-xs rounded border"
+                                  />
+                                </div>
+                              );
+                            }
+
+                            return (
+                              <ReadOnlyInput
+                                key={key}
+                                label={formatKeyLabel(key)}
+                                value={
+                                  key === "tanggalLahir"
+                                    ? formatDateIndo(value)
+                                    : typeof value === "string"
+                                      ? value.replace("_", " ")
+                                      : String(value)
+                                }
+                              />
+                            );
+                          })}
                         </div>
                       </div>
                     ))}
@@ -279,14 +299,56 @@ export default function DetailPengajuanStaffPage() {
               {/* Untuk data tambahan lainnya */}
               {Object.entries(surat.dataSurat)
                 .filter(([key]) => key !== "daftarAnak")
-                .map(([key, value]) => (
-                  <ReadOnlyInput
-                    key={key}
-                    label={key}
-                    value={String(value)}
-                    className="mb-4"
-                  />
-                ))}
+                .map(([key, value]) => {
+                  const isBase64Image =
+                    typeof value === "string" && value.startsWith("data:image");
+
+                  const isBase64PDF =
+                    typeof value === "string" &&
+                    value.startsWith("data:application/pdf");
+
+                  if (isBase64Image) {
+                    return (
+                      <div key={key} className="mb-4">
+                        <p className="text-sm font-semibold text-gray-600 mb-2">
+                          {formatKeyLabel(key)}
+                        </p>
+                        <img
+                          src={value}
+                          alt={formatKeyLabel(key)}
+                          className="max-w-xs rounded border"
+                        />
+                      </div>
+                    );
+                  }
+
+                  if (isBase64PDF) {
+                    return (
+                      <div key={key} className="mb-4">
+                        <p className="text-sm font-semibold text-gray-600 mb-2">
+                          {formatKeyLabel(key)}
+                        </p>
+                        <a
+                          href={value}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center text-blue-600 underline text-sm"
+                        >
+                          📄 Lihat Dokumen PDF
+                        </a>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <ReadOnlyInput
+                      key={key}
+                      label={formatKeyLabel(key)}
+                      value={String(value)}
+                      className="mb-4"
+                    />
+                  );
+                })}
             </CardBody>
           </Card>
         )}

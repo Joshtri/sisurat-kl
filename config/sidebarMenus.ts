@@ -131,7 +131,7 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       href: "/lurah/persetujuan",
       icon: ShieldCheckIcon,
       iconSolid: ShieldCheckIcon,
-      badge: "5",
+      // badge: "5",
     },
 
     {
