@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useFormContext } from "react-hook-form"; // Tambahkan ini
 
 import { CreateOrEditButtons } from "../ui/CreateOrEditButtons";
 import { DateInput } from "../ui/inputs/DateInput";
@@ -40,6 +41,7 @@ export default function FormCreateWarga({
   // const effectiveUserId = defaultUserId || userIdFromQuery;
 
   const [userIdFromQuery, setUserIdFromQuery] = useState<string>("");
+  const [peran, setPeran] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
@@ -47,6 +49,22 @@ export default function FormCreateWarga({
 
     if (uid) setUserIdFromQuery(uid);
   }, []);
+  4;
+
+  function AutoSetGender({ peran }: { peran?: string }) {
+    const { setValue } = useFormContext();
+
+    useEffect(() => {
+      if (peran === "ISTRI") {
+        setValue("jenisKelamin", "PEREMPUAN");
+      } else if (peran === "KEPALA_KELUARGA") {
+        setValue("jenisKelamin", "LAKI_LAKI");
+      }
+    }, [peran, setValue]);
+
+    return null; // karena hanya side effect
+  }
+
   const queryClient = useQueryClient();
 
   const { data: users = [], isLoading: loadingUsers } = useQuery({
@@ -98,10 +116,10 @@ export default function FormCreateWarga({
           jenisKelamin: "LAKI_LAKI",
           pekerjaan: "LAINNYA",
           agama: "LAINNYA",
-          noTelepon: "",
-          rt: "",
-          rw: "",
-          alamat: "",
+          // noTelepon: "",
+          // rt: "",
+          // rw: "",
+          // alamat: "",
           //   foto: "",
           statusHidup: "HIDUP",
           kartuKeluargaId: undefined,
@@ -119,6 +137,8 @@ export default function FormCreateWarga({
           submitWarga(payload);
         }}
       >
+        <AutoSetGender peran={peran} />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <SelectInput
             label="Akun Pengguna"
@@ -134,19 +154,8 @@ export default function FormCreateWarga({
           />
 
           <SelectInput
-            label="Kartu Keluarga"
-            name="kartuKeluargaId"
-            placeholder="Pilih kartu keluarga"
-            isLoading={loadingKK}
-            options={kkList.map((kk) => ({
-              label:
-                kk.nomorKK + " - " + (kk.kepalaKeluarga?.namaLengkap ?? "-"),
-              value: kk.id,
-            }))}
-          />
-
-          <SelectInput
             label="Peran dalam Keluarga"
+            onChange={(val) => setPeran(val as string)}
             name="peranDalamKK"
             options={[
               { label: "Kepala Keluarga", value: "KEPALA_KELUARGA" },
@@ -156,6 +165,42 @@ export default function FormCreateWarga({
               { label: "Famili Lainnya", value: "FAMILI_LAINNYA" },
             ]}
           />
+
+          {peran !== "KEPALA_KELUARGA" && (
+            <div className="col-span-1 md:col-span-2">
+              {kkList.length > 0 ? (
+                <>
+                  <SelectInput
+                    label="Kartu Keluarga"
+                    name="kartuKeluargaId"
+                    placeholder="Pilih kartu keluarga"
+                    isLoading={loadingKK}
+                    options={kkList.map((kk) => ({
+                      label:
+                        kk.nomorKK +
+                        " - " +
+                        (kk.kepalaKeluarga?.namaLengkap ?? "-"),
+                      value: kk.id,
+                    }))}
+                  />
+
+                  <div className="mt-1 p-3 rounded-md bg-yellow-50 text-sm text-yellow-800 border border-yellow-200">
+                    💡 <strong>Catatan:</strong> Pilih{" "}
+                    <strong>Kartu Keluarga</strong> tempat warga ini{" "}
+                    <strong>terdaftar sebagai anggota</strong>.
+                  </div>
+                </>
+              ) : (
+                <div className="mt-1 p-3 rounded-md bg-red-50 text-sm text-red-800 border border-red-200">
+                  ⚠️ <strong>Belum ada data Kartu Keluarga.</strong> Silakan
+                  buat data <strong>Warga sebagai Kepala Keluarga</strong>{" "}
+                  terlebih dahulu, lalu tambahkan data Kartu Keluarga melalui
+                  menu <em>Manajemen KK</em>.
+                </div>
+              )}
+            </div>
+          )}
+
           <TextInput label="Nama Lengkap" name="namaLengkap" />
           <TextInput label="NIK" name="nik" maxLength={16} />
           <TextInput label="Tempat Lahir" name="tempatLahir" />
@@ -205,10 +250,10 @@ export default function FormCreateWarga({
               LAINNYA: "Lainnya",
             })}
           />
-          <TextInput label="No Telepon" name="noTelepon" />
+          {/* <TextInput label="No Telepon" name="noTelepon" />
           <TextInput label="RT" name="rt" />
           <TextInput label="RW" name="rw" />
-          <TextInput label="Alamat" name="alamat" />
+          <TextInput label="Alamat" name="alamat" /> */}
           {/* <TextInput label="Foto (URL)" name="foto" /> */}
           <SelectInput
             label="Status Hidup"
