@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardHeader, CardBody } from "@heroui/react";
+
 import { TableActions } from "@/components/common/TableActions";
 
 interface ActionData {
@@ -50,7 +51,7 @@ export function TableActionsDemo({ data }: TableActionsDemoProps) {
                           confirmLabel: "Hapus Surat",
                           onConfirm: async () => {
                             await new Promise((resolve) =>
-                              setTimeout(resolve, 1000)
+                              setTimeout(resolve, 1000),
                             );
                             alert(`Surat ${item.id} berhasil dihapus`);
                           },
