@@ -48,7 +48,11 @@ export default function RiwayatPage() {
               icon: DocumentIcon,
               onClick: async () => {
                 try {
-                  await previewSuratPdf(item.id);
+                  const blob = await previewSuratPdf(item.id);
+
+                  const blobUrl = URL.createObjectURL(blob);
+
+                  window.open(blobUrl, "_blank");
                 } catch (err: any) {
                   showToast({
                     title: "Gagal Preview",
