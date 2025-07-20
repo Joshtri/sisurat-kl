@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
@@ -9,7 +10,7 @@ export async function GET(req: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { message: "User ID wajib disediakan" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
         prisma.surat.count({
           where: {
             idPemohon: userId,
-            status: "DITERBITKAN",
+            status: "DIVERIFIKASI_LURAH",
           },
         }),
         prisma.surat.count({
@@ -75,7 +76,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       { message: "Terjadi kesalahan server" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
