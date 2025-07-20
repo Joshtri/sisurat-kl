@@ -24,6 +24,22 @@ export async function GET(
         agama: true,
         statusHidup: true,
         peranDalamKK: true,
+        statusPerkawinan: true,
+        createdAt: true,
+        updatedAt: true,
+        kartuKeluarga: {
+          select: {
+            id: true,
+            alamat: true,
+            rt: true,
+            rw: true,
+            nomorKK: true,
+          },
+        },
+        fileKk: true,
+        fileKtp: true,
+        foto: true,
+        kepalaDariKK: true,
       },
       orderBy: {
         namaLengkap: "asc",
