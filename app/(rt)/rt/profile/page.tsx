@@ -11,6 +11,7 @@ export default function ProfilePage() {
           { label: "Dashboard", href: "/rt/dashboard" },
           { label: "Profil" },
         ]}
+        backHref="/rt/dashboard"
         title="Profil RT"
       />
       <ProfileGrid />
