@@ -80,7 +80,7 @@ export default function UsersPage() {
             }
           },
         }}
-        onEdit={() => alert(`Edit ${user.username}`)}
+        onEdit={() => router.push(`/superadmin/users/${user.id}/edit`)}
         onView={() => router.push(`/superadmin/users/${user.id}`)}
       />
     ),
