@@ -3,13 +3,24 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { DocumentIcon } from "@heroicons/react/24/outline";
+import {
+  DocumentArrowDownIcon,
+  DocumentIcon,
+  DocumentTextIcon,
+} from "@heroicons/react/24/outline";
 
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
-import { getAllSurat } from "@/services/suratService";
+import {
+  downloadSuratPdf,
+  getAllSurat,
+  previewSuratPdf,
+  previewSuratPengantar,
+} from "@/services/suratService";
 import { formatDateIndo } from "@/utils/common";
+import { TableActionsInline } from "@/components/common/TableActionsInline";
+import { showToast } from "@/utils/toastHelper";
 
 export default function SuratPage() {
   const router = useRouter();
@@ -32,18 +43,55 @@ export default function SuratPage() {
   const rows = data.map((item) => ({
     key: item.id,
     noSurat: item.noSurat || "-",
-    jenisSurat: item.jenisSurat,
-    pemohon: item.namaLengkap,
+    jenisSurat: item.jenisSurat || "-",
+    pemohon: item.namaLengkap || "-",
+    // rtrw: `${item.pemohon?.profil?.kartuKeluarga?.rt || "-"} / ${
+    //   item.pemohon?.profil?.kartuKeluarga?.rw || "-"
+    // }`,
     rtrw: `${item.rt || "-"} / ${item.rw || "-"}`,
     status: item.status.replaceAll("_", " "),
     tanggal: formatDateIndo(item.tanggalPengajuan),
     actions: (
-      <TableActions
-        onView={() => router.push(`/superadmin/surat/${item.id}`)}
-        onDelete={{
-          onConfirm: () => alert(`Hapus surat ${item.noSurat}`),
-        }}
-      />
+      <div className="flex items-center gap-2">
+        <TableActions
+          onView={() => router.push(`/superadmin/surat/${item.id}`)}
+          onDelete={{
+            onConfirm: () => alert(`Hapus surat ${item.noSurat}`),
+          }}
+        />
+
+        <TableActionsInline
+          customActions={[
+            {
+              key: "preview",
+              label: "Preview PDF",
+              icon: DocumentIcon,
+              color: "primary",
+              onClick: async () => {
+                try {
+                  const blob = await previewSuratPdf(item.id);
+                  const blobUrl = URL.createObjectURL(blob);
+                  window.open(blobUrl, "_blank");
+                } catch (err: any) {
+                  showToast({
+                    title: "Gagal Preview",
+                    description: err.message,
+                    color: "error",
+                  });
+                }
+              },
+            },
+            {
+              key: "previewPengantar",
+              label: "Preview Pengantar",
+              icon: DocumentTextIcon,
+              onClick: async () => {
+                await previewSuratPengantar(item.id);
+              },
+            },
+          ]}
+        />
+      </div>
     ),
   }));
 
