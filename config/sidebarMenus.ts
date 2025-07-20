@@ -250,7 +250,7 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
     },
     {
       title: "Profile Anda",
-      href: "/warga/profile",
+      href: "/rt/profile",
       icon: UserIcon,
       iconSolid: UserIcon,
     },
