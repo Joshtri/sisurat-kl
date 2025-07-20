@@ -1,0 +1,128 @@
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Surat Keterangan Pindah Keluar</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        line-height: 1.6;
+        margin: 40px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .header h3,
+      .header p {
+        margin: 2px 0;
+      }
+
+      .title {
+        text-align: center;
+        font-weight: bold;
+        text-decoration: underline;
+        margin: 20px 0;
+      }
+
+      .nomor {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .content {
+        text-align: justify;
+      }
+
+      .field {
+        margin-left: 30px;
+      }
+
+      .footer {
+        margin-top: 40px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .qr img {
+        margin-top: 8px;
+      }
+
+      .ttd {
+        text-align: center;
+        width: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h3>PEMERINTAH KOTA KUPANG</h3>
+      <h3>KECAMATAN OEBUBO</h3>
+      <h3>KELURAHAN LILIBA</h3>
+      <p>Jalan Taebenu - Liliba, Email: kel.liliba@kupangkota.go.id</p>
+    </div>
+
+    <div class="title">SURAT KETERANGAN PINDAH KELUAR</div>
+    <div class="nomor">Nomor: {{noSurat}}</div>
+
+    <div class="content">
+      <p>Yang bertanda tangan di bawah ini:</p>
+      <div class="field">
+        <p>Nama: {{namaLurah}}</p>
+        <p>NIP: {{nipLurah}}</p>
+        <p>Jabatan: Lurah Liliba</p>
+      </div>
+
+      <p>Menerangkan dengan sebenarnya bahwa warga berikut ini akan pindah dari
+        wilayah Kelurahan Liliba:</p>
+      <div class="field">
+        <p>Nama Lengkap: {{namaLengkap}}</p>
+        <p>NIK: {{nik}}</p>
+        <p>Tempat, Tanggal Lahir: {{tempatTanggalLahir}}</p>
+        <p>Jenis Kelamin: {{jenisKelamin}}</p>
+        <p>Agama: {{agama}}</p>
+        <p>Status Perkawinan: {{statusPerkawinan}}</p>
+        <p>Pekerjaan: {{pekerjaan}}</p>
+        <p>Alamat: {{alamat}} RT {{rt}} / RW {{rw}}</p>
+      </div>
+
+      <p>Dengan rincian kepindahan sebagai berikut:</p>
+      <div class="field">
+        <p>Alamat Tujuan: {{alamatTujuan}}</p>
+        <p>RT/RW Tujuan: {{rtTujuan}} / {{rwTujuan}}</p>
+        <p>Desa/Kelurahan: {{desa}}</p>
+        <p>Kecamatan: {{kecamatan}}</p>
+        <p>Kabupaten/Kota: {{kabupaten}}</p>
+        <p>Provinsi: {{provinsi}}</p>
+        <p>Klasifikasi Pindah: {{klasifikasiPindah}}</p>
+        <p>Jenis Kepindahan: {{jenisKepindahan}}</p>
+        <p>Status KK yang Ditinggal: {{statusKKTinggal}}</p>
+        <p>Status KK di Tempat Tujuan: {{statusKKTujuan}}</p>
+      </div>
+
+      <p>Alasan pengajuan: {{alasanPengajuan}}</p>
+
+      <p>Demikian surat keterangan ini dibuat untuk dipergunakan sebagaimana
+        mestinya.</p>
+    </div>
+
+    <div class="footer">
+      <div class="qr">
+        <img
+          src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
+          alt="QR Code"
+        />
+      </div>
+
+      <div class="ttd">
+        <p>Kupang, {{tanggalSurat}}</p>
+        <p>Lurah Liliba</p>
+        <br /><br /><br />
+        <p><strong>{{namaLurah}}</strong></p>
+        <p>NIP. {{nipLurah}}</p>
+      </div>
+    </div>
+  </body>
+</html>
