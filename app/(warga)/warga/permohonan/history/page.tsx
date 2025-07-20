@@ -21,7 +21,11 @@ import {
 import { Surat, JenisSurat } from "@prisma/client";
 
 import { PageHeader } from "@/components/common/PageHeader";
-import { downloadSuratPdf, getSuratHistory } from "@/services/suratService";
+import {
+  downloadSuratPdf,
+  getSuratHistory,
+  previewSuratPengantar,
+} from "@/services/suratService";
 import SuratProgress from "@/components/SuratPermohonan/SuratProgress";
 
 type SuratWithJenis = Surat & { jenis: JenisSurat };
@@ -139,6 +143,7 @@ export default function HistorySuratPermohonanPage() {
                     Lihat Detail
                   </Button>
 
+                  {/* Tombol PDF utama jika surat sudah final */}
                   {surat.status === "DIVERIFIKASI_LURAH" && (
                     <Button
                       onClick={() => downloadSuratPdf(surat.id)}
@@ -150,6 +155,19 @@ export default function HistorySuratPermohonanPage() {
                       }
                     >
                       Unduh PDF
+                    </Button>
+                  )}
+
+                  {/* Tampilkan jika sudah diverifikasi RT */}
+                  {surat.idRT && (
+                    <Button
+                      onClick={() => previewSuratPengantar(surat.id)}
+                      variant="flat"
+                      color="warning"
+                      size="sm"
+                      startContent={<DocumentTextIcon className="h-4 w-4" />}
+                    >
+                      Lihat Surat Pengantar
                     </Button>
                   )}
                 </div>
