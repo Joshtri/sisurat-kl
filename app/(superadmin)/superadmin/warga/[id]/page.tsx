@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Chip } from "@heroui/react";
+import { Button, Chip } from "@heroui/react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
@@ -10,7 +10,8 @@ import { CardContainer } from "@/components/common/CardContainer";
 import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 import { getWargaById } from "@/services/wargaService";
 import { formatDateIndo } from "@/utils/common";
-
+import { PencilIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
 const genderColorMap: Record<string, "primary" | "success" | "danger"> = {
   LAKI_LAKI: "primary",
   PEREMPUAN: "danger",
@@ -30,6 +31,15 @@ export default function WargaDetailPage() {
     enabled: !!id,
   });
 
+  const router = useRouter();
+
+  const kepalaKeluargaNama =
+    warga?.kartuKeluarga?.kepalaKeluargaId === warga?.id
+      ? "(Diri Sendiri)"
+      : warga?.kartuKeluarga?.anggota?.find(
+          (w: any) => w.id === warga.kartuKeluarga.kepalaKeluargaId
+        )?.namaLengkap;
+
   return (
     <>
       <PageHeader
@@ -39,7 +49,18 @@ export default function WargaDetailPage() {
           { label: "Warga", href: "/superadmin/warga" },
           { label: "Detail Warga" },
         ]}
-        actions={[]}
+        title={`Detail Warga: ${warga?.namaLengkap || "-"}`}
+        actions={
+          <Button
+            variant="flat"
+            color="primary"
+            startContent={<PencilIcon className="w-5 h-5" />}
+            onPress={() => router.push(`/superadmin/warga/${id}/edit`)}
+            size="md"
+          >
+            Edit
+          </Button>
+        }
       />
 
       <CardContainer isLoading={isLoading} skeleton={<SkeletonCard rows={8} />}>
@@ -75,10 +96,10 @@ export default function WargaDetailPage() {
             />
             <ReadOnlyInput label="Pekerjaan" value={warga.pekerjaan || "-"} />
             <ReadOnlyInput label="Agama" value={warga.agama || "-"} />
-            <ReadOnlyInput label="No Telepon" value={warga.noTelepon || "-"} />
-            <ReadOnlyInput label="RT" value={warga.rt || "-"} />
-            <ReadOnlyInput label="RW" value={warga.rw || "-"} />
-            <ReadOnlyInput label="Alamat" value={warga.alamat || "-"} />
+            <ReadOnlyInput
+              label="Peran dalam KK"
+              value={warga.peranDalamKK || "-"}
+            />
             <ReadOnlyInput
               label="Status Hidup"
               value={
@@ -89,6 +110,26 @@ export default function WargaDetailPage() {
                 >
                   {warga.statusHidup === "HIDUP" ? "Hidup" : "Meninggal"}
                 </Chip>
+              }
+            />
+            <ReadOnlyInput
+              label="Alamat"
+              value={warga.kartuKeluarga?.alamat || "-"}
+            />
+            <ReadOnlyInput
+              label="RT / RW"
+              value={`${warga.kartuKeluarga?.rt || "-"} / ${warga.kartuKeluarga?.rw || "-"}`}
+            />
+            <ReadOnlyInput
+              label="Nomor Kartu Keluarga"
+              value={warga.kartuKeluarga?.nomorKK || "-"}
+            />
+            <ReadOnlyInput
+              label="Kepala Keluarga"
+              value={
+                kepalaKeluargaNama
+                  ? kepalaKeluargaNama
+                  : warga.kartuKeluarga?.kepalaKeluargaId || "-"
               }
             />
             <ReadOnlyInput
