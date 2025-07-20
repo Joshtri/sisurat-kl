@@ -12,7 +12,6 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-
 import { DocumentTextIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -68,7 +67,7 @@ export default function DashboardWarga() {
           color="success"
         />
         <StatsCard
-          title="Surat Diverifikasi"
+          title="Surat Diverifikasi Lurah"
           value={stats?.totalSuratVerified || 0}
           isLoading={isLoading}
           icon={<DocumentTextIcon className="w-6 h-6 text-warning" />}
