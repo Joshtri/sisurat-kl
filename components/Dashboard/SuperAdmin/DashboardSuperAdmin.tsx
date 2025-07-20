@@ -13,6 +13,7 @@ import { RecentActivities } from "./RecentActivities";
 import { StatsCard } from "./StatsCard";
 import { SystemOverview } from "./SystemOverview";
 import { TableActionsDemo } from "./TableActionsDemo";
+import { DashboardStatsChart } from "./DashboardStatsChart";
 
 import {
   DatabaseStatus,
@@ -23,7 +24,6 @@ import {
 } from "@/services/healthService";
 import { SkeletonText } from "@/components/ui/skeleton/SkeletonText";
 import { getDashboardStats } from "@/services/dashboardService";
-import { DashboardStatsChart } from "./DashboardStatsChart";
 
 export default function DashboardSuperAdmin() {
   const { data: serverStatusData, isLoading: serverLoading } = useQuery({
