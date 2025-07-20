@@ -88,7 +88,7 @@ export default function PengajuanSuratPage() {
   const rows = Array.isArray(data)
     ? data.map((item: any) => {
         const sudahDiproses = ["DIVERIFIKASI_STAFF", "DITOLAK_STAFF"].includes(
-          item.status
+          item.status,
         );
 
         return {
@@ -128,6 +128,7 @@ export default function PengajuanSuratPage() {
                                 description: "Nomor surat wajib diisi.",
                                 color: "warning",
                               });
+
                               return;
                             }
 
@@ -200,7 +201,11 @@ export default function PengajuanSuratPage() {
                     icon: DocumentIcon,
                     onClick: async () => {
                       try {
-                        await previewSuratPdf(item.id);
+                        const blob = await previewSuratPdf(item.id);
+
+                        const blobUrl = URL.createObjectURL(blob);
+
+                        window.open(blobUrl, "_blank");
                       } catch (err: any) {
                         showToast({
                           title: "Gagal Preview",
@@ -232,6 +237,15 @@ export default function PengajuanSuratPage() {
       pageSize={10}
       searchPlaceholder="Cari surat..."
       showPagination
+      onSearch={(query) => {
+        queryClient.setQueryData(["surat-staff"], (oldData: any) => {
+          if (!Array.isArray(oldData)) return oldData;
+
+          return oldData.filter((item: any) =>
+            item.jenisSurat.toLowerCase().includes(query.toLowerCase()),
+          );
+        });
+      }}
       empty={
         <EmptyState
           icon={<DocumentIcon className="w-6 h-6" />}
