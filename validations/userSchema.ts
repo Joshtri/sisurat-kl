@@ -8,6 +8,8 @@ const userBaseSchema = z.object({
   confirmPassword: z.string(),
   extraRoles: z.array(z.nativeEnum(Role)).optional(), // Tambahkan extraRoles sebagai array enum Role
   role: z.nativeEnum(Role),
+
+  // namaLengkap: z.string().min(1, "Nama lengkap wajib diisi"),
   // phone: z.string().optional(),
   // address: z.string().optional(),
 });
