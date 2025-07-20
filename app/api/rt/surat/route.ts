@@ -1,5 +1,3 @@
-// /app/api/rt/surat/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
@@ -56,13 +54,26 @@ export async function GET(req: NextRequest) {
     };
   }
 
+  // Step 1: Cari userId dari warga yang tinggal di RT tersebut
+  const wargaDiRt = await prisma.warga.findMany({
+    where: {
+      kartuKeluarga: {
+        rt: rtProfile.rt,
+      },
+    },
+    select: {
+      userId: true,
+    },
+  });
+
+  const userIds = wargaDiRt.map((w) => w.userId);
+
+  // Step 2: Ambil surat dari userId yang cocok
   const suratList = await prisma.surat.findMany({
     where: {
       ...dateFilter,
-      pemohon: {
-        profil: {
-          rt: rtProfile.rt,
-        },
+      idPemohon: {
+        in: userIds,
       },
     },
     include: {
