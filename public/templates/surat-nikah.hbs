@@ -1,0 +1,107 @@
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Surat Keterangan Untuk Nikah</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        line-height: 1.6;
+        margin: 40px;
+      }
+
+      .header,
+      .title,
+      .content,
+      .footer {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .field {
+        margin-left: 30px;
+        text-align: left;
+        margin-bottom: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      td {
+        padding: 4px 0;
+        vertical-align: top;
+      }
+
+      .bold {
+        font-weight: bold;
+      }
+
+      .ttd {
+        text-align: right;
+        margin-top: 40px;
+      }
+
+      .ttd p {
+        margin: 2px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <p>Lampiran 7 KMA No. 477 Tahun 2004</p>
+      <p>Pasal 5 Ayat (1)</p>
+      <p>Model N-1</p>
+    </div>
+
+    <div class="title">
+      <p class="bold">SURAT KETERANGAN UNTUK NIKAH</p>
+      <p>Nomor: {{noSurat}}</p>
+    </div>
+
+    <div class="field">
+      <table>
+        <tr><td>1. Nama Lengkap dan Alias</td><td>: {{namaLengkap}}</td></tr>
+        <tr><td>2. Jenis Kelamin</td><td>: {{jenisKelamin}}</td></tr>
+        <tr><td>3. Tempat dan Tanggal Lahir</td><td>:
+            {{tempatLahir}},
+            {{tanggalLahir}}</td></tr>
+        <tr><td>4. Warga Negara</td><td>: {{wargaNegara}}</td></tr>
+        <tr><td>5. Agama</td><td>: {{agama}}</td></tr>
+        <tr><td>6. Pekerjaan</td><td>: {{pekerjaan}}</td></tr>
+        <tr><td>7. Tempat Tinggal</td><td>: {{alamat}}</td></tr>
+        <tr><td>8. Bin / Binti</td><td>: {{binBinti}}</td></tr>
+        <tr><td>9. Status Perkawinan</td><td>: {{statusPerkawinan}}</td></tr>
+
+        {{#if statusPria}}
+          <tr><td>10. a. Jika Pria, terangkan Jejaka / Duda dan berapa istri</td><td
+            >: {{statusPria}}</td></tr>
+        {{/if}}
+
+        {{#if statusWanita}}
+          <tr><td>  b. Jika Wanita, terangkan Perawan / Janda</td><td>:
+              {{statusWanita}}</td></tr>
+        {{/if}}
+
+        {{#if namaPasanganTerdahulu}}
+          <tr><td>11. Nama Istri / Suami Terdahulu</td><td>:
+              {{namaPasanganTerdahulu}}</td></tr>
+        {{/if}}
+      </table>
+    </div>
+
+    <div class="content">
+      <p>Demikianlah Surat Keterangan ini dibuat dengan mengingat Sumpah Jabatan
+        dan untuk dipergunakan seperlunya.</p>
+    </div>
+
+    <div class="ttd">
+      <p>Kupang, {{tanggalSurat}}</p>
+      <p>Lurah Liliba</p><br /><br /><br />
+      <p><strong>{{namaLurah}}</strong></p>
+      <p>NIP. {{nipLurah}}</p>
+    </div>
+  </body>
+</html>
