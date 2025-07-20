@@ -39,6 +39,7 @@ export default function WargaDetailPage() {
           { label: "Warga", href: "/staff/warga" },
           { label: "Detail Warga" },
         ]}
+        title="Detail Warga"
         actions={[]}
       />
 
