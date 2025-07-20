@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
@@ -76,7 +77,7 @@ export async function GET(req: NextRequest) {
             "id-ID",
             {
               month: "short",
-            }
+            },
           ),
           count: item._count._all,
         })),
@@ -84,9 +85,10 @@ export async function GET(req: NextRequest) {
     });
   } catch (error: any) {
     console.error("[API] Dashboard Staff error:", error);
+
     return NextResponse.json(
       { message: "Gagal mengambil data dashboard staff", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
