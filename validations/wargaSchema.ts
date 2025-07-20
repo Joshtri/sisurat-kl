@@ -1,7 +1,7 @@
 // schemas/wargaSchema.ts
 import { z } from "zod";
 
-import { isValidNIK, isValidRTRW } from "@/utils/common";
+import { isValidNIK } from "@/utils/common";
 
 export const wargaSchema = z.object({
   id: z.string().optional(), // ✅ tambahkan ini
@@ -21,7 +21,7 @@ export const wargaSchema = z.object({
 
       return date instanceof Date && !isNaN(date.getTime());
     },
-    { message: "Tanggal lahir tidak valid" }
+    { message: "Tanggal lahir tidak valid" },
   ),
 
   jenisKelamin: z.enum(["LAKI_LAKI", "PEREMPUAN"]),
@@ -55,17 +55,17 @@ export const wargaSchema = z.object({
     ])
     .optional(),
 
-  noTelepon: z.string().optional(),
+  // noTelepon: z.string().optional(),
 
-  rt: z.string().refine(isValidRTRW, {
-    message: "RT harus terdiri dari 3 digit angka (contoh: 001)",
-  }),
+  // rt: z.string().refine(isValidRTRW, {
+  //   message: "RT harus terdiri dari 3 digit angka (contoh: 001)",
+  // }),
 
-  rw: z.string().refine(isValidRTRW, {
-    message: "RW harus terdiri dari 3 digit angka (contoh: 001)",
-  }),
+  // rw: z.string().refine(isValidRTRW, {
+  //   message: "RW harus terdiri dari 3 digit angka (contoh: 001)",
+  // }),
 
-  alamat: z.string().optional(),
+  // alamat: z.string().optional(),
   foto: z.string().nullable().optional(),
 
   statusHidup: z.enum(["HIDUP", "MENINGGAL"]).default("HIDUP"),
