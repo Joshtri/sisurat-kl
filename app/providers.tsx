@@ -7,6 +7,8 @@ import { ThemeProvider, ThemeProviderProps } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastProvider } from "@heroui/toast";
 
+import { AuthProvider } from "@/contexts/AuthContext"; // Tambahkan ini
+
 export interface ProvidersProps {
   children: React.ReactNode;
   themeProps?: ThemeProviderProps;
@@ -29,7 +31,9 @@ export function Providers({ children, themeProps }: ProvidersProps) {
     <QueryClientProvider client={queryClient}>
       <HeroUIProvider navigate={router.push}>
         <ToastProvider placement="top-right" />
-        <ThemeProvider {...themeProps}>{children}</ThemeProvider>
+        <ThemeProvider {...themeProps}>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </HeroUIProvider>
     </QueryClientProvider>
   );
