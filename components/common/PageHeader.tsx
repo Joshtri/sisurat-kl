@@ -4,7 +4,6 @@ import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { ChevronRightIcon, Cog6ToothIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { ReactNode } from "react";
-import { Button } from "@heroui/react";
 
 interface BreadcrumbItem {
   label: string;
@@ -55,16 +54,18 @@ export function PageHeader({
 
       {/* Title, Back Button, Actions, Options */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           {backHref && (
-            <Button
-              className="text-sm"
-              size="sm"
-              startContent={<ChevronLeftIcon className="w-4 h-4 mr-1" />}
-              variant="solid"
-            >
-              <Link href={backHref}>Kembali</Link>
-            </Button>
+            <>
+              <Link
+                href={backHref}
+                className="flex items-center text-sm text-gray-600 hover:text-primary transition-colors"
+              >
+                <ChevronLeftIcon className="w-5 h-5 mr-1" />
+                Kembali
+              </Link>
+              <div className="h-6 w-px bg-gray-300" />
+            </>
           )}
           <div>
             <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">
