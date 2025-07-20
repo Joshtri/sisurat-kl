@@ -14,6 +14,7 @@ import { createRTProfile } from "@/services/rtService";
 import { showToast } from "@/utils/toastHelper";
 
 const rtProfileSchema = z.object({
+  namaLengkap: z.string().min(1, "Nama lengkap wajib diisi"),
   nik: z.string().min(16, "NIK harus 16 digit"),
   rt: z.string().min(1, "RT wajib diisi"),
   rw: z.string().min(1, "RW wajib diisi"),
@@ -87,6 +88,7 @@ export default function CreateProfileRTPage() {
           schema={rtProfileSchema}
           onSubmit={onSubmit}
         >
+          <TextInput name="namaLengkap" label="Nama Lengkap" />
           <TextInput name="nik" label="NIK" maxLength={16} isNumber />
           <TextInput name="rt" label="RT" maxLength={3} isNumber />
           <TextInput name="rw" label="RW" maxLength={3} isNumber />
