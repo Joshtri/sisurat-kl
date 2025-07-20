@@ -46,7 +46,6 @@ enum PeranKeluarga {
   FAMILI_LAINNYA
 }
 
-
 enum StatusPerkawinan {
   BELUM_KAWIN
   KAWIN
@@ -55,7 +54,7 @@ enum StatusPerkawinan {
 }
 
 model User {
-  id             String  @id @default(uuid())
+  id             String  @id @default(dbgenerated("concat('usr_', gen_random_uuid())")) @db.VarChar(40)
   username       String  @unique
   password       String
   role           Role    @default(WARGA)
@@ -78,36 +77,36 @@ model User {
 }
 
 model RTProfile {
-  id      String  @id @default(uuid())
-  userId  String  @unique
-  namaLengkap String? 
-  nik     String  @unique
-  user    User    @relation(fields: [userId], references: [id])
-  rt      String
-  rw      String?
-  wilayah String? // Optional untuk deskripsi area RT
+  id          String  @id @default(dbgenerated("concat('rtp_', gen_random_uuid())")) @db.VarChar(40)
+  userId      String  @unique @map("rtp_user_id")
+  namaLengkap String?
+  nik         String  @unique
+  user        User    @relation(fields: [userId], references: [id])
+  rt          String
+  rw          String?
+  wilayah     String? // Optional untuk deskripsi area RT
 }
 
 model Warga {
-  id     String @id @default(uuid())
-  userId String @unique
+  id     String @id @default(dbgenerated("concat('wrg_', gen_random_uuid())")) @db.VarChar(40)
+  userId String @unique @map("wrg_user_id")
   user   User   @relation(fields: [userId], references: [id])
 
-  namaLengkap  String
-  nik          String       @unique
-  tempatLahir  String?
-  tanggalLahir DateTime?
-  jenisKelamin JenisKelamin
-  pekerjaan    String?
-  agama        String?
-  foto         String?
-  statusHidup  StatusHidup? @default(HIDUP)
+  namaLengkap      String
+  nik              String            @unique
+  tempatLahir      String?
+  tanggalLahir     DateTime?
+  jenisKelamin     JenisKelamin
+  pekerjaan        String?
+  agama            String?
+  foto             String?
+  statusHidup      StatusHidup?      @default(HIDUP)
   statusPerkawinan StatusPerkawinan? @default(BELUM_KAWIN)
 
   fileKtp String?
   fileKk  String?
 
-  kartuKeluargaId String?
+  kartuKeluargaId String?        @map("wrg_kk_id")
   kartuKeluarga   KartuKeluarga? @relation("AnggotaKK", fields: [kartuKeluargaId], references: [id])
 
   peranDalamKK PeranKeluarga?
@@ -118,9 +117,9 @@ model Warga {
 }
 
 model KartuKeluarga {
-  id               String @id @default(uuid())
+  id               String @id @default(dbgenerated("concat('kk_', gen_random_uuid())")) @db.VarChar(40)
   nomorKK          String @unique
-  kepalaKeluargaId String @unique
+  kepalaKeluargaId String @unique @map("kk_kepala_id")
   kepalaKeluarga   Warga  @relation("KepalaKeluarga", fields: [kepalaKeluargaId], references: [id])
 
   alamat String
@@ -133,11 +132,11 @@ model KartuKeluarga {
 }
 
 model Surat {
-  id           String     @id @default(uuid())
-  idJenisSurat String
+  id           String     @id @default(dbgenerated("concat('srt_', gen_random_uuid())")) @db.VarChar(40)
+  idJenisSurat String     @map("srt_jenis_id")
   jenis        JenisSurat @relation(fields: [idJenisSurat], references: [id])
 
-  idPemohon String
+  idPemohon String @map("srt_pemohon_id")
   pemohon   User   @relation("PemohonSurat", fields: [idPemohon], references: [id])
 
   alasanPengajuan String?
@@ -147,19 +146,19 @@ model Surat {
   tanggalPengajuan DateTime?   @default(now())
 
   // RT
-  idRT                String?
+  idRT                String?   @map("srt_rt_id")
   rt                  User?     @relation("RTVerifikasi", fields: [idRT], references: [id])
   tanggalVerifikasiRT DateTime?
   catatanPenolakanRT  String?
 
   // Staff
-  idStaff                String?
+  idStaff                String?   @map("srt_staff_id")
   staff                  User?     @relation("StaffVerifikasi", fields: [idStaff], references: [id])
   tanggalVerifikasiStaff DateTime?
   catatanPenolakan       String?
 
   // Lurah
-  idLurah                String?
+  idLurah                String?   @map("srt_lurah_id")
   lurah                  User?     @relation("LurahVerifikasi", fields: [idLurah], references: [id])
   tanggalVerifikasiLurah DateTime?
 
@@ -171,7 +170,7 @@ model Surat {
   fileSuratTerbit    String?
 
   noSurat String? @unique
-  userId  String?
+  userId  String? @map("srt_user_id")
   User    User?   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
@@ -179,7 +178,7 @@ model Surat {
 }
 
 model JenisSurat {
-  id        String  @id @default(uuid())
+  id        String  @id @default(dbgenerated("concat('js_', gen_random_uuid())")) @db.VarChar(40)
   kode      String  @unique
   nama      String
   deskripsi String?
@@ -188,7 +187,7 @@ model JenisSurat {
 }
 
 model Setting {
-  id        String   @id @default("global") // singleton row
+  id        String   @id @default("stg_global") @db.VarChar(20) // stg_global (singleton)
   key       String   @unique
   value     String
   updatedAt DateTime @updatedAt
