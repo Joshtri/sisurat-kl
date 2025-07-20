@@ -2,6 +2,7 @@
 "use client";
 
 import { Card, CardBody } from "@heroui/react";
+
 import { PageHeader } from "@/components/common/PageHeader";
 
 export default function TermsPage() {
