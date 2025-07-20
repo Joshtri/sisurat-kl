@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Surat Keterangan Belum Menikah</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        line-height: 1.6;
+        margin: 40px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .header h3,
+      .header p {
+        margin: 2px 0;
+      }
+
+      .title {
+        text-align: center;
+        font-weight: bold;
+        text-decoration: underline;
+        margin: 20px 0;
+      }
+
+      .nomor {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .content {
+        text-align: justify;
+      }
+
+      .field {
+        margin-left: 30px;
+        margin-bottom: 10px;
+      }
+
+      .footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 40px;
+      }
+
+      .ttd {
+        text-align: center;
+        width: 300px;
+      }
+
+      .qr {
+        margin: 10px 0;
+      }
+
+      .jabatan {
+        margin-top: 10px;
+        margin-bottom: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h3>PEMERINTAH KOTA KUPANG</h3>
+      <h3>KECAMATAN OEBUBO</h3>
+      <h3>KELURAHAN LILIBA</h3>
+      <p>Jalan Taebenu - Liliba, Email: kel.liliba@kupangkota.go.id</p>
+    </div>
+
+    <div class="title">SURAT KETERANGAN BELUM MENIKAH</div>
+    <div class="nomor">Nomor: {{nomorSurat}}</div>
+
+    <div class="content">
+      <p>Yang bertanda tangan di bawah ini Lurah Liliba Kecamatan Oebobo Kota Kupang dengan ini menerangkan bahwa:</p>
+
+      <div class="field">
+        <p>Nama: {{namaLengkap}}</p>
+        <p>Jenis Kelamin: {{jenisKelamin}}</p>
+        <p>Tempat & Tanggal Lahir: {{tempatLahir}}, {{tanggalLahir}}</p>
+        <p>NIK: {{nik}}</p>
+        <p>Agama: {{agama}}</p>
+        <p>Status Perkawinan: Belum Menikah</p>
+        <p>Pekerjaan: {{pekerjaan}}</p>
+        <p>Alamat: RT. {{rt}} / RW. {{rw}}, {{alamat}}</p>
+      </div>
+
+      <p>
+        Berdasarkan Surat Pengantar Ketua RT. {{rt}} / RW. {{rw}} Nomor: {{nomorPengantar}} tanggal {{tanggalPengantar}} bahwa benar yang bersangkutan adalah warga Kelurahan Liliba Kecamatan Oebobo Kota Kupang yang berdomisili sesuai alamat tersebut dan sampai dengan saat surat ini dibuat masih berstatus <strong>Belum Menikah</strong>.
+        <br /><br />
+        Surat Keterangan ini diberikan kepada yang bersangkutan untuk keperluan administrasi {{keperluan}}.
+      </p>
+
+      <p>Demikian Surat Keterangan ini diberikan untuk dipergunakan sebagaimana mestinya.</p>
+    </div>
+
+    <div class="footer">
+      <div class="ttd">
+        <div>Kupang, {{tanggalSurat}}</div>
+        <div class="jabatan">Lurah Liliba</div>
+
+        <div class="qr">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
+            alt="QR Code"
+          />
+        </div>
+
+        <div><strong>{{namaLurah}}</strong></div>
+        <div>{{nipLurah}}</div>
+      </div>
+    </div>
+  </body>
+</html>
