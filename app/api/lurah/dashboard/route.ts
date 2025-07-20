@@ -99,7 +99,7 @@ export async function GET() {
 
     return NextResponse.json(
       { message: "Gagal memuat dashboard lurah", error: `${error}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
