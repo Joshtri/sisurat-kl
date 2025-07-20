@@ -46,12 +46,20 @@ enum PeranKeluarga {
   FAMILI_LAINNYA
 }
 
+
+enum StatusPerkawinan {
+  BELUM_KAWIN
+  KAWIN
+  CERAI_HIDUP
+  CERAI_MATI
+}
+
 model User {
   id             String  @id @default(uuid())
   username       String  @unique
-  email          String? @unique
   password       String
   role           Role    @default(WARGA)
+  email          String? @unique
   numberWhatsApp String? @unique
 
   rememberToken     String?
@@ -72,6 +80,7 @@ model User {
 model RTProfile {
   id      String  @id @default(uuid())
   userId  String  @unique
+  namaLengkap String? 
   nik     String  @unique
   user    User    @relation(fields: [userId], references: [id])
   rt      String
@@ -91,12 +100,9 @@ model Warga {
   jenisKelamin JenisKelamin
   pekerjaan    String?
   agama        String?
-  noTelepon    String?
-  rt           String?
-  rw           String?
-  alamat       String?
   foto         String?
   statusHidup  StatusHidup? @default(HIDUP)
+  statusPerkawinan StatusPerkawinan? @default(BELUM_KAWIN)
 
   fileKtp String?
   fileKk  String?
@@ -134,17 +140,8 @@ model Surat {
   idPemohon String
   pemohon   User   @relation("PemohonSurat", fields: [idPemohon], references: [id])
 
-  namaLengkap        String
-  nik                String
-  jenisKelamin       JenisKelamin
-  tempatTanggalLahir String
-  agama              String?
-  pekerjaan          String?
-  alamat             String?
-  noTelepon          String?
-
   alasanPengajuan String?
-  dataSurat       Json? // ← Data khusus sesuai jenis surat (fleksibel, bisa berisi upload/file/link juga)
+  dataSurat       Json? // ← Data khusus per jenis surat
 
   status           StatusSurat @default(DIAJUKAN)
   tanggalPengajuan DateTime?   @default(now())
@@ -173,7 +170,6 @@ model Surat {
   fileSuratPengantar String?
   fileSuratTerbit    String?
 
-  // Optional
   noSurat String? @unique
   userId  String?
   User    User?   @relation(fields: [userId], references: [id])
@@ -190,58 +186,6 @@ model JenisSurat {
   aktif     Boolean @default(true)
   surat     Surat[]
 }
-
-// model DetailSuratUsaha {
-//   id          String  @id @default(uuid())
-//   suratId     String  @unique
-//   surat       Surat   @relation(fields: [suratId], references: [id])
-//   jenisUsaha  String
-//   namaUsaha   String
-//   alamatUsaha String
-//   fotoUsaha   String?
-// }
-
-// model DetailSuratKematian {
-//   id                String   @id @default(uuid())
-//   suratId           String   @unique
-//   surat             Surat    @relation(fields: [suratId], references: [id])
-//   namaAyah          String
-//   namaIbu           String
-//   tanggalKematian   DateTime
-//   tempatKematian    String
-//   sebabKematian     String
-//   fileSuratKematian String?
-// }
-
-// model DetailSuratAhliWaris {
-//   id                     String   @id @default(uuid())
-//   suratId                String   @unique
-//   surat                  Surat    @relation(fields: [suratId], references: [id])
-//   namaAlmarhum           String
-//   tanggalMeninggal       DateTime
-//   alamatTerakhir         String
-//   hubunganDenganAlmarhum String
-//   dataAhliWaris          Json?
-//   dataIstri              Json?
-//   dataAnak               Json?
-//   dataSaksi              Json?
-//   fileAktaKematian       String?
-//   fileKtpAhliWaris       Json?
-//   fileAktaLahirAhliWaris Json?
-//   fileKtpSaksi           Json?
-// }
-
-// model DetailSuratOrangTua {
-//   id      String @id @default(uuid())
-//   suratId String @unique
-//   surat   Surat  @relation(fields: [suratId], references: [id])
-
-//   namaAyah   String?
-//   namaIbu    String?
-//   alamatOrtu String?
-
-//   dataTambahan Json? // bisa menampung data fleksibel seperti pekerjaan, nik, umur, dll
-// }
 
 model Setting {
   id        String   @id @default("global") // singleton row

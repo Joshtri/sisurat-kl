@@ -8,6 +8,7 @@ export async function getAllRT(): Promise<any[]> {
 
 export async function createRTProfile(data: {
   userId: string;
+  namaLengkap: string;
   nik: string;
   rt: string;
   rw: string;
@@ -26,7 +27,13 @@ export async function getRTProfileByUserId(userId: string): Promise<any> {
 
 export async function updateRTProfile(
   userId: string,
-  data: { nik?: string; rt?: string; rw?: string; wilayah?: string },
+  data: {
+    nik?: string;
+    rt?: string;
+    rw?: string;
+    wilayah?: string;
+    namaLengkap?: string;
+  },
 ): Promise<any> {
   const res = await axios.patch(`/api/rt/profile?userId=${userId}`, data);
 

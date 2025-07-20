@@ -1,0 +1,118 @@
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Surat Keterangan Tidak Berada di Tempat</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        line-height: 1.6;
+        margin: 40px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .header h2,
+      .header h3,
+      .header p {
+        margin: 2px 0;
+      }
+
+      .title {
+        text-align: center;
+        font-weight: bold;
+        text-decoration: underline;
+        margin: 20px 0;
+      }
+
+      .nomor {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .content {
+        text-align: justify;
+      }
+
+      .field {
+        margin-left: 30px;
+      }
+
+      .footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 40px;
+      }
+
+      .ttd {
+        text-align: center;
+        width: 300px;
+      }
+
+      .qr {
+        margin: 10px 0;
+      }
+
+      .jabatan {
+        margin-top: 10px;
+        margin-bottom: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h3>PEMERINTAH KOTA KUPANG</h3>
+      <h3>KECAMATAN OEBUBO</h3>
+      <h3>KELURAHAN LILIBA</h3>
+      <p>Jalan Taebenu - Liliba, Email: kel.liliba@kupangkota.go.id</p>
+    </div>
+
+    <div class="title">SURAT KETERANGAN TIDAK BERADA DI TEMPAT</div>
+    <div class="nomor">Nomor: {{nomorSurat}}</div>
+
+    <div class="content">
+      <p>
+        Yang bertanda tangan di bawah ini Lurah Liliba Kecamatan Oebobo Kota Kupang dengan ini menerangkan bahwa:
+      </p>
+
+      <div class="field">
+        <p>Nama: {{namaLengkap}}</p>
+        <p>Jenis Kelamin: {{jenisKelamin}}</p>
+        <p>Tempat dan Tanggal Lahir: {{tempatLahir}}, {{tanggalLahir}}</p>
+        <p>NIK: {{nik}}</p>
+        <p>Status Perkawinan: {{statusPerkawinan}}</p>
+        <p>Agama: {{agama}}</p>
+        <p>Pekerjaan: {{pekerjaan}}</p>
+        <p>Alamat: {{alamat}}</p>
+      </div>
+
+      <p>
+        Sesuai Surat Pengantar Ketua RT. {{rt}} / RW. {{rw}} Nomor: {{nomorPengantar}} tanggal {{tanggalPengantar}}, bahwa benar yang bersangkutan adalah warga Kelurahan Liliba yang berdomisili sesuai dengan alamat tersebut di atas. Sampai dengan surat ini dibuat, menerangkan bahwa <strong>pasangannya</strong> atas nama <strong>{{namaPasangan}}</strong> sedang tidak berada di tempat/luar daerah ({{lokasiPasangan}}). Surat keterangan ini diberikan untuk kelengkapan administrasi {{keperluan}}.
+      </p>
+
+      <p>
+        Demikian Surat Keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.
+      </p>
+    </div>
+
+    <div class="footer">
+      <div class="ttd">
+        <div>Kupang, {{tanggalTerbit}}</div>
+        <div class="jabatan">An. Lurah Liliba<br />Kasie Pelmas</div>
+
+        <div class="qr">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
+            alt="QR Code"
+          />
+        </div>
+
+        <div><strong>{{namaLurah}}</strong></div>
+        <div>{{nipLurah}}</div>
+      </div>
+    </div>
+  </body>
+</html>

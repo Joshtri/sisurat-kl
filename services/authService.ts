@@ -32,7 +32,6 @@ export async function getMe() {
 
 export const queryClient = new QueryClient();
 
-
 export async function logout(): Promise<void> {
   await axios.post("/api/auth/logout");
   localStorage.removeItem("token");

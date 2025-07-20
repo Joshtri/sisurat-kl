@@ -47,3 +47,20 @@ export function formatDateIndo(dateString: string, withTime = false): string {
 
   return date.toLocaleDateString("id-ID", options);
 }
+
+export const getRoleColor = (role?: string) => {
+  switch (role) {
+    case "KEPALA_KELUARGA":
+      return "primary";
+    case "ISTRI":
+      return "secondary";
+    case "ANAK":
+      return "success";
+    default:
+      return "default";
+  }
+};
+
+export const getGenderColor = (gender?: string) => {
+  return gender === "LAKI_LAKI" ? "primary" : "secondary";
+};

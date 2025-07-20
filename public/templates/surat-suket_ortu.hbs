@@ -1,0 +1,135 @@
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Surat Keterangan Tentang Orang Tua</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        line-height: 1.6;
+        margin: 40px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .header h3,
+      .header p {
+        margin: 2px 0;
+      }
+
+      .title {
+        text-align: center;
+        font-weight: bold;
+        text-decoration: underline;
+        margin: 20px 0;
+      }
+
+      .nomor {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .content {
+        text-align: justify;
+      }
+
+      .field {
+        margin-left: 30px;
+      }
+
+      .footer {
+        margin-top: 40px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .qr img {
+        margin-top: 8px;
+      }
+
+      .ttd {
+        text-align: center;
+        width: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h3>PEMERINTAH KOTA KUPANG</h3>
+      <h3>KECAMATAN OEBUBO</h3>
+      <h3>KELURAHAN LILIBA</h3>
+      <p>Jalan Taebenu - Liliba, Email: kel.liliba@kupangkota.go.id</p>
+    </div>
+
+    <div class="title">SURAT KETERANGAN TENTANG ORANG TUA</div>
+    <div class="nomor">Nomor: {{noSurat}}</div>
+
+    <div class="content">
+      <p>Yang bertanda tangan di bawah ini:</p>
+      <div class="field">
+        <p>Nama: {{namaLurah}}</p>
+        <p>NIP: {{nipLurah}}</p>
+        <p>Jabatan: Lurah Liliba</p>
+      </div>
+
+      <p>Menerangkan dengan sesungguhnya bahwa:</p>
+
+      <ol>
+        <li><strong>Data Ayah:</strong>
+          <div class="field">
+            <p>Nama Lengkap dan Alias: {{ayah.nama}}</p>
+            <p>Tempat dan Tanggal Lahir: {{ayah.ttl}}</p>
+            <p>Warga Negara: {{ayah.wargaNegara}}</p>
+            <p>Agama: {{ayah.agama}}</p>
+            <p>Pekerjaan: {{ayah.pekerjaan}}</p>
+            <p>Tempat Tinggal: {{ayah.alamat}}</p>
+          </div>
+        </li>
+
+        <li><strong>Data Ibu:</strong>
+          <div class="field">
+            <p>Nama Lengkap dan Alias: {{ibu.nama}}</p>
+            <p>Tempat dan Tanggal Lahir: {{ibu.ttl}}</p>
+            <p>Warga Negara: {{ibu.wargaNegara}}</p>
+            <p>Agama: {{ibu.agama}}</p>
+            <p>Pekerjaan: {{ibu.pekerjaan}}</p>
+            <p>Tempat Tinggal: {{ibu.alamat}}</p>
+          </div>
+        </li>
+      </ol>
+
+      <p>Adalah benar Ayah Kandung dan Ibu Kandung dari:</p>
+      <div class="field">
+        <p>Nama Lengkap dan Alias: {{anak.nama}}</p>
+        <p>Tempat dan Tanggal Lahir: {{anak.ttl}}</p>
+        <p>Warga Negara: {{anak.wargaNegara}}</p>
+        <p>Agama: {{anak.agama}}</p>
+        <p>Pekerjaan: {{anak.pekerjaan}}</p>
+        <p>Tempat Tinggal: {{anak.alamat}}</p>
+      </div>
+
+      <p>Demikian Surat Keterangan ini dibuat dengan mengingat sumpah jabatan
+        dan untuk dipergunakan sebagaimana mestinya.</p>
+    </div>
+
+    <div class="footer">
+      <div class="qr">
+        <img
+          src="https://api.qrserver.com/v1/create-qr-code/?data={{qrData}}&size=80x80"
+          alt="QR Code"
+        />
+      </div>
+
+      <div class="ttd">
+        <p>Kupang, {{tanggalSurat}}</p>
+        <p>Lurah Liliba</p>
+        <br /><br /><br />
+        <p><strong>{{namaLurah}}</strong></p>
+        <p>NIP. {{nipLurah}}</p>
+      </div>
+    </div>
+  </body>
+</html>

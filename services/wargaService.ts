@@ -9,7 +9,7 @@ export async function getAllWarga(): Promise<Warga[]> {
   return res.data;
 }
 
-export async function getWargaById(id: string): Promise<Warga> {
+export async function getWargaById(id: string) {
   const res = await axios.get(`/api/warga/${id}`);
 
   return res.data;
@@ -46,4 +46,16 @@ export async function getWargaByRT() {
   }
 
   return res.json();
+}
+
+export async function getAnggotaByKkId(kartuKeluargaId: string) {
+  const res = await axios.get(`/api/warga/by-kk/${kartuKeluargaId}`);
+
+  return res.data; // asumsikan ini mengembalikan Warga[]
+}
+
+export async function getProfileKKAnak(userId: string) {
+  const res = await axios.get(`/api/profiles/kk/${userId}`);
+
+  return res.data;
 }

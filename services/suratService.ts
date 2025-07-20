@@ -151,7 +151,13 @@ export async function getSuratForLurah() {
 export async function getSuratDetailByLurah(id: string) {
   const res = await axios.get(`/api/lurah/surat/${id}`);
 
-  return res.data.data;
+  return res.data.data; // cocok dengan return API: { data: surat }
+}
+
+export async function getSuratDetailByStaff(id: string) {
+  const res = await axios.get(`/api/staff/surat/${id}`);
+
+  return res.data;
 }
 
 // PATCH surat oleh LURAH
@@ -160,7 +166,6 @@ export async function verifySuratByLurah(id: string, data: any) {
 
   return res.data;
 }
-
 export async function previewSuratPdf(id: string): Promise<Blob> {
   const token = localStorage.getItem("token");
 
@@ -173,12 +178,12 @@ export async function previewSuratPdf(id: string): Promise<Blob> {
   });
 
   if (!res.ok) {
-    const err = await res.json();
+    const errText = await res.text(); // GANTI INI
 
-    throw new Error(err.message || "Gagal mengambil PDF surat");
+    throw new Error(errText || "Gagal mengambil PDF surat");
   }
 
-  return res.blob(); // <--- penting, bukan res.json()
+  return res.blob(); // <--- tetap gunakan blob untuk PDF
 }
 
 export async function downloadSuratPdf(id: string): Promise<void> {
@@ -208,4 +213,19 @@ export async function downloadSuratPdf(id: string): Promise<void> {
   link.click();
 
   URL.revokeObjectURL(url);
+}
+
+// Get PDF preview as blob and open in new tab
+export async function previewSuratPengantar(id: string) {
+  const res = await axios.get(`/api/surat/history/${id}/pengantar`, {
+    responseType: "blob",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`, // atau sesuaikan dengan skema auth kamu
+    },
+  });
+
+  const blob = new Blob([res.data], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+
+  window.open(url);
 }
