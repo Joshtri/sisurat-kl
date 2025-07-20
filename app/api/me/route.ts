@@ -44,18 +44,20 @@ export async function GET(req: NextRequest) {
       updatedAt: user.updatedAt,
 
       // 👤 WARGA SECTION
+      wargaId: warga?.id ?? null, // ID WARGA
+
       namaLengkap: warga?.namaLengkap ?? null,
       nik: warga?.nik ?? null,
       tempatLahir: warga?.tempatLahir ?? null,
       tanggalLahir: warga?.tanggalLahir ?? null,
       jenisKelamin: warga?.jenisKelamin ?? null,
+
+      kartuKeluargaId: warga?.kartuKeluargaId ?? null,
       pekerjaan: warga?.pekerjaan ?? null,
       agama: warga?.agama ?? null,
-      noTelepon: warga?.noTelepon ?? null,
-      rt: warga?.rt ?? null,
-      rw: warga?.rw ?? null,
-      alamat: warga?.alamat ?? null,
       statusHidup: warga?.statusHidup ?? null,
+      statusPerkawinan: warga?.statusPerkawinan ?? null,
+      peranDalamKk: warga?.peranDalamKK ?? null,
       foto: warga?.foto ?? null,
       fileKtp: warga?.fileKtp ?? null,
       fileKk: warga?.fileKk ?? null,
@@ -64,6 +66,7 @@ export async function GET(req: NextRequest) {
       rtProfile: rtProfile
         ? {
             id: rtProfile.id,
+            namaLengkap: rtProfile.namaLengkap ?? null,
             nik: rtProfile.nik,
             rt: rtProfile.rt,
             rw: rtProfile.rw,
