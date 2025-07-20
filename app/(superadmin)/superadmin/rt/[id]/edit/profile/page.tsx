@@ -15,6 +15,7 @@ import { updateRTProfile } from "@/services/rtService";
 
 // ✅ schema untuk form RTProfile
 const rtProfileSchema = z.object({
+  namaLengkap: z.string().min(1, "Nama lengkap wajib diisi"),
   nik: z.string().min(16, "NIK harus 16 digit"),
   rt: z.string().min(1, "RT wajib diisi"),
   rw: z.string().min(1, "RW wajib diisi"),
@@ -82,6 +83,7 @@ export default function EditRTProfilePage() {
         {data?.rtProfile && (
           <FormWrapper<RTProfileSchema>
             defaultValues={{
+              namaLengkap: data.rtProfile.namaLengkap,
               nik: data.rtProfile.nik,
               rt: data.rtProfile.rt,
               rw: data.rtProfile.rw ?? "",
@@ -90,6 +92,7 @@ export default function EditRTProfilePage() {
             schema={rtProfileSchema}
             onSubmit={onSubmit}
           >
+            <TextInput name="namaLengkap" label="Nama Lengkap" />
             <TextInput name="nik" label="NIK" maxLength={16} isNumber />
             <TextInput name="rt" label="RT" maxLength={3} isNumber />
             <TextInput name="rw" label="RW" maxLength={3} isNumber />
