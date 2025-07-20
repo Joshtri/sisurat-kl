@@ -15,7 +15,11 @@ export async function GET(
       where: { id },
       include: {
         user: true,
-        kartuKeluarga: true,
+        kartuKeluarga: {
+          include: {
+            anggota: true, // untuk mendapatkan semua anggota keluarga
+          },
+        },
       },
     });
 
