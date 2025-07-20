@@ -8,6 +8,7 @@ import Link from "next/link";
 import { showToast } from "@/utils/toastHelper";
 import { formatDateIndo } from "@/utils/common";
 import { getSuratByRT, getNotificationByRole } from "@/services/suratService";
+import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 
 interface NotificationGridProps {
   getMeData?: any; // Optional prop to pass user data
@@ -77,13 +78,15 @@ export default function NotificationGrid({ getMeData }: NotificationGridProps) {
           Notifikasi Surat
         </div>
       </CardHeader>
-      <CardBody className="space-y-4">
+
+      <CardBody className="space-y-4 max-h-[400px] overflow-y-auto">
         {isLoading ? (
-          <p className="text-sm text-gray-500">Memuat notifikasi...</p>
-        ) : filteredSurat.length === 0 ? (
+          <SkeletonCard rows={5} />
+        ) : // <p className="text-sm text-gray-500">Memuat notifikasi...</p>
+        filteredSurat.length === 0 ? (
           <p className="text-sm text-gray-500">Tidak ada notifikasi baru.</p>
         ) : (
-          filteredSurat.map((surat: any) => (
+          filteredSurat.slice(0, 7).map((surat: any) => (
             <div key={surat.id} className="border rounded-lg p-3 shadow-sm">
               <div className="font-medium text-sm mb-1">
                 {surat.jenis?.nama || "Surat"}
