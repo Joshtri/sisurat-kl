@@ -3,11 +3,12 @@ import { z } from "zod";
 
 const userBaseSchema = z.object({
   username: z.string().min(1, "Username wajib diisi"),
-  email: z.string().email("Email tidak valid"),
+  email: z.string().email("Email tidak valid").optional(),
   password: z.string().min(6, "Password minimal 6 karakter"),
   confirmPassword: z.string(),
   extraRoles: z.array(z.nativeEnum(Role)).optional(), // Tambahkan extraRoles sebagai array enum Role
   role: z.nativeEnum(Role),
+  numberWhatsapp: z.string().optional(),
 
   // namaLengkap: z.string().min(1, "Nama lengkap wajib diisi"),
   // phone: z.string().optional(),

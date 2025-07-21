@@ -2,15 +2,16 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@heroui/react";
 import { UserIcon } from "@heroicons/react/24/outline";
 
-import { getAllWarga } from "@/services/wargaService";
+import { deleteWarga, getAllWarga } from "@/services/wargaService";
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
 import { formatDateIndo } from "@/utils/common";
+import { showToast } from "@/utils/toastHelper";
 
 export default function WargaPage() {
   const router = useRouter();
@@ -19,6 +20,8 @@ export default function WargaPage() {
     queryKey: ["warga"],
     queryFn: getAllWarga,
   });
+
+  const queryClient = useQueryClient();
 
   const columns = [
     { key: "nik", label: "NIK" },
@@ -54,8 +57,28 @@ export default function WargaPage() {
     actions: (
       <TableActions
         onDelete={{
-          onConfirm: () =>
-            alert(`Hapus warga ${item.namaLengkap} (NIK: ${item.nik})`),
+          title: "Hapus Warga",
+          message: `Apakah Anda yakin ingin menghapus warga "${item.namaLengkap}"?`,
+          confirmLabel: "Hapus",
+          loadingText: "Menghapus...",
+          onConfirm: async () => {
+            try {
+              await deleteWarga(item.id);
+              showToast({
+                title: "Berhasil",
+                description: `Warga ${item.namaLengkap} berhasil dihapus.`,
+                color: "success",
+              });
+
+              queryClient.invalidateQueries({ queryKey: ["warga"] }); // refresh list
+            } catch (error) {
+              showToast({
+                title: "Gagal",
+                description: `Terjadi kesalahan saat menghapus warga ${item.namaLengkap}.`,
+                color: "error",
+              });
+            }
+          },
         }}
         onEdit={() => router.push(`/superadmin/warga/${item.id}/edit`)}
         // onEdit={() => alert(`Edit warga ${item.namaLengkap}`)}

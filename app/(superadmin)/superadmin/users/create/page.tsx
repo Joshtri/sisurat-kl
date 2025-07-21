@@ -54,6 +54,7 @@ export default function UsersCreatePage() {
       <PageHeader
         actions={[]}
         backHref="/superadmin/users"
+        title="Buat Pengguna Baru"
         breadcrumbs={[
           { label: "Dashboard", href: "/superadmin" },
           { label: "Pengguna", href: "/superadmin/users" },
@@ -74,7 +75,18 @@ export default function UsersCreatePage() {
           onSubmit={onSubmit}
         >
           <TextInput label="Username" name="username" />
-          <TextInput label="Email" name="email" type="email" />
+          <TextInput
+            label="Email"
+            name="email"
+            type="email"
+            isRequired={false}
+          />
+
+          <TextInput
+            label="No. Telepon"
+            name="numberWhatsapp"
+            isRequired={false}
+          />
           <TextInput
             label="Password"
             name="password"
@@ -98,8 +110,6 @@ export default function UsersCreatePage() {
               { label: "Admin", value: "SUPERADMIN" },
             ]}
           />
-          <TextInput label="No. Telepon" name="phone" />
-          <TextInput label="Alamat" name="address" />
 
           <div className="flex justify-end space-x-3 pt-6">
             <CreateOrEditButtons

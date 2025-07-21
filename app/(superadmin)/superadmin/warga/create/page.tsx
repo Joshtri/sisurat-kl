@@ -9,6 +9,7 @@ export default function CreateWargaPage() {
       <PageHeader
         actions={[]}
         backHref="/superadmin/warga"
+        title="Buat Warga Baru"
         breadcrumbs={[
           { label: "Dashboard", href: "/superadmin" },
           { label: "Pengguna", href: "/superadmin/warga" },

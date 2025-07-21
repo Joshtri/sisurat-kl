@@ -6,7 +6,7 @@ import { isValidNIK } from "@/utils/common";
 export const wargaSchema = z.object({
   id: z.string().optional(), // ✅ tambahkan ini
 
-  userId: z.string().uuid(),
+  userId: z.string(),
   namaLengkap: z.string().min(3, "Nama lengkap minimal 3 karakter"),
 
   nik: z.string().refine(isValidNIK, {
