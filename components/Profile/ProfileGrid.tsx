@@ -34,6 +34,7 @@ export default function ProfileGrid() {
           username: user.username,
           email: user.email,
           role: user.role,
+          numberWhatsApp: user.numberWhatsApp,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         }}

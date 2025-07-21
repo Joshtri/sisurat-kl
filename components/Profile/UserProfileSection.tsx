@@ -37,13 +37,12 @@ export function UserProfileSection({ user }: UserProfileSectionProps) {
           <PencilIcon className="w-5 h-5" />
         </Button>
       </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ReadOnlyInput label="Username" value={user.username} />
         <ReadOnlyInput label="Email" value={user.email ?? "-"} />
         <ReadOnlyInput
           label="Nomor WhatsApp"
-          value={user.numberWhatsApp ?? "-"}
+          value={user?.numberWhatsApp ?? "-"}
         />
         <ReadOnlyInput label="Role" value={user.role} />
         <ReadOnlyInput
