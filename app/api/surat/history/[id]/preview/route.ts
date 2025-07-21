@@ -1,7 +1,8 @@
 import { readFile } from "fs/promises";
 import path from "path";
 
-import { chromium } from "playwright"; // Ganti dari puppeteer ke playwright
+// GANTI KE jsPDF + html2canvas untuk pure JavaScript solution
+import { JSDOM } from "jsdom";
 import Handlebars from "handlebars";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -297,46 +298,20 @@ export async function GET(
     const compiled = Handlebars.compile(rawTemplate);
     const renderedHtml = compiled(data);
 
-    // GANTI KE PLAYWRIGHT: Launch browser
-    const browser = await chromium.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
-
-    const page = await browser.newPage();
-
-    // Set content
-    await page.setContent(renderedHtml, {
-      waitUntil: "networkidle",
-      timeout: 30000,
-    });
-
-    // Generate PDF - API hampir sama dengan Puppeteer
-    const pdfBuffer = await page.pdf({
-      format: "A4",
-      printBackground: true,
-      margin: {
-        top: "20mm",
-        right: "20mm",
-        bottom: "20mm",
-        left: "20mm",
-      },
-    });
-
-    await browser.close();
-
-    return new Response(pdfBuffer, {
+    // FALLBACK: Return rendered HTML instead of PDF for now
+    // Nanti bisa ditangani di frontend dengan jsPDF atau print to PDF
+    return new Response(renderedHtml, {
       status: 200,
       headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": "inline; filename=preview-surat.pdf",
+        "Content-Type": "text/html; charset=utf-8",
+        "Content-Disposition": "inline",
       },
     });
   } catch (error) {
-    console.error("PDF Generation error:", error);
+    console.error("HTML Generation error:", error);
 
     return NextResponse.json(
-      { message: "Gagal membuat PDF", error: error.message },
+      { message: "Gagal membuat preview", error: error.message },
       { status: 500 }
     );
   }
