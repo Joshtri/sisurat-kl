@@ -9,9 +9,15 @@ import {
   TableCell,
   getKeyValue,
   Pagination,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Button,
 } from "@heroui/react";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useMediaQuery } from "react-responsive";
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import SearchBar from "@/components/ui/SearchBar";
@@ -29,6 +35,28 @@ interface Row {
   [key: string]: any;
 }
 
+interface OptionsMenuItem {
+  key: string;
+  label: string;
+  icon?: ReactNode;
+  color?:
+    | "default"
+    | "primary"
+    | "secondary"
+    | "success"
+    | "warning"
+    | "danger";
+  variant?:
+    | "solid"
+    | "bordered"
+    | "light"
+    | "flat"
+    | "faded"
+    | "shadow"
+    | "ghost";
+  onPress?: () => void;
+}
+
 interface ListGridProps {
   title: string;
   description?: string;
@@ -40,7 +68,8 @@ interface ListGridProps {
   rows: Row[];
   loading?: boolean;
   empty?: ReactNode;
-  onOptionsClick?: () => void;
+  onOptionsClick?: () => void | ReactNode;
+  optionsMenu?: OptionsMenuItem[]; // New prop for options menu items
   pageSize?: number;
   showPagination?: boolean;
   isMobile?: boolean;
@@ -58,6 +87,7 @@ export function ListGrid({
   loading = false,
   empty,
   onOptionsClick,
+  optionsMenu = [],
   pageSize = 10,
   showPagination = true,
   isMobile: isMobileProp,
@@ -93,8 +123,8 @@ export function ListGrid({
 
       filtered = filtered.filter((row) =>
         Object.values(row).some(
-          (val) => typeof val === "string" && val.toLowerCase().includes(q),
-        ),
+          (val) => typeof val === "string" && val.toLowerCase().includes(q)
+        )
       );
     }
 
@@ -154,10 +184,50 @@ export function ListGrid({
     </div>
   );
 
+  // Render options menu button
+  const renderOptionsMenu = () => {
+    if (optionsMenu.length === 0) return null;
+
+    return (
+      <Dropdown>
+        <DropdownTrigger>
+          <Button isIconOnly variant="light" size="sm">
+            <EllipsisVerticalIcon className="w-5 h-5" />
+          </Button>
+        </DropdownTrigger>
+        <DropdownMenu
+          aria-label="Options menu"
+          onAction={(key) => {
+            const menuItem = optionsMenu.find((item) => item.key === key);
+            if (menuItem && menuItem.onPress) {
+              menuItem.onPress();
+            }
+          }}
+        >
+          {optionsMenu.map((item) => (
+            <DropdownItem
+              key={item.key}
+              color={item.color}
+              variant={item.variant}
+              startContent={item.icon}
+            >
+              {item.label}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </Dropdown>
+    );
+  };
+
   return (
     <div className="p-6 space-y-6">
       <PageHeader
-        actions={actions}
+        actions={
+          <div className="flex items-center gap-2">
+            {renderOptionsMenu()}
+            {actions}
+          </div>
+        }
         breadcrumbs={breadcrumbs}
         description={description}
         title={title}
