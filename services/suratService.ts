@@ -166,25 +166,36 @@ export async function verifySuratByLurah(id: string, data: any) {
 
   return res.data;
 }
-export async function previewSuratPdf(id: string): Promise<Blob> {
+// services/suratService.js - UPDATE
+export const previewSuratPdf = async (id: string) => {
   const token = localStorage.getItem("token");
 
-  if (!token) throw new Error("Token tidak ditemukan. Silakan login ulang.");
-
-  const res = await fetch(`/api/surat/history/${id}/preview`, {
+  const response = await fetch(`/api/surat/history/${id}/preview`, {
     headers: {
       Authorization: `Bearer ${token}`,
+      Accept: "text/html", // Accept HTML instead of PDF
     },
   });
 
-  if (!res.ok) {
-    const errText = await res.text(); // GANTI INI
-
-    throw new Error(errText || "Gagal mengambil PDF surat");
+  if (!response.ok) {
+    throw new Error("Failed to fetch preview");
   }
 
-  return res.blob(); // <--- tetap gunakan blob untuk PDF
-}
+  // Get HTML content
+  const htmlContent = await response.text();
+
+  // Convert HTML to PDF using browser's print function
+  const printWindow = window.open("", "_blank");
+  printWindow?.document.write(htmlContent);
+  printWindow?.document.close();
+
+  // Auto print dialog
+  setTimeout(() => {
+    printWindow?.print();
+  }, 1000);
+
+  return new Blob(); // Dummy return
+};
 
 export async function downloadSuratPdf(id: string): Promise<void> {
   const token = localStorage.getItem("token");

@@ -54,7 +54,7 @@ const terbilang = (num) => {
 
 export async function GET(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: { id: string } },
 ) {
   const { id } = context.params;
   const authHeader = req.headers.get("authorization");
@@ -63,7 +63,7 @@ export async function GET(
   if (!token)
     return NextResponse.json(
       { message: "Token tidak ditemukan" },
-      { status: 401 }
+      { status: 401 },
     );
 
   const user = verifyToken(token);
@@ -73,7 +73,7 @@ export async function GET(
 
   const formatTTL = (
     tempat: string | null | undefined,
-    tanggal: Date | null | undefined
+    tanggal: Date | null | undefined,
   ) =>
     `${tempat ?? "-"}, ${
       tanggal ? new Date(tanggal).toLocaleDateString("id-ID") : "-"
@@ -100,7 +100,7 @@ export async function GET(
   if (!surat)
     return NextResponse.json(
       { message: "Surat tidak ditemukan" },
-      { status: 404 }
+      { status: 404 },
     );
 
   const isAuthorized =
@@ -131,7 +131,7 @@ export async function GET(
 
     return NextResponse.json(
       { message: `Template tidak ditemukan: ${kodeSurat}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -141,7 +141,7 @@ export async function GET(
   if (!profil || !kk) {
     return NextResponse.json(
       { message: "Data profil atau kartu keluarga tidak lengkap" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -152,18 +152,19 @@ export async function GET(
     let ayah =
       anggota.find(
         (w) =>
-          w.peranDalamKK === "KEPALA_KELUARGA" && w.jenisKelamin === "LAKI_LAKI"
+          w.peranDalamKK === "KEPALA_KELUARGA" &&
+          w.jenisKelamin === "LAKI_LAKI",
       ) ??
       anggota.find(
-        (w) => w.peranDalamKK === "ORANG_TUA" && w.jenisKelamin === "LAKI_LAKI"
+        (w) => w.peranDalamKK === "ORANG_TUA" && w.jenisKelamin === "LAKI_LAKI",
       );
 
     let ibu =
       anggota.find(
-        (w) => w.peranDalamKK === "ISTRI" && w.jenisKelamin === "PEREMPUAN"
+        (w) => w.peranDalamKK === "ISTRI" && w.jenisKelamin === "PEREMPUAN",
       ) ??
       anggota.find(
-        (w) => w.peranDalamKK === "ORANG_TUA" && w.jenisKelamin === "PEREMPUAN"
+        (w) => w.peranDalamKK === "ORANG_TUA" && w.jenisKelamin === "PEREMPUAN",
       );
 
     return { ayah, ibu };
@@ -298,21 +299,59 @@ export async function GET(
     const compiled = Handlebars.compile(rawTemplate);
     const renderedHtml = compiled(data);
 
-    // FALLBACK: Return rendered HTML instead of PDF for now
-    // Nanti bisa ditangani di frontend dengan jsPDF atau print to PDF
-    return new Response(renderedHtml, {
+    // Wrap HTML dengan CSS ukuran A4 minimal
+    const styledHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Preview Surat</title>
+        <style>
+          @page {
+            size: A4;
+            margin: 0;
+          }
+          
+          body {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          
+          @media print {
+            body {
+              width: 210mm;
+              height: 297mm;
+            }
+            @page {
+              size: A4 portrait;
+              margin: 0;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        ${renderedHtml}
+      </body>
+      </html>
+    `;
+
+    return new Response(styledHtml, {
       status: 200,
       headers: {
         "Content-Type": "text/html; charset=utf-8",
         "Content-Disposition": "inline",
       },
     });
+
   } catch (error) {
     console.error("HTML Generation error:", error);
 
     return NextResponse.json(
       { message: "Gagal membuat preview", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
