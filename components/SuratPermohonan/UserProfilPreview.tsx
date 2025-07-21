@@ -39,6 +39,13 @@ export default function UserProfilPreview() {
       <ReadOnlyInput label="Agama" value={user.agama} />
       <ReadOnlyInput label="Pekerjaan" value={user.pekerjaan} />
       <ReadOnlyInput label="Alamat" value={user.alamat} />
+      <ReadOnlyInput label="RT/RW" value={`${user.rt} / ${user.rw}`} />
+      <ReadOnlyInput label="Status Hidup" value={user.statusHidup} />
+      {/* <ReadOnlyInput label="Status Perkawinan" value={user.statusPerkawinan} /> */}
+      <ReadOnlyInput
+        label="Peran dalam Kartu Keluarga"
+        value={user.peranDalamKk}
+      />
     </div>
   );
 }

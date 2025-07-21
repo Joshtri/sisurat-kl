@@ -22,7 +22,11 @@ export async function GET(req: NextRequest) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
-        profil: true,
+        profil: {
+          include: {
+            kartuKeluarga: true, // Include kartuKeluarga relation
+          },
+        },
         RTProfile: true,
       },
     });
@@ -33,6 +37,7 @@ export async function GET(req: NextRequest) {
 
     const warga = user.profil;
     const rtProfile = user.RTProfile;
+    const kartuKeluarga = warga?.kartuKeluarga;
 
     return NextResponse.json({
       // 🔐 USER SECTION
@@ -57,6 +62,12 @@ export async function GET(req: NextRequest) {
       kartuKeluargaId: warga?.kartuKeluargaId ?? null,
       pekerjaan: warga?.pekerjaan ?? null,
       agama: warga?.agama ?? null,
+
+      // 🏠 ALAMAT SECTION (dari Kartu Keluarga)
+      alamat: kartuKeluarga?.alamat ?? null,
+      rt: kartuKeluarga?.rt ?? null,
+      rw: kartuKeluarga?.rw ?? null,
+      // alamat: warga.k
       statusHidup: warga?.statusHidup ?? null,
       statusPerkawinan: warga?.statusPerkawinan ?? null,
       peranDalamKk: warga?.peranDalamKK ?? null,
