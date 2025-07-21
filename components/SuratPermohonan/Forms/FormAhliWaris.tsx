@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
+
 import { getAnggotaByKkId } from "@/services/wargaService";
 import { convertFileToBase64 } from "@/utils/common";
 
@@ -47,7 +48,7 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
         const semuaAnggota: AnakWaris[] = res.data;
 
         const anak = semuaAnggota.filter(
-          (item) => item.peranDalamKK === "ANAK" && item.userId !== userId
+          (item) => item.peranDalamKK === "ANAK" && item.userId !== userId,
         );
 
         setAnakList(anak);
@@ -73,15 +74,17 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
   const validateAndConvert = async (
     file: File,
     fieldName: string,
-    targetField: string
+    targetField: string,
   ) => {
     const isValidType =
       file.type === "application/pdf" || file.type.startsWith("image/");
+
     if (!isValidType) {
       setError(fieldName, {
         type: "manual",
         message: "Hanya file gambar atau PDF yang diperbolehkan",
       });
+
       return;
     }
 
@@ -90,11 +93,13 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
         type: "manual",
         message: "Ukuran file maksimal 1 MB",
       });
+
       return;
     }
 
     clearErrors(fieldName);
     const base64 = await convertFileToBase64(file);
+
     setValue(targetField, base64);
   };
 
@@ -103,7 +108,7 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
       validateAndConvert(
         aktaNikah,
         "dataSurat.aktaNikah",
-        "dataSurat.aktaNikahBase64"
+        "dataSurat.aktaNikahBase64",
       );
     }
   }, [aktaNikah]);
@@ -113,7 +118,7 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
       validateAndConvert(
         ktpSaksi,
         "dataSurat.ktpSaksi",
-        "dataSurat.ktpSaksiBase64"
+        "dataSurat.ktpSaksiBase64",
       );
     }
   }, [ktpSaksi]);
@@ -123,6 +128,7 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
       if (file) {
         const field = `dataSurat.aktaLahirAnak.${index}`;
         const base64Field = `dataSurat.aktaLahirAnakBase64.${index}`;
+
         await validateAndConvert(file, field, base64Field);
       }
     });

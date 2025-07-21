@@ -10,6 +10,7 @@ import { Button } from "@heroui/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
 
 import ImportResultModal from "@/components/AddonsDialog/ImportResultModal";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -24,7 +25,6 @@ import {
 } from "@/services/userExcelService";
 import { deleteUser, getUsers } from "@/services/userService";
 import { showToast } from "@/utils/toastHelper";
-import { useRef, useState } from "react";
 export default function UsersPage() {
   const router = useRouter();
 
@@ -158,9 +158,10 @@ export default function UsersPage() {
   };
 
   const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
+
     if (!file) return;
 
     // Validasi file type
@@ -170,6 +171,7 @@ export default function UsersPage() {
         description: "Pilih file Excel dengan format .xlsx atau .xls",
         color: "error",
       });
+
       return;
     }
 
@@ -181,6 +183,7 @@ export default function UsersPage() {
       });
 
       const result = await importUsersFromExcel(file);
+
       setImportResult(result.data);
       setShowImportModal(true);
 

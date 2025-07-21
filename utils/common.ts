@@ -68,10 +68,12 @@ export const getGenderColor = (gender?: string) => {
 export function convertFileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
+
     reader.readAsDataURL(file); // Hasilkan base64 dengan prefix data:...
 
     reader.onload = () => {
       const result = reader.result as string;
+
       resolve(result); // langsung string base64
     };
 

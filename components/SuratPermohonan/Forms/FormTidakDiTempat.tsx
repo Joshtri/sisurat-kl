@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { Input, Select, SelectItem } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
+
 import { getAnggotaByKkId } from "@/services/wargaService";
 import { convertFileToBase64 } from "@/utils/common";
 
@@ -31,7 +32,7 @@ export default function FormTidakDiTempat({ kartuKeluargaId }: Props) {
 
   const anggotaKeluarga = (data?.data || []).filter(
     (a: any) =>
-      a.peranDalamKK === "KEPALA_KELUARGA" || a.peranDalamKK === "ISTRI"
+      a.peranDalamKK === "KEPALA_KELUARGA" || a.peranDalamKK === "ISTRI",
   );
 
   const selected = anggotaKeluarga.find((a: any) => a.id === selectedId);
@@ -57,15 +58,18 @@ export default function FormTidakDiTempat({ kartuKeluargaId }: Props) {
   // Proses file ke base64 & validasi
   useEffect(() => {
     const file = suketFile?.[0];
+
     if (!file) return;
 
     const isValidType =
       file.type === "application/pdf" || file.type.startsWith("image/");
+
     if (!isValidType) {
       setError("dataSurat.suketPribadiPasangan", {
         type: "manual",
         message: "Hanya file gambar atau PDF yang diperbolehkan",
       });
+
       return;
     }
 
@@ -74,6 +78,7 @@ export default function FormTidakDiTempat({ kartuKeluargaId }: Props) {
         type: "manual",
         message: "Ukuran file maksimal 1 MB",
       });
+
       return;
     }
 

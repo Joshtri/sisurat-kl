@@ -13,6 +13,9 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
+import { PencilIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
@@ -20,9 +23,6 @@ import { CardContainer } from "@/components/common/CardContainer";
 import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 import { getWargaById } from "@/services/wargaService";
 import { formatDateIndo } from "@/utils/common";
-import { PencilIcon } from "@heroicons/react/24/outline";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 const genderColorMap: Record<string, "primary" | "success" | "danger"> = {
   LAKI_LAKI: "primary",
   PEREMPUAN: "danger",
@@ -49,7 +49,7 @@ export default function WargaDetailPage() {
     warga?.kartuKeluarga?.kepalaKeluargaId === warga?.id
       ? "(Diri Sendiri)"
       : warga?.kartuKeluarga?.anggota?.find(
-          (w: any) => w.id === warga.kartuKeluarga.kepalaKeluargaId
+          (w: any) => w.id === warga.kartuKeluarga.kepalaKeluargaId,
         )?.namaLengkap;
 
   return (

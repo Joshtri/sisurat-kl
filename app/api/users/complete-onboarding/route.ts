@@ -1,5 +1,6 @@
 // /app/api/users/complete-onboarding/route.ts
 import { NextRequest, NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
@@ -29,7 +30,7 @@ export async function PATCH(request: NextRequest) {
     if (!email || !numberWhatsApp) {
       return NextResponse.json(
         { message: "Email dan nomor WhatsApp wajib diisi" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -38,12 +39,13 @@ export async function PATCH(request: NextRequest) {
 
     for (const key of ["fileKtp", "fileKk"]) {
       const file = formData.get(key) as File;
+
       if (!file) {
         return NextResponse.json(
           {
             message: `File ${key === "fileKtp" ? "KTP" : "Kartu Keluarga"} wajib diupload`,
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -60,15 +62,17 @@ export async function PATCH(request: NextRequest) {
 
       if (error) {
         console.error(`Error uploading ${key}:`, error);
+
         return NextResponse.json(
           {
             message: `Gagal mengupload ${key === "fileKtp" ? "KTP" : "Kartu Keluarga"}`,
           },
-          { status: 500 }
+          { status: 500 },
         );
       }
 
       const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/sisurat-bucket/${data.path}`;
+
       uploads[key] = url;
     }
 
@@ -121,13 +125,13 @@ export async function PATCH(request: NextRequest) {
     if (error.code === "P2002") {
       return NextResponse.json(
         { message: "Email atau nomor WhatsApp sudah digunakan" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

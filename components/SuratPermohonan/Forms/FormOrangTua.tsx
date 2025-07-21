@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { Input } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
+
 import { getProfileKKAnak } from "@/services/wargaService";
 import { convertFileToBase64 } from "@/utils/common";
 
@@ -41,7 +42,7 @@ export default function FormOrangTua({ userId }: Props) {
       setValue("dataSurat.namaAnak", data.namaAnak || "");
       setValue(
         "dataSurat.tanggalLahirAnak",
-        data.tanggalLahirAnak?.slice(0, 10) || ""
+        data.tanggalLahirAnak?.slice(0, 10) || "",
       );
     }
   }, [data, setValue]);
@@ -49,15 +50,17 @@ export default function FormOrangTua({ userId }: Props) {
   const handleFileValidation = async (
     file: File,
     fieldName: string,
-    base64Field: string
+    base64Field: string,
   ) => {
     const isValidType =
       file.type === "application/pdf" || file.type.startsWith("image/");
+
     if (!isValidType) {
       setError(fieldName, {
         type: "manual",
         message: "Hanya file gambar atau PDF yang diperbolehkan",
       });
+
       return;
     }
 
@@ -66,11 +69,13 @@ export default function FormOrangTua({ userId }: Props) {
         type: "manual",
         message: "Ukuran file maksimal 1 MB",
       });
+
       return;
     }
 
     clearErrors(fieldName);
     const base64 = await convertFileToBase64(file);
+
     setValue(base64Field, base64);
   };
 
@@ -79,7 +84,7 @@ export default function FormOrangTua({ userId }: Props) {
       handleFileValidation(
         fileKtpAyah,
         "dataSurat.fileKtpAyah",
-        "dataSurat.fileKtpAyahBase64"
+        "dataSurat.fileKtpAyahBase64",
       );
     }
   }, [fileKtpAyah]);
@@ -89,7 +94,7 @@ export default function FormOrangTua({ userId }: Props) {
       handleFileValidation(
         fileKtpIbu,
         "dataSurat.fileKtpIbu",
-        "dataSurat.fileKtpIbuBase64"
+        "dataSurat.fileKtpIbuBase64",
       );
     }
   }, [fileKtpIbu]);
@@ -99,7 +104,7 @@ export default function FormOrangTua({ userId }: Props) {
       handleFileValidation(
         fileAktaLahir,
         "dataSurat.fileAktaLahirAnak",
-        "dataSurat.fileAktaLahirAnakBase64"
+        "dataSurat.fileAktaLahirAnakBase64",
       );
     }
   }, [fileAktaLahir]);

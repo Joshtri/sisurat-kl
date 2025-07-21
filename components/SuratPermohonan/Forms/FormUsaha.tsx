@@ -3,6 +3,7 @@
 import { useFormContext } from "react-hook-form";
 import { Image, Input } from "@heroui/react";
 import { useEffect, useState } from "react";
+
 import { convertFileToBase64 } from "@/utils/common";
 
 export default function FormUsaha() {
@@ -20,6 +21,7 @@ export default function FormUsaha() {
 
   useEffect(() => {
     const file = fotoFile?.[0];
+
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
@@ -28,6 +30,7 @@ export default function FormUsaha() {
         message: "File harus berupa gambar (jpg/png/webp)",
       });
       setPreviewUrl(null);
+
       return;
     }
 
@@ -37,6 +40,7 @@ export default function FormUsaha() {
         message: "Ukuran file maksimal 1 MB",
       });
       setPreviewUrl(null);
+
       return;
     }
 

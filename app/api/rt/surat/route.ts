@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   if (!rtProfile?.rt) {
     return NextResponse.json(
       { message: "RT tidak ditemukan" },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -119,7 +119,7 @@ export async function GET(req: NextRequest) {
           ];
 
           return !isBase64 && !blacklist.includes(key);
-        })
+        }),
       );
     }
 

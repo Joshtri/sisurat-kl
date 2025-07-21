@@ -49,8 +49,9 @@ export async function GET(req: NextRequest) {
               "buktiBase64",
               "lampiranPdf",
             ];
+
             return !isBase64 && !blacklist.includes(key);
-          })
+          }),
         );
       }
 
@@ -66,7 +67,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

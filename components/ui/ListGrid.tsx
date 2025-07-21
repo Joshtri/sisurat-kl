@@ -123,8 +123,8 @@ export function ListGrid({
 
       filtered = filtered.filter((row) =>
         Object.values(row).some(
-          (val) => typeof val === "string" && val.toLowerCase().includes(q)
-        )
+          (val) => typeof val === "string" && val.toLowerCase().includes(q),
+        ),
       );
     }
 
@@ -199,6 +199,7 @@ export function ListGrid({
           aria-label="Options menu"
           onAction={(key) => {
             const menuItem = optionsMenu.find((item) => item.key === key);
+
             if (menuItem && menuItem.onPress) {
               menuItem.onPress();
             }

@@ -42,7 +42,7 @@ export default function CreateSuratPermohonanPage() {
   const [selectedJenisSurat, setSelectedJenisSurat] =
     useState<JenisSurat | null>(null);
   const [detailSurat, setDetailSurat] = useState<Record<string, any> | null>(
-    null
+    null,
   );
 
   const { data: jenisList = [], isLoading } = useQuery({

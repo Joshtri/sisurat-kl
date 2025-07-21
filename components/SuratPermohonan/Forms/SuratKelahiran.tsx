@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { Input, Select, SelectItem } from "@heroui/react";
+
 import { convertFileToBase64 } from "@/utils/common";
 
 export default function FormKelahiran() {
@@ -13,12 +14,14 @@ export default function FormKelahiran() {
 
   useEffect(() => {
     const file = suketRSFile?.[0];
+
     if (file) {
       if (file.size > 1024 * 1024) {
         setError("dataSurat.suketRS", {
           type: "manual",
           message: "Ukuran file maksimal 1 MB",
         });
+
         return;
       } else {
         clearErrors("dataSurat.suketRS");
@@ -32,12 +35,14 @@ export default function FormKelahiran() {
 
   useEffect(() => {
     const file = ktpSaksiFile?.[0];
+
     if (file) {
       if (file.size > 1024 * 1024) {
         setError("dataSurat.ktpSaksi", {
           type: "manual",
           message: "Ukuran file maksimal 1 MB",
         });
+
         return;
       } else {
         clearErrors("dataSurat.ktpSaksi");

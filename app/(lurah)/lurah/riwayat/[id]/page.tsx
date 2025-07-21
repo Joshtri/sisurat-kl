@@ -3,13 +3,6 @@
 import { Button, Card, CardBody, Chip, Image } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-
-import { PageHeader } from "@/components/common/PageHeader";
-import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
-import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
-import { getSuratHistoryById } from "@/services/suratService";
-import { formatDateIndo, formatKeyLabel } from "@/utils/common";
-
 import {
   Modal,
   ModalBody,
@@ -18,6 +11,12 @@ import {
   ModalHeader,
 } from "@heroui/modal";
 import { useState } from "react";
+
+import { PageHeader } from "@/components/common/PageHeader";
+import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
+import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
+import { getSuratHistoryById } from "@/services/suratService";
+import { formatDateIndo, formatKeyLabel } from "@/utils/common";
 
 export default function DetailPengajuanLurahPage() {
   const { id } = useParams();

@@ -17,7 +17,7 @@ export const userSchema = userBaseSchema.refine(
   {
     path: ["confirmPassword"],
     message: "Password tidak cocok",
-  }
+  },
 );
 
 // Schema untuk edit - buat schema terpisah untuk fleksibilitas lebih baik
@@ -40,8 +40,10 @@ export const userSchemaPartial = userEditBaseSchema.refine(
       if (data.password.length < 6) {
         return false; // Password kurang dari 6 karakter
       }
+
       return data.password === data.confirmPassword;
     }
+
     // Jika password kosong/undefined, skip validasi
     return true;
   },
@@ -61,11 +63,12 @@ export const userSchemaPartial = userEditBaseSchema.refine(
         };
       }
     }
+
     return {
       path: ["confirmPassword"],
       message: "Password tidak cocok",
     };
-  }
+  },
 );
 
 export type UserSchema = z.infer<typeof userSchema>;

@@ -37,6 +37,7 @@ export async function exportUsersToExcel(): Promise<void> {
 
     // Create temporary link and click it
     const link = document.createElement("a");
+
     link.href = url;
     link.download = `users-export-${new Date().toISOString().split("T")[0]}.xlsx`;
     document.body.appendChild(link);
@@ -69,6 +70,7 @@ export async function downloadUsersTemplate(): Promise<void> {
 
     // Create temporary link and click it
     const link = document.createElement("a");
+
     link.href = url;
     link.download = "template-import-users.xlsx";
     document.body.appendChild(link);
@@ -85,10 +87,11 @@ export async function downloadUsersTemplate(): Promise<void> {
 
 // Import users from Excel
 export async function importUsersFromExcel(
-  file: File
+  file: File,
 ): Promise<ImportResponse> {
   try {
     const formData = new FormData();
+
     formData.append("file", file);
 
     const response = await axios.post("/api/users/import", formData, {

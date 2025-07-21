@@ -11,6 +11,7 @@ import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { uploadWargaIdentity } from "@/services/wargaService";
 
 interface Props {
@@ -33,10 +34,11 @@ export default function EditFileWargaDialog({
     mutationFn: async (formData: FormData) => {
       const fileKtp = formData.get("fileKtp") as File | null;
       const fileKk = formData.get("fileKk") as File | null;
+
       return uploadWargaIdentity(
         wargaId,
         fileKtp ?? undefined,
-        fileKk ?? undefined
+        fileKk ?? undefined,
       );
     },
     onSuccess: () => {

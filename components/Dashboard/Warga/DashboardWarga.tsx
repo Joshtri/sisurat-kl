@@ -62,6 +62,7 @@ export default function DashboardWarga() {
     // Cek kelengkapan data sebelum redirect
     if (completionData && !completionData.isComplete) {
       setShowOnboardingModal(true);
+
       return;
     }
     router.push("/warga/permohonan/create");

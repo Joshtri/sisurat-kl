@@ -3,11 +3,6 @@
 import { Button } from "@heroui/button";
 import { useState } from "react";
 import { BookOpenIcon, PencilIcon } from "@heroicons/react/24/solid";
-
-import { EditWargaDialog } from "./EditWargaDialog";
-import EditFileWargaDialog from "./EditFileWargaDialog";
-
-import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
 import {
   Modal,
   ModalBody,
@@ -16,6 +11,11 @@ import {
   ModalHeader,
 } from "@heroui/modal";
 import { Image } from "@heroui/react";
+
+import { EditWargaDialog } from "./EditWargaDialog";
+import EditFileWargaDialog from "./EditFileWargaDialog";
+
+import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
 
 interface WargaProfileSectionProps {
   warga: {
@@ -37,7 +37,6 @@ interface WargaProfileSectionProps {
     foto?: string;
   };
 }
-
 
 export function WargaProfileSection({ warga }: WargaProfileSectionProps) {
   const [open, setOpen] = useState(false);

@@ -63,9 +63,10 @@ export async function getProfileKKAnak(userId: string) {
 export async function uploadWargaIdentity(
   userId: string,
   fileKtp?: File,
-  fileKk?: File
+  fileKk?: File,
 ) {
   const formData = new FormData();
+
   formData.append("userId", userId);
   if (fileKtp) formData.append("fileKtp", fileKtp);
   if (fileKk) formData.append("fileKk", fileKk);

@@ -1,5 +1,6 @@
 import FormSktm from "./Forms/FormSKTM";
 import FormPindahKeluar from "./Forms/FormPindahKeluar";
+import FormJandaDuda from "./Forms/FormJandaDuda";
 
 import FormDomisili from "@/components/SuratPermohonan/Forms/SuratDomisili";
 import FormKelahiran from "@/components/SuratPermohonan/Forms/SuratKelahiran";
@@ -10,7 +11,6 @@ import FormTidakDiTempat from "@/components/SuratPermohonan/Forms/FormTidakDiTem
 import FormBelumMenikah from "@/components/SuratPermohonan/Forms/FormBelumMenikah";
 import FormNikah from "@/components/SuratPermohonan/Forms/FormNikah";
 import FormUsaha from "@/components/SuratPermohonan/Forms/FormUsaha";
-import FormJandaDuda from "./Forms/FormJandaDuda";
 
 interface Props {
   kodeJenisSurat: string;

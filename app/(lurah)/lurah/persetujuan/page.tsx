@@ -8,6 +8,7 @@ import {
   DocumentIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
+import { Button } from "@heroui/button";
 
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -21,7 +22,6 @@ import { formatDateIndo } from "@/utils/common";
 import { TableActionsInline } from "@/components/common/TableActionsInline";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { showToast } from "@/utils/toastHelper";
-import { Button } from "@heroui/button";
 
 export default function PersetujuanPage() {
   const router = useRouter();

@@ -1,8 +1,9 @@
 // /app/api/users/export/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import * as XLSX from "xlsx";
+
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
-import * as XLSX from "xlsx";
 
 export async function GET(request: NextRequest) {
   try {
@@ -57,6 +58,7 @@ export async function GET(request: NextRequest) {
       { wch: 15 }, // Role
       { wch: 15 }, // Tanggal Dibuat
     ];
+
     worksheet["!cols"] = colWidths;
 
     // Add worksheet to workbook
@@ -70,13 +72,14 @@ export async function GET(request: NextRequest) {
 
     // Set headers for download
     const headers = new Headers();
+
     headers.set(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
     headers.set(
       "Content-Disposition",
-      `attachment; filename="users-export-${new Date().toISOString().split("T")[0]}.xlsx"`
+      `attachment; filename="users-export-${new Date().toISOString().split("T")[0]}.xlsx"`,
     );
 
     return new NextResponse(buffer, {
@@ -85,9 +88,10 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error exporting users:", error);
+
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

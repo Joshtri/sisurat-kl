@@ -3,17 +3,12 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import {
-  DocumentArrowDownIcon,
-  DocumentIcon,
-  DocumentTextIcon,
-} from "@heroicons/react/24/outline";
+import { DocumentIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
 import {
-  downloadSuratPdf,
   getAllSurat,
   previewSuratPdf,
   previewSuratPengantar,
@@ -71,6 +66,7 @@ export default function SuratPage() {
                 try {
                   const blob = await previewSuratPdf(item.id);
                   const blobUrl = URL.createObjectURL(blob);
+
                   window.open(blobUrl, "_blank");
                 } catch (err: any) {
                   showToast({

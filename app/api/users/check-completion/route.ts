@@ -1,5 +1,6 @@
 // /app/api/users/check-completion/route.ts
 import { NextRequest, NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
 
@@ -77,9 +78,10 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error checking user completion:", error);
+
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

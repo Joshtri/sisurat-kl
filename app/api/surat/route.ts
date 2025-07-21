@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
             ? (error as { message: string }).message
             : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       { message: "Terjadi kesalahan saat membuat surat" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

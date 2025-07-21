@@ -1,6 +1,7 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import { supabase } from "@/lib/supabase";
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(req: NextRequest) {
   const formData = await req.formData();
@@ -10,6 +11,7 @@ export async function PATCH(req: NextRequest) {
 
   for (const key of ["fileKtp", "fileKk"]) {
     const file = formData.get(key) as File;
+
     if (!file) continue;
 
     const arrayBuffer = await file.arrayBuffer();
@@ -27,6 +29,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
 
     const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/sisurat-bucket/${data.path}`;
+
     uploads[key] = url;
   }
 

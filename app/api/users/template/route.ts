@@ -1,7 +1,8 @@
 // /app/api/users/template/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth";
 import * as XLSX from "xlsx";
+
+import { verifyToken } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,6 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     const decoded = verifyToken(token);
+
     if (!decoded?.sub) {
       return NextResponse.json({ message: "Invalid token" }, { status: 401 });
     }
@@ -78,6 +80,7 @@ export async function GET(request: NextRequest) {
     ];
 
     const instructionsSheet = XLSX.utils.json_to_sheet(instructionsData);
+
     instructionsSheet["!cols"] = [
       { wch: 20 }, // Kolom
       { wch: 50 }, // Keterangan
@@ -96,13 +99,14 @@ export async function GET(request: NextRequest) {
 
     // Set headers for download
     const headers = new Headers();
+
     headers.set(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
     headers.set(
       "Content-Disposition",
-      'attachment; filename="template-import-users.xlsx"'
+      'attachment; filename="template-import-users.xlsx"',
     );
 
     return new NextResponse(buffer, {
@@ -111,9 +115,10 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error generating template:", error);
+
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

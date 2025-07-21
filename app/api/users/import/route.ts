@@ -1,9 +1,10 @@
 // /app/api/users/import/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { verifyToken } from "@/lib/auth";
 import * as XLSX from "xlsx";
 import bcrypt from "bcryptjs";
+
+import { prisma } from "@/lib/prisma";
+import { verifyToken } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
     if (!file) {
       return NextResponse.json(
         { message: "File tidak ditemukan" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
     if (!file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
       return NextResponse.json(
         { message: "File harus berformat .xlsx atau .xls" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
     if (!jsonData.length) {
       return NextResponse.json(
         { message: "File Excel kosong" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -107,6 +108,7 @@ export async function POST(request: NextRequest) {
           row.Email.trim() !== ""
         ) {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
           if (!emailRegex.test(row.Email)) {
             results.errors.push({
               row: rowNum,
@@ -153,6 +155,7 @@ export async function POST(request: NextRequest) {
 
         if (error.code === "P2002") {
           const target = error.meta?.target;
+
           if (target?.includes("username")) {
             errorMessage = "Username sudah digunakan";
           } else if (target?.includes("email")) {
@@ -175,9 +178,10 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error importing users:", error);
+
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

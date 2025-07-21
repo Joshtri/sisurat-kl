@@ -20,6 +20,7 @@ export async function checkUserCompletion(): Promise<UserCompletionResponse> {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
+
   return response.data;
 }
 
@@ -32,7 +33,8 @@ export async function completeOnboarding(formData: FormData) {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
         "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
+
   return response.data;
 }

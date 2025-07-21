@@ -65,7 +65,7 @@ export default function KartuKeluargaAnggotaPage() {
 
   const familyCardInfo = anggota[0]?.kartuKeluarga;
   const kepalaKeluarga = anggota.find(
-    (member) => member.peranDalamKK === "KEPALA_KELUARGA"
+    (member) => member.peranDalamKK === "KEPALA_KELUARGA",
   );
 
   if (isLoading) {

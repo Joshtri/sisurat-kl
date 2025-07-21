@@ -66,7 +66,7 @@ export default function HistorySuratPermohonanPage() {
 
   const paginatedHistory = history.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   const totalPages = Math.ceil(history.length / itemsPerPage);

@@ -5,7 +5,7 @@ import { wargaSchema } from "@/validations/wargaSchema";
 
 export async function GET(
   _: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Await the params object before accessing its properties
@@ -26,7 +26,7 @@ export async function GET(
     if (!warga) {
       return NextResponse.json(
         { message: "Warga tidak ditemukan" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -34,13 +34,13 @@ export async function GET(
   } catch (error: any) {
     return NextResponse.json(
       { message: "Gagal mengambil detail warga", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const body = await req.json();
@@ -55,14 +55,14 @@ export async function PATCH(
   } catch (error: any) {
     return NextResponse.json(
       { message: "Gagal mengubah data warga", error: error.message },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }
 
 export async function DELETE(
   _: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     await prisma.warga.delete({
@@ -73,7 +73,7 @@ export async function DELETE(
   } catch (error: any) {
     return NextResponse.json(
       { message: "Gagal menghapus data warga", error: error.message },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }

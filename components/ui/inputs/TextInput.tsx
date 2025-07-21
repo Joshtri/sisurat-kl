@@ -105,8 +105,8 @@ export function TextInput({
           size="md"
           {...Object.fromEntries(
             Object.entries(rest).filter(
-              ([key]) => key !== "size" && key !== "isNumber"
-            )
+              ([key]) => key !== "size" && key !== "isNumber",
+            ),
           )}
         />
         {showPasswordToggle && type === "password" && (
