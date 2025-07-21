@@ -3,7 +3,8 @@
 import {
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
-  DocumentArrowDownIcon, UserIcon
+  DocumentArrowDownIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -52,18 +53,21 @@ export default function UsersPage() {
     email: user.email ?? "-",
     role: user.role,
     createdAt: new Date(user.createdAt).toLocaleDateString("id-ID"),
-    statusWarga: user.isWarga ? (
-      <span className="text-green-700 bg-green-100 px-2 py-1 rounded-full text-xs font-medium">
-        Terdaftar
-      </span>
-    ) : (
-      <Link
-        href={`/superadmin/warga/create?userId=${user.id}`}
-        className="text-red-700 bg-red-100 hover:bg-red-200 px-2 py-1 rounded-full text-xs font-medium"
-      >
-        Belum terdaftar
-      </Link>
-    ),
+    statusWarga:
+      user.role === "WARGA" ? (
+        user.isWarga ? (
+          <span className="text-green-700 bg-green-100 px-2 py-1 rounded-full text-xs font-medium">
+            Terdaftar
+          </span>
+        ) : (
+          <Link
+            href={`/superadmin/warga/create?userId=${user.id}`}
+            className="text-red-700 bg-red-100 hover:bg-red-200 px-2 py-1 rounded-full text-xs font-medium"
+          >
+            Belum terdaftar
+          </Link>
+        )
+      ) : null, // selain WARGA, tidak tampil status
 
     actions: (
       <TableActions
