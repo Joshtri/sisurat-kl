@@ -2,7 +2,17 @@
 
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Chip } from "@heroui/react";
+import {
+  Alert,
+  Button,
+  Chip,
+  Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@heroui/react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
@@ -12,6 +22,7 @@ import { getWargaById } from "@/services/wargaService";
 import { formatDateIndo } from "@/utils/common";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 const genderColorMap: Record<string, "primary" | "success" | "danger"> = {
   LAKI_LAKI: "primary",
   PEREMPUAN: "danger",
@@ -24,6 +35,7 @@ const statusColorMap: Record<string, "success" | "danger"> = {
 
 export default function WargaDetailPage() {
   const { id } = useParams();
+  const [previewFileUrl, setPreviewFileUrl] = useState<string | null>(null);
 
   const { data: warga, isLoading } = useQuery({
     queryKey: ["warga", id],
@@ -136,7 +148,75 @@ export default function WargaDetailPage() {
               label="Dibuat pada"
               value={formatDateIndo(String(warga.createdAt), true)}
             />
+
+            <h3>File Dokumen</h3>
+
+            {!warga.fileKtp && (
+              <Alert color="warning" variant="flat" className="col-span-2">
+                File KTP belum dilengkapi warga.
+              </Alert>
+            )}
+
+            {!warga.fileKk && (
+              <Alert color="warning" variant="flat" className="col-span-2">
+                File KK belum dilengkapi warga.
+              </Alert>
+            )}
+
+            {warga.fileKtp && (
+              <Button
+                size="sm"
+                variant="flat"
+                color="secondary"
+                onPress={() => setPreviewFileUrl(warga.fileKtp!)}
+              >
+                Lihat File KTP
+              </Button>
+            )}
+            {warga.fileKk && (
+              <Button
+                size="sm"
+                variant="flat"
+                color="secondary"
+                onPress={() => setPreviewFileUrl(warga.fileKk!)}
+              >
+                Lihat File KK
+              </Button>
+            )}
           </div>
+        )}
+
+        {previewFileUrl && (
+          <Modal
+            isOpen={!!previewFileUrl}
+            onClose={() => setPreviewFileUrl(null)}
+            size="3xl"
+            placement="center"
+          >
+            <ModalContent>
+              <ModalHeader>Pratinjau Dokumen</ModalHeader>
+              <ModalBody>
+                {previewFileUrl.endsWith(".pdf") ? (
+                  <iframe
+                    title="Preview PDF"
+                    src={previewFileUrl}
+                    className="w-full h-[80vh] rounded-md"
+                  />
+                ) : (
+                  <Image
+                    src={previewFileUrl}
+                    alt="Preview Dokumen"
+                    className="w-full max-h-[80vh] object-contain rounded-md"
+                  />
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="primary" onPress={() => setPreviewFileUrl(null)}>
+                  Tutup
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
         )}
       </CardContainer>
     </>

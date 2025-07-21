@@ -1,19 +1,15 @@
 import {
-  HomeIcon,
-  DocumentTextIcon,
-  UserGroupIcon,
-  CogIcon,
-  ChartBarIcon,
-  UserIcon,
-  ShieldCheckIcon,
   ArchiveBoxIcon,
+  DocumentTextIcon,
+  HomeIcon,
+  ShieldCheckIcon,
+  UserGroupIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 import {
-  HomeIcon as HomeSolidIcon,
   DocumentTextIcon as DocumentSolidIcon,
+  HomeIcon as HomeSolidIcon,
   UserGroupIcon as UserGroupSolidIcon,
-  CogIcon as CogSolidIcon,
-  ChartBarIcon as ChartSolidIcon,
 } from "@heroicons/react/24/solid";
 
 export interface MenuItem {
@@ -81,12 +77,13 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       icon: UserGroupIcon,
       iconSolid: UserGroupSolidIcon,
     },
-    // {
-    //   title: "Template Surat",
-    //   href: "/staff/template",
-    //   icon: DocumentDuplicateIcon,
-    //   iconSolid: DocumentDuplicateIcon,
-    // },
+
+    {
+      title: "Profile",
+      href: "/staff/profile",
+      icon: UserIcon,
+      iconSolid: UserIcon,
+    },
   ],
   LURAH: [
     {
@@ -95,36 +92,6 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       icon: HomeIcon,
       iconSolid: HomeSolidIcon,
     },
-    // {
-    //   title: "Laporan",
-    //   href: "/lurah/laporan",
-    //   icon: ChartBarIcon,
-    //   iconSolid: ChartSolidIcon,
-    //   submenu: [
-    //     { title: "Laporan Harian", href: "/lurah/laporan/harian" },
-    //     { title: "Laporan Bulanan", href: "/lurah/laporan/bulanan" },
-    //     { title: "Laporan Tahunan", href: "/lurah/laporan/tahunan" },
-    //   ],
-    // },
-    // {
-    //   title: "Persetujuan Surat",
-    //   href: "/lurah/persetujuan",
-    //   icon: ShieldCheckIcon,
-    //   iconSolid: ShieldCheckIcon,
-    //   badge: "5",
-    // },
-    // {
-    //   title: "Manajemen Staff",
-    //   href: "/lurah/staff",
-    //   icon: UsersIcon,
-    //   iconSolid: UsersIcon,
-    // },
-    // {
-    //   title: "Arsip",
-    //   href: "/lurah/arsip",
-    //   icon: ArchiveBoxIcon,
-    //   iconSolid: ArchiveBoxIcon,
-    // },4
 
     {
       title: "Persetujuan Surat",
@@ -156,12 +123,7 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       iconSolid: HomeSolidIcon,
     },
 
-    {
-      title: "Manajemen User",
-      href: "/superadmin/users",
-      icon: UserGroupIcon,
-      iconSolid: UserGroupSolidIcon,
-    },
+    // 1. Data Master (Jenis Surat, RT)
     {
       title: "Manajemen Jenis Surat",
       href: "/superadmin/jenis-surat",
@@ -169,26 +131,19 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       iconSolid: DocumentSolidIcon,
     },
     {
-      title: "Manajemen Surat",
-      href: "/superadmin/surat",
+      title: "Manajemen RT",
+      href: "/superadmin/rt",
       icon: DocumentTextIcon,
       iconSolid: DocumentSolidIcon,
     },
 
+    // 2. Manajemen Pengguna & Peran
     {
-      title: "Manajemen Kartu Keluarga",
-      href: "/superadmin/kartu-keluarga",
-      icon: DocumentTextIcon,
-      iconSolid: DocumentSolidIcon,
-    },
-
-    {
-      title: "Manajemen Warga",
-      href: "/superadmin/warga",
+      title: "Manajemen User",
+      href: "/superadmin/users",
       icon: UserGroupIcon,
       iconSolid: UserGroupSolidIcon,
     },
-
     {
       title: "Manajemen Multi Role",
       href: "/superadmin/multi-role",
@@ -196,31 +151,29 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       iconSolid: DocumentSolidIcon,
     },
 
+    // 3. Data Kependudukan
     {
-      title: "Manajemen RT",
-      href: "/superadmin/rt",
+      title: "Manajemen Kartu Keluarga",
+      href: "/superadmin/kartu-keluarga",
       icon: DocumentTextIcon,
       iconSolid: DocumentSolidIcon,
     },
+    {
+      title: "Manajemen Warga",
+      href: "/superadmin/warga",
+      icon: UserGroupIcon,
+      iconSolid: UserGroupSolidIcon,
+    },
 
-    // {
-    //   title: "Sistem",
-    //   href: "/superadmin/sistem",
-    //   icon: CogIcon,
-    //   iconSolid: CogSolidIcon,
-    //   submenu: [
-    //     { title: "Pengaturan", href: "/superadmin/sistem/pengaturan" },
-    //     { title: "Backup", href: "/superadmin/sistem/backup" },
-    //     { title: "Log Aktivitas", href: "/superadmin/sistem/logs" },
-    //   ],
-    // },
-    // {
-    //   title: "Laporan Global",
-    //   href: "/superadmin/laporan-global",
-    //   icon: ChartBarIcon,
-    //   iconSolid: ChartSolidIcon,
-    // },
+    // 4. Pengelolaan Surat
+    {
+      title: "Manajemen Surat",
+      href: "/superadmin/surat",
+      icon: DocumentTextIcon,
+      iconSolid: DocumentSolidIcon,
+    },
   ],
+
   RT: [
     {
       title: "Dashboard",

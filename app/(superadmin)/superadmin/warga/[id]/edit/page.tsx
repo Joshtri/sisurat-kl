@@ -80,6 +80,7 @@ export default function EditWargaPage() {
     <>
       <PageHeader
         backHref="/superadmin/warga"
+        title={`Edit Warga: ${formData?.namaLengkap || "Loading..."}`}
         breadcrumbs={[
           { label: "Dashboard", href: "/superadmin" },
           { label: "Warga", href: "/superadmin/warga" },
@@ -170,34 +171,7 @@ export default function EditWargaPage() {
                   <SelectItem key={val}>{val}</SelectItem>
                 ))}
               </Select>
-              <Input
-                name="noTelepon"
-                label="No Telepon"
-                value={formData.noTelepon}
-                onChange={handleChange}
-                placeholder="Masukkan No Telepon"
-              />
-              {/* <Input
-                name="rt"
-                label="RT"
-                value={formData.rt}
-                onChange={handleChange}
-                placeholder="Masukkan RT"
-              />
-              <Input
-                name="rw"
-                label="RW"
-                value={formData.rw}
-                onChange={handleChange}
-                placeholder="Masukkan RW"
-              />
-              <Input
-                name="alamat"
-                label="Alamat"
-                value={formData.alamat}
-                onChange={handleChange}
-                placeholder="Masukkan Alamat"
-              /> */}
+
               <Select
                 aria-label="statusHidup"
                 label="Status Hidup"
