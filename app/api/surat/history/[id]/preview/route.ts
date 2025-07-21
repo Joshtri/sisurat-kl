@@ -1,10 +1,9 @@
 import { readFile } from "fs/promises";
 import path from "path";
 
-import puppeteer from "puppeteer";
+import { chromium } from "playwright"; // Ganti dari puppeteer ke playwright
 import Handlebars from "handlebars";
 import { NextRequest, NextResponse } from "next/server";
-import { executablePath } from "puppeteer";
 
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
@@ -298,23 +297,21 @@ export async function GET(
     const compiled = Handlebars.compile(rawTemplate);
     const renderedHtml = compiled(data);
 
-    console.log("Launching Puppeteer with path:", executablePath());
-
-    // Buat PDF dengan Puppeteer
-    const browser = await puppeteer.launch({
-      headless: "new",
-      executablePath: executablePath(), // pakai bawaan puppeteer
+    // GANTI KE PLAYWRIGHT: Launch browser
+    const browser = await chromium.launch({
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     const page = await browser.newPage();
 
-    // Set content dengan timeout yang lebih panjang
+    // Set content
     await page.setContent(renderedHtml, {
-      waitUntil: "networkidle0",
+      waitUntil: "networkidle",
       timeout: 30000,
     });
 
+    // Generate PDF - API hampir sama dengan Puppeteer
     const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,
