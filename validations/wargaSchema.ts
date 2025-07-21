@@ -70,7 +70,7 @@ export const wargaSchema = z.object({
 
   statusHidup: z.enum(["HIDUP", "MENINGGAL"]).default("HIDUP"),
 
-  kartuKeluargaId: z.string().uuid().nullable().optional(),
+  kartuKeluargaId: z.string().nullable().optional(),
 
   peranDalamKK: z
     .enum(["KEPALA_KELUARGA", "ISTRI", "ANAK", "ORANG_TUA", "FAMILI_LAINNYA"])
