@@ -38,6 +38,7 @@ interface WargaProfileSectionProps {
   };
 }
 
+
 export function WargaProfileSection({ warga }: WargaProfileSectionProps) {
   const [open, setOpen] = useState(false);
 
