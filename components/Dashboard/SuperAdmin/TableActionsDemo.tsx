@@ -38,26 +38,6 @@ export function TableActionsDemo({ data }: TableActionsDemoProps) {
                 </div>
                 <TableActions
                   onView={() => alert(`Lihat detail surat ID: ${item.id}`)}
-                  onEdit={
-                    item.status === "DIAJUKAN" ||
-                    item.status.startsWith("DIVERIFIKASI")
-                      ? () => alert(`Verifikasi surat ID: ${item.id}`)
-                      : undefined
-                  }
-                  onDelete={
-                    item.status.startsWith("DITOLAK")
-                      ? {
-                          message: "Yakin ingin menghapus surat ini?",
-                          confirmLabel: "Hapus Surat",
-                          onConfirm: async () => {
-                            await new Promise((resolve) =>
-                              setTimeout(resolve, 1000),
-                            );
-                            alert(`Surat ${item.id} berhasil dihapus`);
-                          },
-                        }
-                      : undefined
-                  }
                 />
               </div>
             ))}

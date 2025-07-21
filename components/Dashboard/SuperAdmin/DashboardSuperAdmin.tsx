@@ -51,12 +51,15 @@ export default function DashboardSuperAdmin() {
     refetchInterval: 30000,
   });
 
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  const { data: dashboardData, isLoading: statsLoading } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: getDashboardStats,
   });
 
   const router = useRouter();
+
+  // Extract stats from the nested structure
+  const stats = dashboardData?.stats;
 
   // Extract the status values from the query data
   const serverStatus = serverLoading ? (
@@ -79,6 +82,15 @@ export default function DashboardSuperAdmin() {
   ) : (
     diskStatusData?.diskUsage || "Unknown"
   );
+
+  // Transform recentActivities to match TableActionsDemo expected format
+  const transformedRecentActions =
+    dashboardData?.recentActivities?.map((activity) => ({
+      id: activity.id,
+      nama: activity.jenis, // Use jenis as nama since we don't have actual name
+      jenis: activity.jenis,
+      status: activity.status,
+    })) || [];
 
   return (
     <div className="space-y-6">
@@ -154,17 +166,18 @@ export default function DashboardSuperAdmin() {
           backupStatus={backupStatus}
           diskStatus={diskStatus}
         />
-        <RecentActivities data={stats?.recentActivities ?? []} />
+        <RecentActivities data={dashboardData?.recentActivities ?? []} />
       </div>
 
-      {/* <QuickActions /> */}
-      <TableActionsDemo data={stats?.recentActions ?? []} />
+      {/* Pass transformed data to TableActionsDemo */}
+      <TableActionsDemo data={transformedRecentActions} />
 
       {stats && (
         <DashboardStatsChart
           submittedToday={stats.submittedToday ?? 0}
           published={stats.published ?? 0}
           usersPerRole={stats.usersPerRole ?? {}}
+          chartData={dashboardData?.chartData ?? []} // Pass chartData if needed
         />
       )}
     </div>
