@@ -50,12 +50,53 @@ export default function OnboardingWargaModal({
 }: OnboardingModalProps) {
   const queryClient = useQueryClient();
 
+  // Helper function untuk format ukuran file
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+  };
+
+  // Validasi file
+  const validateFile = (fileList: FileList | null, fieldName: string) => {
+    if (!fileList || fileList.length === 0) {
+      return `File ${fieldName} wajib diupload`;
+    }
+
+    const file = fileList[0];
+    const maxSize = 1024 * 1024; // 1MB dalam bytes
+
+    // Validasi ukuran
+    if (file.size > maxSize) {
+      return `Ukuran file ${fieldName} maksimal 1MB. File Anda: ${formatFileSize(file.size)}`;
+    }
+
+    // Validasi tipe file
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "application/pdf",
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      return `Format file ${fieldName} tidak didukung. Gunakan: JPG, PNG, GIF, atau PDF`;
+    }
+
+    return true;
+  };
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
     watch,
+    clearErrors,
+    setError,
   } = useForm<FormData>({
     defaultValues: {
       email: userData.email || "",
@@ -107,12 +148,52 @@ export default function OnboardingWargaModal({
   });
 
   const onSubmit = (data: FormData) => {
+    // Validasi file sebelum submit
+    const ktpValidation = validateFile(data.fileKtp, "KTP");
+    const kkValidation = validateFile(data.fileKk, "Kartu Keluarga");
+
+    if (ktpValidation !== true) {
+      setError("fileKtp", {
+        type: "manual",
+        message: ktpValidation,
+      });
+      return;
+    }
+
+    if (kkValidation !== true) {
+      setError("fileKk", {
+        type: "manual",
+        message: kkValidation,
+      });
+      return;
+    }
+
     completeOnboardingMutation(data);
   };
 
-  // Watch file inputs untuk validasi
+  // Watch file inputs untuk validasi realtime
   const fileKtpWatch = watch("fileKtp");
   const fileKkWatch = watch("fileKk");
+
+  // Handle file change untuk validasi realtime
+  const handleFileChange =
+    (fieldName: "fileKtp" | "fileKk") =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files;
+      const validation = validateFile(
+        files,
+        fieldName === "fileKtp" ? "KTP" : "Kartu Keluarga"
+      );
+
+      if (validation === true) {
+        clearErrors(fieldName);
+      } else {
+        setError(fieldName, {
+          type: "manual",
+          message: validation,
+        });
+      }
+    };
 
   return (
     <Modal
@@ -207,9 +288,10 @@ export default function OnboardingWargaModal({
                 <Input
                   label="Upload File KTP"
                   type="file"
-                  accept="application/pdf,image/*"
+                  accept="application/pdf,image/jpeg,image/jpg,image/png,image/gif"
                   {...register("fileKtp", {
                     required: "File KTP wajib diupload",
+                    onChange: handleFileChange("fileKtp"),
                   })}
                   startContent={
                     <DocumentIcon className="w-4 h-4 text-default-400" />
@@ -217,12 +299,17 @@ export default function OnboardingWargaModal({
                   isInvalid={!!errors.fileKtp}
                   errorMessage={errors.fileKtp?.message}
                   isRequired
-                  description="Upload scan/foto KTP yang jelas (PDF/Image)"
+                  description="Upload scan/foto KTP yang jelas (PDF/JPG/PNG/GIF, maks. 1MB)"
                 />
-                {fileKtpWatch?.[0] && (
-                  <p className="text-xs text-success-600">
-                    ✓ File terpilih: {fileKtpWatch[0].name}
-                  </p>
+                {fileKtpWatch?.[0] && !errors.fileKtp && (
+                  <div className="flex items-center justify-between text-xs">
+                    <p className="text-success-600">
+                      ✓ File terpilih: {fileKtpWatch[0].name}
+                    </p>
+                    <p className="text-default-500">
+                      {formatFileSize(fileKtpWatch[0].size)}
+                    </p>
+                  </div>
                 )}
               </div>
 
@@ -231,9 +318,10 @@ export default function OnboardingWargaModal({
                 <Input
                   label="Upload File Kartu Keluarga"
                   type="file"
-                  accept="application/pdf,image/*"
+                  accept="application/pdf,image/jpeg,image/jpg,image/png,image/gif"
                   {...register("fileKk", {
                     required: "File Kartu Keluarga wajib diupload",
+                    onChange: handleFileChange("fileKk"),
                   })}
                   startContent={
                     <DocumentIcon className="w-4 h-4 text-default-400" />
@@ -241,12 +329,17 @@ export default function OnboardingWargaModal({
                   isInvalid={!!errors.fileKk}
                   errorMessage={errors.fileKk?.message}
                   isRequired
-                  description="Upload scan/foto Kartu Keluarga (PDF/Image)"
+                  description="Upload scan/foto Kartu Keluarga (PDF/JPG/PNG/GIF, maks. 1MB)"
                 />
-                {fileKkWatch?.[0] && (
-                  <p className="text-xs text-success-600">
-                    ✓ File terpilih: {fileKkWatch[0].name}
-                  </p>
+                {fileKkWatch?.[0] && !errors.fileKk && (
+                  <div className="flex items-center justify-between text-xs">
+                    <p className="text-success-600">
+                      ✓ File terpilih: {fileKkWatch[0].name}
+                    </p>
+                    <p className="text-default-500">
+                      {formatFileSize(fileKkWatch[0].size)}
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
