@@ -40,6 +40,8 @@ export async function GET(req: NextRequest) {
       username: user.username,
       email: user.email,
       role: user.role,
+      numberWhatsApp: user.numberWhatsApp,
+
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
 
@@ -79,7 +81,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

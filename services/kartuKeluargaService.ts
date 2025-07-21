@@ -35,3 +35,7 @@ export async function updateKartuKeluarga(id: string, data: any) {
 
   return res.data;
 }
+
+export async function deleteKartuKeluarga(id: string): Promise<void> {
+  await axios.delete(`/api/kartu-keluarga/${id}`);
+}

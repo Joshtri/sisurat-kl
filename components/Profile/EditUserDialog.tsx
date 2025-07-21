@@ -7,7 +7,8 @@ import {
   ModalBody,
   ModalFooter,
 } from "@heroui/modal";
-import { useState } from "react";
+import { Input, Button } from "@heroui/react";
+import { useState, useEffect } from "react";
 
 export function EditUserDialog({
   open,
@@ -16,12 +17,23 @@ export function EditUserDialog({
 }: {
   open: boolean;
   onClose: () => void;
-  user: { username: string; email?: string; role: string };
+  user: {
+    username: string;
+    email?: string;
+    role: string;
+    numberWhatsApp?: string;
+  };
 }) {
   const [form, setForm] = useState(user);
 
-  const handleChange = (e: any) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  // Reset form saat dialog dibuka kembali
+  useEffect(() => {
+    if (open) setForm(user);
+  }, [open, user]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSave = () => {
@@ -33,32 +45,36 @@ export function EditUserDialog({
     <Modal isOpen={open} onClose={onClose}>
       <ModalContent>
         <ModalHeader>Edit Profil Akun</ModalHeader>
-        <ModalBody className="space-y-3">
-          <input
+        <ModalBody className="space-y-4">
+          <Input
             name="username"
+            label="Username"
             value={form.username}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            placeholder="Username"
+            placeholder="Masukkan username"
           />
-          <input
+          <Input
             name="email"
+            label="Email"
             value={form.email ?? ""}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            placeholder="Email"
+            placeholder="Masukkan email"
+          />
+          <Input
+            name="numberWhatsApp"
+            label="Nomor WhatsApp"
+            value={form.numberWhatsApp ?? ""}
+            onChange={handleChange}
+            placeholder="08xxxxxxxxxx"
           />
         </ModalBody>
         <ModalFooter className="flex justify-end space-x-2">
-          <button onClick={onClose} className="text-gray-600 px-4 py-2">
+          <Button variant="light" onPress={onClose}>
             Batal
-          </button>
-          <button
-            onClick={handleSave}
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-          >
+          </Button>
+          <Button color="primary" onPress={handleSave}>
             Simpan
-          </button>
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

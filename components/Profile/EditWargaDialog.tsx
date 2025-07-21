@@ -1,22 +1,22 @@
 "use client";
 
+import { Input } from "@heroui/input";
 import {
   Modal,
-  ModalContent,
-  ModalHeader,
   ModalBody,
+  ModalContent,
   ModalFooter,
+  ModalHeader,
 } from "@heroui/modal";
-import { Input, Textarea } from "@heroui/input";
-import { useForm, FormProvider } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 
 import { CreateOrEditButtons } from "../ui/CreateOrEditButtons";
 
 import { SelectInput } from "@/components/ui/inputs/SelectInput";
 import {
+  Agama,
   JenisKelaminEnum,
   Pekerjaan,
-  Agama,
   StatusHidupEnum,
 } from "@/constants/enums";
 import { enumToSelectOptions } from "@/utils/enumHelpers";
@@ -97,22 +97,6 @@ export function EditWargaDialog({
                 name="agama"
                 label="Agama"
                 options={enumToSelectOptions(Agama)}
-              />
-
-              <Input
-                label="No Telepon"
-                {...register("noTelepon")}
-                placeholder="08xxxxxxxx"
-              />
-
-              <Input label="RT" {...register("rt")} placeholder="contoh: 01" />
-              <Input label="RW" {...register("rw")} placeholder="contoh: 02" />
-
-              <Textarea
-                label="Alamat"
-                {...register("alamat")}
-                placeholder="Masukkan alamat lengkap"
-                className="sm:col-span-2"
               />
 
               <SelectInput

@@ -53,6 +53,7 @@ export default function RTCreatePage() {
       <PageHeader
         actions={[]}
         backHref="/superadmin/rt"
+        title="Buat Akun RT"
         breadcrumbs={[
           { label: "Dashboard", href: "/superadmin" },
           { label: "Manajemen RT", href: "/superadmin/rt" },

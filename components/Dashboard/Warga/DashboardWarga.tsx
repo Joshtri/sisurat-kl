@@ -46,6 +46,21 @@ export default function DashboardWarga() {
           </p>
         )}
 
+        {/* Card Alert */}
+        <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md shadow-sm">
+          <div className="flex items-start space-x-3">
+            <DocumentTextIcon className="w-6 h-6 text-yellow-500" />
+            <div>
+              <h3 className="text-sm font-medium text-yellow-800">Perhatian</h3>
+              <p className="text-sm text-yellow-700 mt-1">
+                Pastikan data profil Anda sudah lengkap sebelum mengajukan
+                surat. Surat yang diajukan tanpa data lengkap bisa ditolak oleh
+                sistem.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="mt-6">
           <Button
             color="primary"

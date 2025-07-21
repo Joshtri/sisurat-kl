@@ -16,6 +16,7 @@ interface UserProfileSectionProps {
     role: string;
     createdAt: string; // ISO string
     updatedAt: string; // ISO string
+    numberWhatsApp?: string;
   };
 }
 
@@ -40,6 +41,10 @@ export function UserProfileSection({ user }: UserProfileSectionProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ReadOnlyInput label="Username" value={user.username} />
         <ReadOnlyInput label="Email" value={user.email ?? "-"} />
+        <ReadOnlyInput
+          label="Nomor WhatsApp"
+          value={user.numberWhatsApp ?? "-"}
+        />
         <ReadOnlyInput label="Role" value={user.role} />
         <ReadOnlyInput
           label="Dibuat pada"
@@ -55,17 +60,16 @@ export function UserProfileSection({ user }: UserProfileSectionProps) {
             timeStyle: "short",
           })}
         />
-
-        <div className="pt-3 sm:pt-6 flex justify-end">
-          <Button
-            color="danger"
-            variant="solid"
-            onPress={() => setOpenPassword(true)}
-            endContent={<KeyIcon className="w-5 h-5" />}
-          >
-            Ganti Password
-          </Button>
-        </div>
+      </div>
+      <div className="pt-3 sm:pt-6 flex justify-end">
+        <Button
+          color="danger"
+          variant="solid"
+          onPress={() => setOpenPassword(true)}
+          endContent={<KeyIcon className="w-5 h-5" />}
+        >
+          Ganti Password
+        </Button>
       </div>
       <ChangePasswordDialog
         open={openPassword}

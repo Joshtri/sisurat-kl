@@ -3,17 +3,23 @@
 import { Button } from "@heroui/react";
 import { UsersIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 // import { KartuKeluarga } from "@prisma/client";
 
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
-import { getKartuKeluarga } from "@/services/kartuKeluargaService";
+import {
+  deleteKartuKeluarga,
+  getKartuKeluarga,
+} from "@/services/kartuKeluargaService";
 import { KartuKeluarga } from "@/interfaces/kartu-keluarga";
+import { showToast } from "@/utils/toastHelper";
 
 export default function KartuKeluargaPage() {
   const router = useRouter();
+
+  const queryClient = useQueryClient();
 
   const { data = [], isLoading } = useQuery<KartuKeluarga[]>({
     queryKey: ["kartu-keluarga"],
@@ -34,7 +40,7 @@ export default function KartuKeluargaPage() {
   const rows = data.map((item) => ({
     key: item.id,
     nomorKK: item.nomorKK,
-    kepala: item.kepalaKeluargaId,
+    kepala: item.kepalaKeluarga.namaLengkap,
     alamat: item.alamat,
     rtrw: `${item.rt ?? "-"} / ${item.rw ?? "-"}`,
     createdAt: new Date(item.createdAt).toLocaleDateString("id-ID"),
@@ -50,7 +56,29 @@ export default function KartuKeluargaPage() {
     ),
     actions: (
       <TableActions
-        onDelete={{ onConfirm: () => alert(`Hapus KK ${item.nomorKK}`) }}
+        onDelete={{
+          title: "Hapus Kartu Keluarga",
+          message: `Apakah Anda yakin ingin menghapus kartu keluarga "${item.nomorKK}"?`,
+          onConfirm: async () => {
+            try {
+              await deleteKartuKeluarga(item.id);
+              showToast({
+                title: "Berhasil",
+                description: "Kartu keluarga berhasil dihapus",
+                color: "success",
+              });
+
+              queryClient.invalidateQueries({ queryKey: ["kartu-keluarga"] }); // refresh list
+            } catch (error) {
+              showToast({
+                title: "Gagal",
+                description: "Terjadi kesalahan saat menghapus kartu keluarga",
+                color: "error",
+              });
+            }
+          },
+        }}
+        // onDelete={{ onConfirm: () => alert(`Hapus KK ${item.nomorKK}`) }}
         // onEdit={() => alert(`Edit KK ${item.nomorKK}`)}
         onEdit={() => router.push(`/superadmin/kartu-keluarga/${item.id}/edit`)}
         onView={() => router.push(`/superadmin/kartu-keluarga/${item.id}`)}
