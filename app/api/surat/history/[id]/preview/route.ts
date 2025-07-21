@@ -4,6 +4,7 @@ import path from "path";
 import puppeteer from "puppeteer";
 import Handlebars from "handlebars";
 import { NextRequest, NextResponse } from "next/server";
+import { executablePath } from "puppeteer";
 
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
@@ -53,7 +54,7 @@ const terbilang = (num) => {
 
 export async function GET(
   req: NextRequest,
-  context: { params: { id: string } },
+  context: { params: { id: string } }
 ) {
   const { id } = context.params;
   const authHeader = req.headers.get("authorization");
@@ -62,7 +63,7 @@ export async function GET(
   if (!token)
     return NextResponse.json(
       { message: "Token tidak ditemukan" },
-      { status: 401 },
+      { status: 401 }
     );
 
   const user = verifyToken(token);
@@ -72,7 +73,7 @@ export async function GET(
 
   const formatTTL = (
     tempat: string | null | undefined,
-    tanggal: Date | null | undefined,
+    tanggal: Date | null | undefined
   ) =>
     `${tempat ?? "-"}, ${
       tanggal ? new Date(tanggal).toLocaleDateString("id-ID") : "-"
@@ -99,7 +100,7 @@ export async function GET(
   if (!surat)
     return NextResponse.json(
       { message: "Surat tidak ditemukan" },
-      { status: 404 },
+      { status: 404 }
     );
 
   const isAuthorized =
@@ -130,7 +131,7 @@ export async function GET(
 
     return NextResponse.json(
       { message: `Template tidak ditemukan: ${kodeSurat}` },
-      { status: 500 },
+      { status: 500 }
     );
   }
 
@@ -140,7 +141,7 @@ export async function GET(
   if (!profil || !kk) {
     return NextResponse.json(
       { message: "Data profil atau kartu keluarga tidak lengkap" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -151,19 +152,18 @@ export async function GET(
     let ayah =
       anggota.find(
         (w) =>
-          w.peranDalamKK === "KEPALA_KELUARGA" &&
-          w.jenisKelamin === "LAKI_LAKI",
+          w.peranDalamKK === "KEPALA_KELUARGA" && w.jenisKelamin === "LAKI_LAKI"
       ) ??
       anggota.find(
-        (w) => w.peranDalamKK === "ORANG_TUA" && w.jenisKelamin === "LAKI_LAKI",
+        (w) => w.peranDalamKK === "ORANG_TUA" && w.jenisKelamin === "LAKI_LAKI"
       );
 
     let ibu =
       anggota.find(
-        (w) => w.peranDalamKK === "ISTRI" && w.jenisKelamin === "PEREMPUAN",
+        (w) => w.peranDalamKK === "ISTRI" && w.jenisKelamin === "PEREMPUAN"
       ) ??
       anggota.find(
-        (w) => w.peranDalamKK === "ORANG_TUA" && w.jenisKelamin === "PEREMPUAN",
+        (w) => w.peranDalamKK === "ORANG_TUA" && w.jenisKelamin === "PEREMPUAN"
       );
 
     return { ayah, ibu };
@@ -298,9 +298,12 @@ export async function GET(
     const compiled = Handlebars.compile(rawTemplate);
     const renderedHtml = compiled(data);
 
+    console.log("Launching Puppeteer with path:", executablePath());
+
     // Buat PDF dengan Puppeteer
     const browser = await puppeteer.launch({
       headless: "new",
+      executablePath: executablePath(), // pakai bawaan puppeteer
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
@@ -337,7 +340,7 @@ export async function GET(
 
     return NextResponse.json(
       { message: "Gagal membuat PDF", error: error.message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
