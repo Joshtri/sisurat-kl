@@ -8,7 +8,7 @@ const userBaseSchema = z.object({
   confirmPassword: z.string(),
   extraRoles: z.array(z.nativeEnum(Role)).optional(), // Tambahkan extraRoles sebagai array enum Role
   role: z.nativeEnum(Role),
-  numberWhatsapp: z.string().optional(),
+  numberWhatsApp: z.string().optional(),
 
   // namaLengkap: z.string().min(1, "Nama lengkap wajib diisi"),
   // phone: z.string().optional(),
@@ -20,7 +20,7 @@ export const userSchema = userBaseSchema.refine(
   {
     path: ["confirmPassword"],
     message: "Password tidak cocok",
-  },
+  }
 );
 
 export const userSchemaPartial = userBaseSchema.partial(); // ✅ bisa gunakan ini untuk PATCH
