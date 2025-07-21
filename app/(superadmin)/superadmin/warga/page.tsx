@@ -51,8 +51,8 @@ export default function WargaPage() {
     tempatTanggalLahir:
       formatDateIndo(item.tanggalLahir ? String(item.tanggalLahir) : "") || "-",
     pekerjaan: item.pekerjaan || "-",
-    alamat: item.alamat || "-",
-    rtrw: `${item.rt || "-"} / ${item.rw || "-"}`,
+    alamat: item.kartuKeluarga?.alamat || "-",
+    rtrw: `${item.kartuKeluarga?.rt || "-"} / ${item.kartuKeluarga?.rw || "-"}`,
     status: formatStatus(item.statusHidup),
     actions: (
       <TableActions

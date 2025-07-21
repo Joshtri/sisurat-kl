@@ -18,4 +18,16 @@ export interface Warga {
   peranDalamKK: string | null;
   createdAt: string;
   updatedAt: string;
+
+  kartuKeluarga?: {
+    id: string;
+    nomorKK: string;
+    rt: string;
+    rw: string;
+    alamat: string;
+    kepalaKeluarga: {
+      id: string;
+      namaLengkap: string;
+    } | null;
+  } | null;
 }
