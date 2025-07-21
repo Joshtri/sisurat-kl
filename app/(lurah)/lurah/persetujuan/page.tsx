@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -9,6 +9,7 @@ import {
   XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/button";
+import { Spinner } from "@heroui/react";
 
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -22,14 +23,35 @@ import { formatDateIndo } from "@/utils/common";
 import { TableActionsInline } from "@/components/common/TableActionsInline";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { showToast } from "@/utils/toastHelper";
+import LoadingScreen from "@/components/ui/loading/LoadingScreen";
+
+
 
 export default function PersetujuanPage() {
   const router = useRouter();
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
 
   const { data = [], isLoading } = useQuery({
     queryKey: ["surat"],
     queryFn: getSuratForLurah,
   });
+
+  // Function to handle preview with loading
+  const handlePreview = async (suratId, type = "surat") => {
+    try {
+      setIsLoadingPreview(true);
+      await previewSuratPengantar(suratId);
+    } catch (error) {
+      console.error("Error previewing surat:", error);
+      showToast({
+        title: "Error",
+        description: "Gagal memuat preview surat",
+        color: "error",
+      });
+    } finally {
+      setIsLoadingPreview(false);
+    }
+  };
 
   const columns = [
     { key: "noSurat", label: "No Surat" },
@@ -62,13 +84,21 @@ export default function PersetujuanPage() {
           <TableActionsInline
             customActions={[
               {
+                key: "view",
+                label: "Preview Surat",
+                icon: DocumentIcon,
+                color: "primary",
+                onClick: async () => {
+                  await handlePreview(item.id, "surat");
+                },
+              },
+              {
                 key: "preview",
                 label: "Lihat Surat Pengantar RT",
                 icon: DocumentIcon,
                 color: "primary",
-
                 onClick: async () => {
-                  await previewSuratPengantar(item.id);
+                  await handlePreview(item.id, "pengantar");
                 },
               },
               {
@@ -83,22 +113,29 @@ export default function PersetujuanPage() {
                       title="Verifikasi Surat"
                       message={`Apakah Anda yakin ingin memverifikasi surat ${item.noSurat}?`}
                       onConfirm={async () => {
-                        await verifySuratByLurah(item.id as string, {
-                          status: "DIVERIFIKASI_LURAH",
-                        });
-                        showToast({
-                          title: "Berhasil",
-                          description: "Surat berhasil diverifikasi.",
-                          color: "success",
-                        });
-                        router.refresh();
+                        try {
+                          await verifySuratByLurah(item.id as string, {
+                            status: "DIVERIFIKASI_LURAH",
+                          });
+                          showToast({
+                            title: "Berhasil",
+                            description: "Surat berhasil diverifikasi.",
+                            color: "success",
+                          });
+                          router.refresh();
+                        } catch (error) {
+                          showToast({
+                            title: "Error",
+                            description: "Gagal memverifikasi surat",
+                            color: "error",
+                          });
+                        }
                       }}
                       trigger={
                         <Button
                           size="sm"
                           variant="flat"
                           color="success"
-                          // isLoading={isVerifying}
                           startContent={<CheckCircleIcon className="w-4 h-4" />}
                         >
                           Verifikasi
@@ -126,16 +163,24 @@ export default function PersetujuanPage() {
                       const alasan = prompt("Masukkan alasan penolakan:");
 
                       if (alasan) {
-                        verifySuratByLurah(item.id as string, {
-                          status: "DITOLAK_LURAH",
-                          catatanPenolakan: alasan,
-                        });
-                        showToast({
-                          title: "Berhasil",
-                          description: "Surat berhasil ditolak.",
-                          color: "success",
-                        });
-                        router.refresh();
+                        try {
+                          await verifySuratByLurah(item.id as string, {
+                            status: "DITOLAK_LURAH",
+                            catatanPenolakan: alasan,
+                          });
+                          showToast({
+                            title: "Berhasil",
+                            description: "Surat berhasil ditolak.",
+                            color: "success",
+                          });
+                          router.refresh();
+                        } catch (error) {
+                          showToast({
+                            title: "Error",
+                            description: "Gagal menolak surat",
+                            color: "error",
+                          });
+                        }
                       } else {
                         showToast({
                           title: "Dibatalkan",
@@ -149,7 +194,6 @@ export default function PersetujuanPage() {
                         size="sm"
                         variant="flat"
                         color="danger"
-                        // isLoading={isRejecting}
                         startContent={<XCircleIcon className="w-4 h-4" />}
                       >
                         Tolak
@@ -166,28 +210,33 @@ export default function PersetujuanPage() {
   }));
 
   return (
-    <ListGrid
-      actions={null}
-      breadcrumbs={[
-        { label: "Dashboard", href: "/lurah/dashboard" },
-        { label: "Persetujuan Surat" },
-      ]}
-      columns={columns}
-      description="Daftar semua surat dari warga yang masuk dalam sistem."
-      empty={
-        <EmptyState
-          icon={<DocumentIcon className="w-6 h-6" />}
-          title="Belum ada data surat"
-          description="Belum ada pengajuan surat yang masuk."
-        />
-      }
-      loading={isLoading}
-      pageSize={10}
-      rows={rows}
-      searchPlaceholder="Cari surat..."
-      showPagination={true}
-      title="Data Persetujuan Surat"
-      onSearch={(query) => console.log("Search:", query)}
-    />
+    <>
+      {/* Loading Screen Overlay */}
+      {isLoadingPreview && <LoadingScreen />}
+
+      <ListGrid
+        actions={null}
+        breadcrumbs={[
+          { label: "Dashboard", href: "/lurah/dashboard" },
+          { label: "Persetujuan Surat" },
+        ]}
+        columns={columns}
+        description="Daftar semua surat dari warga yang masuk dalam sistem."
+        empty={
+          <EmptyState
+            icon={<DocumentIcon className="w-6 h-6" />}
+            title="Belum ada data surat"
+            description="Belum ada pengajuan surat yang masuk."
+          />
+        }
+        loading={isLoading}
+        pageSize={10}
+        rows={rows}
+        searchPlaceholder="Cari surat..."
+        showPagination={true}
+        title="Data Persetujuan Surat"
+        onSearch={(query) => console.log("Search:", query)}
+      />
+    </>
   );
 }

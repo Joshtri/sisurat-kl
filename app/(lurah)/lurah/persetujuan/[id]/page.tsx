@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button, Card, CardBody, Chip, Image } from "@heroui/react";
+import { Button, Card, CardBody, Chip, Image, Spinner } from "@heroui/react";
 import {
   CheckCircleIcon,
   DocumentTextIcon,
@@ -15,17 +15,23 @@ import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
 import {
   getSuratDetailByLurah,
+  previewSuratPdf,
   previewSuratPengantar,
   verifySuratByLurah,
 } from "@/services/suratService";
 import { showToast } from "@/utils/toastHelper";
 import { formatDateIndo, formatKeyLabel } from "@/utils/common";
 import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
+import LoadingScreen from "@/components/ui/loading/LoadingScreen";
 
 export default function DetailPersetujuanPage() {
   const { id } = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  // Loading states for preview buttons
+  const [isLoadingSuratPdf, setIsLoadingSuratPdf] = useState(false);
+  const [isLoadingSuratPengantar, setIsLoadingSuratPengantar] = useState(false);
 
   const {
     data: surat,
@@ -85,6 +91,40 @@ export default function DetailPersetujuanPage() {
     },
   });
 
+  // Function to handle preview surat PDF with loading
+  const handlePreviewSuratPdf = async () => {
+    try {
+      setIsLoadingSuratPdf(true);
+      await previewSuratPdf(surat.id);
+    } catch (error) {
+      console.error("Error previewing surat PDF:", error);
+      showToast({
+        title: "Error",
+        description: "Gagal memuat surat PDF",
+        color: "error",
+      });
+    } finally {
+      setIsLoadingSuratPdf(false);
+    }
+  };
+
+  // Function to handle preview surat pengantar with loading
+  const handlePreviewSuratPengantar = async () => {
+    try {
+      setIsLoadingSuratPengantar(true);
+      await previewSuratPengantar(surat.id);
+    } catch (error) {
+      console.error("Error previewing surat pengantar:", error);
+      showToast({
+        title: "Error",
+        description: "Gagal memuat surat pengantar",
+        color: "error",
+      });
+    } finally {
+      setIsLoadingSuratPengantar(false);
+    }
+  };
+
   // Function to get status chip color
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -107,6 +147,10 @@ export default function DetailPersetujuanPage() {
 
   return (
     <>
+      {/* Loading Screen Overlays */}
+      {isLoadingSuratPdf && <LoadingScreen />}
+      {isLoadingSuratPengantar && <LoadingScreen />}
+
       <PageHeader
         title="Detail Surat Persetujuan"
         backHref="/lurah/persetujuan"
@@ -317,15 +361,37 @@ export default function DetailPersetujuanPage() {
         <Card>
           <CardBody>
             <div className="flex flex-col sm:flex-row gap-4">
+              <Button
+                onClick={handlePreviewSuratPdf}
+                variant="flat"
+                color="primary"
+                size="md"
+                isLoading={isLoadingSuratPdf}
+                disabled={isLoadingSuratPdf || isLoadingSuratPengantar}
+                startContent={
+                  !isLoadingSuratPdf && <DocumentTextIcon className="h-4 w-4" />
+                }
+              >
+                {isLoadingSuratPdf ? "Memuat..." : "Lihat Surat"}
+              </Button>
+
               {surat.idRT && (
                 <Button
-                  onClick={() => previewSuratPengantar(surat.id)}
+                  onClick={handlePreviewSuratPengantar}
                   variant="flat"
                   color="warning"
                   size="md"
-                  startContent={<DocumentTextIcon className="h-4 w-4" />}
+                  isLoading={isLoadingSuratPengantar}
+                  disabled={isLoadingSuratPdf || isLoadingSuratPengantar}
+                  startContent={
+                    !isLoadingSuratPengantar && (
+                      <DocumentTextIcon className="h-4 w-4" />
+                    )
+                  }
                 >
-                  Lihat Surat Pengantar
+                  {isLoadingSuratPengantar
+                    ? "Memuat..."
+                    : "Lihat Surat Pengantar"}
                 </Button>
               )}
 
@@ -343,6 +409,7 @@ export default function DetailPersetujuanPage() {
                         size="md"
                         color="success"
                         isLoading={isVerifying}
+                        disabled={isLoadingSuratPdf || isLoadingSuratPengantar}
                         startContent={<CheckCircleIcon className="w-5 h-5" />}
                       >
                         Verifikasi
@@ -371,6 +438,7 @@ export default function DetailPersetujuanPage() {
                         size="md"
                         color="danger"
                         isLoading={isRejecting}
+                        disabled={isLoadingSuratPdf || isLoadingSuratPengantar}
                         startContent={<XCircleIcon className="w-5 h-5" />}
                       >
                         Tolak
