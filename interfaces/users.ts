@@ -3,6 +3,7 @@ export interface Users {
   username: string;
   email: string | null;
   role: string;
+  numberWhatsApp: string | null; // Perbaiki penamaan properti
   createdAt: string;
   updatedAt: string;
   profil: {

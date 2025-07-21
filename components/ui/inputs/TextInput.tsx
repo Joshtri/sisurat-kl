@@ -14,6 +14,7 @@ interface TextInputProps
   isRequired?: boolean;
   isDisabled?: boolean;
   showPasswordToggle?: boolean;
+  helperText?: string; // <- tambahkan ini
   isNumber?: boolean; // <- tambah ini
 }
 
@@ -26,6 +27,7 @@ export function TextInput({
   isRequired = true,
   showPasswordToggle = false,
   className = "",
+  helperText,
   ...rest
 }: TextInputProps) {
   const {
@@ -103,8 +105,8 @@ export function TextInput({
           size="md"
           {...Object.fromEntries(
             Object.entries(rest).filter(
-              ([key]) => key !== "size" && key !== "isNumber",
-            ),
+              ([key]) => key !== "size" && key !== "isNumber"
+            )
           )}
         />
         {showPasswordToggle && type === "password" && (
@@ -122,6 +124,9 @@ export function TextInput({
         )}
       </div>
       {error && <p className="text-sm text-red-500">{error}</p>}
+      {helperText && !error && (
+        <p className="text-sm text-gray-500">{helperText}</p>
+      )}
     </div>
   );
 }

@@ -40,10 +40,11 @@ export default function UsersCreatePage() {
   const onSubmit = (data: UserSchema) => {
     const payload = {
       username: data.username,
-      email: data.email,
+      email: data.email || undefined, // Kirim undefined jika string kosong
       password: data.password,
       confirmPassword: data.confirmPassword,
       role: data.role as Role,
+      numberWhatsApp: data.numberWhatsApp || undefined, // Kirim undefined jika string kosong
     };
 
     mutate(payload);
@@ -70,6 +71,7 @@ export default function UsersCreatePage() {
             password: "",
             confirmPassword: "",
             role: "" as Role,
+            numberWhatsApp: "",
           }}
           schema={userSchema}
           onSubmit={onSubmit}
@@ -84,7 +86,7 @@ export default function UsersCreatePage() {
 
           <TextInput
             label="No. Telepon"
-            name="numberWhatsApp"
+            name="numberWhatsapp"
             isRequired={false}
           />
           <TextInput
