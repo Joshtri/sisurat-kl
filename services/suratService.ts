@@ -166,14 +166,13 @@ export async function verifySuratByLurah(id: string, data: any) {
 
   return res.data;
 }
-// services/suratService.js - UPDATE
 export const previewSuratPdf = async (id: string) => {
   const token = localStorage.getItem("token");
 
   const response = await fetch(`/api/surat/history/${id}/preview`, {
     headers: {
       Authorization: `Bearer ${token}`,
-      Accept: "text/html", // Accept HTML instead of PDF
+      Accept: "application/pdf", // Accept PDF instead of HTML
     },
   });
 
@@ -181,51 +180,35 @@ export const previewSuratPdf = async (id: string) => {
     throw new Error("Failed to fetch preview");
   }
 
-  // Get HTML content
-  const htmlContent = await response.text();
+  // Get PDF blob
+  const blob = await response.blob();
+  const blobUrl = URL.createObjectURL(blob);
 
-  // Convert HTML to PDF using browser's print function
-  const printWindow = window.open("", "_blank");
-  printWindow?.document.write(htmlContent);
-  printWindow?.document.close();
+  // Open PDF in new tab
+  window.open(blobUrl, "_blank");
 
-  // Auto print dialog
-  setTimeout(() => {
-    printWindow?.print();
-  }, 1000);
-
-  return new Blob(); // Dummy return
+  return blob;
 };
+
+
+// services/suratService.js - LANGSUNG DOWNLOAD AJA
 
 export async function downloadSuratPdf(id: string): Promise<void> {
   const token = localStorage.getItem("token");
-
-  if (!token) throw new Error("Token tidak ditemukan");
-
   const res = await fetch(`/api/surat/history/${id}/preview`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { Authorization: `Bearer ${token}` },
   });
-
-  if (!res.ok) {
-    const err = await res.json();
-
-    throw new Error(err.message || "Gagal mendownload PDF");
-  }
 
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);
 
   const link = document.createElement("a");
-
   link.href = url;
   link.download = `surat-${id}.pdf`;
   link.click();
 
   URL.revokeObjectURL(url);
 }
-
 // Get PDF preview as blob and open in new tab
 export async function previewSuratPengantar(id: string) {
   const res = await axios.get(`/api/surat/history/${id}/pengantar`, {

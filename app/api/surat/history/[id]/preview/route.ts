@@ -1,10 +1,8 @@
 import { readFile } from "fs/promises";
 import path from "path";
-
-// GANTI KE jsPDF + html2canvas untuk pure JavaScript solution
-import { JSDOM } from "jsdom";
-import Handlebars from "handlebars";
 import { NextRequest, NextResponse } from "next/server";
+import Handlebars from "handlebars";
+import puppeteer from "puppeteer"; // TAMBAH PUPPETEER
 
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
@@ -12,7 +10,6 @@ import { verifyToken } from "@/lib/auth";
 // Helper functions untuk Handlebars
 const formatTanggal = (date) => {
   if (!date) return "-";
-
   return new Date(date).toLocaleDateString("id-ID", {
     day: "2-digit",
     month: "long",
@@ -21,34 +18,13 @@ const formatTanggal = (date) => {
 };
 
 const addOne = (index) => index + 1;
-
 const terbilang = (num) => {
   const angka = [
-    "",
-    "satu",
-    "dua",
-    "tiga",
-    "empat",
-    "lima",
-    "enam",
-    "tujuh",
-    "delapan",
-    "sembilan",
-    "sepuluh",
-    "sebelas",
-    "dua belas",
-    "tiga belas",
-    "empat belas",
-    "lima belas",
-    "enam belas",
-    "tujuh belas",
-    "delapan belas",
-    "sembilan belas",
-    "dua puluh",
+    "", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh",
+    "sebelas", "dua belas", "tiga belas", "empat belas", "lima belas", "enam belas", "tujuh belas",
+    "delapan belas", "sembilan belas", "dua puluh",
   ];
-
   if (num <= 20) return angka[num] || num.toString();
-
   return num.toString();
 };
 
@@ -67,17 +43,11 @@ export async function GET(
     );
 
   const user = verifyToken(token);
-
   if (!user)
     return NextResponse.json({ message: "Token tidak valid" }, { status: 401 });
 
-  const formatTTL = (
-    tempat: string | null | undefined,
-    tanggal: Date | null | undefined,
-  ) =>
-    `${tempat ?? "-"}, ${
-      tanggal ? new Date(tanggal).toLocaleDateString("id-ID") : "-"
-    }`;
+  const formatTTL = (tempat, tanggal) =>
+    `${tempat ?? "-"}, ${tanggal ? new Date(tanggal).toLocaleDateString("id-ID") : "-"}`;
 
   const { sub: userId, role: userRole } = user;
 
@@ -113,22 +83,19 @@ export async function GET(
   if (!isAuthorized)
     return NextResponse.json({ message: "Akses ditolak" }, { status: 403 });
 
-  // Register Handlebars helpers - PENTING: Harus diregistrasi sebelum compile!
+  // Register Handlebars helpers
   Handlebars.registerHelper("formatTanggal", formatTanggal);
   Handlebars.registerHelper("addOne", addOne);
   Handlebars.registerHelper("terbilang", terbilang);
 
-  // Gunakan template .hbs (handlebars)
   const kodeSurat = surat.jenis.kode?.toLowerCase();
   const templatePath = path.resolve(`public/templates/surat-${kodeSurat}.hbs`);
 
   let rawTemplate = "";
-
   try {
     rawTemplate = await readFile(templatePath, "utf-8");
   } catch (err) {
     console.error("Template error:", err);
-
     return NextResponse.json(
       { message: `Template tidak ditemukan: ${kodeSurat}` },
       { status: 500 },
@@ -147,41 +114,26 @@ export async function GET(
 
   const daftarAnak = (surat.dataSurat as any)?.daftarAnak ?? [];
 
-  // Logika fallback pencarian ayah & ibu
-  function findOrangTua(anggota: typeof anggotaKK) {
-    let ayah =
-      anggota.find(
-        (w) =>
-          w.peranDalamKK === "KEPALA_KELUARGA" &&
-          w.jenisKelamin === "LAKI_LAKI",
-      ) ??
-      anggota.find(
-        (w) => w.peranDalamKK === "ORANG_TUA" && w.jenisKelamin === "LAKI_LAKI",
-      );
-
-    let ibu =
-      anggota.find(
-        (w) => w.peranDalamKK === "ISTRI" && w.jenisKelamin === "PEREMPUAN",
-      ) ??
-      anggota.find(
-        (w) => w.peranDalamKK === "ORANG_TUA" && w.jenisKelamin === "PEREMPUAN",
-      );
-
-    return { ayah, ibu };
-  }
-
-  // Ambil data orang tua
+  // Logika pencarian ayah & ibu
   const anggotaKK = await prisma.warga.findMany({
     where: { kartuKeluargaId: kk?.id },
   });
 
+  function findOrangTua(anggota: typeof anggotaKK) {
+    let ayah = anggota.find(w => w.peranDalamKK === "KEPALA_KELUARGA" && w.jenisKelamin === "LAKI_LAKI") ??
+      anggota.find(w => w.peranDalamKK === "ORANG_TUA" && w.jenisKelamin === "LAKI_LAKI");
+
+    let ibu = anggota.find(w => w.peranDalamKK === "ISTRI" && w.jenisKelamin === "PEREMPUAN") ??
+      anggota.find(w => w.peranDalamKK === "ORANG_TUA" && w.jenisKelamin === "PEREMPUAN");
+
+    return { ayah, ibu };
+  }
+
   const { ayah, ibu } = findOrangTua(anggotaKK);
 
-  // Data tambahan untuk berbagai jenis surat
+  // Data tambahan
   const extra = {
     ...((surat.dataSurat as Record<string, any>) ?? {}),
-
-    // Orang Tua
     ayah: {
       nama: ayah?.namaLengkap ?? "-",
       ttl: formatTTL(ayah?.tempatLahir, ayah?.tanggalLahir),
@@ -198,8 +150,6 @@ export async function GET(
       pekerjaan: ibu?.pekerjaan ?? "-",
       alamat: kk?.alamat ?? "-",
     },
-
-    // Anak (Pemohon)
     anak: {
       nama: profil?.namaLengkap,
       ttl: formatTTL(profil?.tempatLahir, profil?.tanggalLahir),
@@ -208,26 +158,10 @@ export async function GET(
       pekerjaan: profil?.pekerjaan ?? "-",
       alamat: kk?.alamat ?? "-",
     },
-
-    // Data umum
-    namaPasangan:
-      (surat.dataSurat as any)?.namaYangTidakDiTempat ??
-      ibu?.namaLengkap ??
-      ayah?.namaLengkap ??
-      "-",
+    namaPasangan: (surat.dataSurat as any)?.namaYangTidakDiTempat ?? ibu?.namaLengkap ?? ayah?.namaLengkap ?? "-",
     lokasiPasangan: (surat.dataSurat as any)?.lokasiTujuan ?? "-",
     keperluan: surat.alasanPengajuan ?? "-",
     tanggalSurat: new Date(),
-
-    // Data khusus surat ahli waris
-    namaAlmarhum:
-      (surat.dataSurat as any)?.namaAlmarhum ?? profil?.namaLengkap ?? "-",
-    tanggalMeninggal: (surat.dataSurat as any)?.tanggalMeninggal
-      ? new Date((surat.dataSurat as any).tanggalMeninggal)
-      : new Date(),
-    tempatMeninggal: (surat.dataSurat as any)?.tempatMeninggal ?? "Kupang",
-    saksi1: (surat.dataSurat as any)?.saksi1 ?? "Saksi Pertama",
-    saksi2: (surat.dataSurat as any)?.saksi2 ?? "Saksi Kedua",
   };
 
   // Kondisi khusus untuk surat nikah
@@ -235,9 +169,7 @@ export async function GET(
     extra.namaLengkap = profil?.namaLengkap ?? "-";
     extra.jenisKelamin = profil?.jenisKelamin ?? "-";
     extra.tempatLahir = profil?.tempatLahir ?? "-";
-    extra.tanggalLahir = profil?.tanggalLahir
-      ? new Date(profil.tanggalLahir).toLocaleDateString("id-ID")
-      : "-";
+    extra.tanggalLahir = profil?.tanggalLahir ? new Date(profil.tanggalLahir).toLocaleDateString("id-ID") : "-";
     extra.wargaNegara = "Indonesia";
     extra.agama = profil?.agama ?? "-";
     extra.pekerjaan = profil?.pekerjaan ?? "-";
@@ -246,10 +178,8 @@ export async function GET(
   }
 
   let statusPerkawinan = "-";
-
   if (kodeSurat === "janda_duda") {
-    statusPerkawinan =
-      profil?.jenisKelamin?.toLowerCase() === "perempuan" ? "Janda" : "Duda";
+    statusPerkawinan = profil?.jenisKelamin?.toLowerCase() === "perempuan" ? "Janda" : "Duda";
   }
 
   // Struktur data final
@@ -258,22 +188,13 @@ export async function GET(
     noSurat: surat.noSurat ?? "Belum ditentukan",
     namaLengkap: profil.namaLengkap,
     jenisKelamin: profil.jenisKelamin,
-    tempatTanggalLahir: `${profil.tempatLahir ?? "-"}, ${
-      profil.tanggalLahir
-        ? new Date(profil.tanggalLahir).toLocaleDateString("id-ID")
-        : "-"
-    }`,
+    tempatTanggalLahir: `${profil.tempatLahir ?? "-"}, ${profil.tanggalLahir ? new Date(profil.tanggalLahir).toLocaleDateString("id-ID") : "-"}`,
     dataSurat: {
       daftarAnak: daftarAnak.map((anak: any) => ({
         namaLengkap: anak.namaLengkap,
         tempatLahir: anak.tempatLahir,
         tanggalLahir: anak.tanggalLahir,
-        jenisKelamin:
-          anak.jenisKelamin === "LAKI_LAKI"
-            ? "L" // Singkatan untuk tabel
-            : anak.jenisKelamin === "PEREMPUAN"
-              ? "P" // Singkatan untuk tabel
-              : "-",
+        jenisKelamin: anak.jenisKelamin === "LAKI_LAKI" ? "L" : anak.jenisKelamin === "PEREMPUAN" ? "P" : "-",
       })),
     },
     nik: profil.nik,
@@ -284,14 +205,13 @@ export async function GET(
     rt: kk.rt ?? "-",
     rw: kk.rw ?? "-",
     noSuratPengantar: surat.noSuratPengantar ?? "-",
-    tanggalSuratPengantar:
-      surat.tanggalVerifikasiRT?.toLocaleDateString("id-ID") ?? "-",
+    tanggalSuratPengantar: surat.tanggalVerifikasiRT?.toLocaleDateString("id-ID") ?? "-",
     alasanPengajuan: surat.alasanPengajuan ?? "-",
     tanggalTerbit: new Date().toLocaleDateString("id-ID"),
     qrData: surat.id,
     namaLurah: "Viktor A. Makoni, S.Sos",
     nipLurah: "19731206 200701 1 009",
-    ...extra, // Merge semua data tambahan
+    ...extra,
   };
 
   try {
@@ -299,58 +219,35 @@ export async function GET(
     const compiled = Handlebars.compile(rawTemplate);
     const renderedHtml = compiled(data);
 
-    // Wrap HTML dengan CSS ukuran A4 minimal
-    const styledHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>Preview Surat</title>
-        <style>
-          @page {
-            size: A4;
-            margin: 0;
-          }
-          
-          body {
-            width: 210mm;
-            min-height: 297mm;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-          }
-          
-          @media print {
-            body {
-              width: 210mm;
-              height: 297mm;
-            }
-            @page {
-              size: A4 portrait;
-              margin: 0;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        ${renderedHtml}
-      </body>
-      </html>
-    `;
+    // TAMBAH PUPPETEER UNTUK GENERATE PDF
+    const browser = await puppeteer.launch({ headless: "new" });
+    const page = await browser.newPage();
 
-    return new Response(styledHtml, {
+    // Set content dengan HTML yang sudah di-render
+    await page.setContent(renderedHtml, { waitUntil: "networkidle0" });
+
+    // Generate PDF
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' }
+    });
+
+    await browser.close();
+
+    // RETURN PDF BINARY (BUKAN HTML!)
+    return new NextResponse(pdfBuffer, {
       status: 200,
       headers: {
-        "Content-Type": "text/html; charset=utf-8",
+        "Content-Type": "application/pdf",
         "Content-Disposition": "inline",
       },
     });
 
   } catch (error) {
-    console.error("HTML Generation error:", error);
-
+    console.error("[API] Error generating PDF:", error);
     return NextResponse.json(
-      { message: "Gagal membuat preview", error: error.message },
+      { message: "Gagal generate PDF" },
       { status: 500 },
     );
   }

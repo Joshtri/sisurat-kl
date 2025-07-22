@@ -9,7 +9,17 @@ import {
   XCircleIcon,
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
-import { Button } from "@heroui/button";
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input,
+  Textarea,
+  useDisclosure,
+} from "@heroui/react";
 
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -30,10 +40,31 @@ export default function PengajuanSuratPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
+  // Modal states
+  const {
+    isOpen: isVerifikasiOpen,
+    onOpen: onVerifikasiOpen,
+    onOpenChange: onVerifikasiOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: isPenolakanOpen,
+    onOpen: onPenolakanOpen,
+    onOpenChange: onPenolakanOpenChange,
+  } = useDisclosure();
+
+  // Form states
+  const [selectedSurat, setSelectedSurat] = useState(null);
+  const [noSurat, setNoSurat] = useState("");
+  const [alasanPenolakan, setAlasanPenolakan] = useState("");
+  const [formErrors, setFormErrors] = useState({
+    noSurat: "",
+    alasanPenolakan: "",
+  });
+
   // Loading states untuk berbagai preview actions
   const [loadingStates, setLoadingStates] = useState({
-    previewPdf: null, // akan berisi ID surat yang sedang loading
-    previewPengantar: null, // akan berisi ID surat yang sedang loading
+    previewPdf: null,
+    previewPengantar: null,
   });
 
   const { data = [], isLoading } = useQuery({
@@ -53,6 +84,41 @@ export default function PengajuanSuratPage() {
   const isAnyLoading = Object.values(loadingStates).some(
     (state) => state !== null
   );
+
+  // Reset form states
+  const resetForms = () => {
+    setSelectedSurat(null);
+    setNoSurat("");
+    setAlasanPenolakan("");
+    setFormErrors({ noSurat: "", alasanPenolakan: "" });
+  };
+
+  // Validate forms
+  const validateVerifikasiForm = () => {
+    const errors = { noSurat: "", alasanPenolakan: "" };
+    let isValid = true;
+
+    if (!noSurat.trim()) {
+      errors.noSurat = "Nomor surat wajib diisi";
+      isValid = false;
+    }
+
+    setFormErrors(errors);
+    return isValid;
+  };
+
+  const validatePenolakanForm = () => {
+    const errors = { noSurat: "", alasanPenolakan: "" };
+    let isValid = true;
+
+    if (!alasanPenolakan.trim()) {
+      errors.alasanPenolakan = "Alasan penolakan wajib diisi";
+      isValid = false;
+    }
+
+    setFormErrors(errors);
+    return isValid;
+  };
 
   // Function to handle preview PDF with loading
   const handlePreviewPdf = async (suratId) => {
@@ -94,10 +160,12 @@ export default function PengajuanSuratPage() {
     onSuccess: () => {
       showToast({
         title: "Berhasil",
-        description: "Surat diverifikasi.",
+        description: "Surat berhasil diverifikasi.",
         color: "success",
       });
       queryClient.invalidateQueries({ queryKey: ["surat-staff"] });
+      onVerifikasiOpenChange();
+      resetForms();
     },
     onError: () => {
       showToast({
@@ -116,11 +184,13 @@ export default function PengajuanSuratPage() {
       }),
     onSuccess: () => {
       showToast({
-        title: "Ditolak",
-        description: "Surat ditolak.",
+        title: "Berhasil",
+        description: "Surat berhasil ditolak.",
         color: "success",
       });
       queryClient.invalidateQueries({ queryKey: ["surat-staff"] });
+      onPenolakanOpenChange();
+      resetForms();
     },
     onError: () => {
       showToast({
@@ -130,6 +200,26 @@ export default function PengajuanSuratPage() {
       });
     },
   });
+
+  // Handle verifikasi submit
+  const handleVerifikasiSubmit = async () => {
+    if (!validateVerifikasiForm()) return;
+
+    await verifikasiSurat({
+      id: selectedSurat.id,
+      noSurat: noSurat.trim(),
+    });
+  };
+
+  // Handle penolakan submit
+  const handlePenolakanSubmit = async () => {
+    if (!validatePenolakanForm()) return;
+
+    await tolakSurat({
+      id: selectedSurat.id,
+      alasan: alasanPenolakan.trim(),
+    });
+  };
 
   const columns = [
     { key: "noSurat", label: "No Surat" },
@@ -176,42 +266,19 @@ export default function PengajuanSuratPage() {
                       icon: CheckCircleIcon,
                       color: "success",
                       render: (
-                        <ConfirmationDialog
-                          title="Verifikasi Surat"
-                          message="Yakin ingin memverifikasi surat ini?"
-                          confirmLabel="Verifikasi"
-                          confirmColor="success"
-                          loadingText="Memverifikasi..."
-                          onConfirm={async () => {
-                            const noSurat = prompt("Masukkan Nomor Surat:");
-
-                            if (!noSurat) {
-                              showToast({
-                                title: "Dibatalkan",
-                                description: "Nomor surat wajib diisi.",
-                                color: "warning",
-                              });
-
-                              return;
-                            }
-
-                            await verifikasiSurat({ id: item.id, noSurat });
+                        <Button
+                          size="sm"
+                          variant="flat"
+                          color="success"
+                          isDisabled={isAnyLoading || isVerifying}
+                          startContent={<CheckCircleIcon className="w-4 h-4" />}
+                          onPress={() => {
+                            setSelectedSurat(item);
+                            onVerifikasiOpen();
                           }}
-                          trigger={
-                            <Button
-                              size="sm"
-                              variant="flat"
-                              color="success"
-                              isLoading={isVerifying}
-                              isDisabled={isAnyLoading}
-                              startContent={
-                                <CheckCircleIcon className="w-4 h-4" />
-                              }
-                            >
-                              Verifikasi
-                            </Button>
-                          }
-                        />
+                        >
+                          Verifikasi
+                        </Button>
                       ),
                     },
                     {
@@ -220,38 +287,19 @@ export default function PengajuanSuratPage() {
                       icon: XCircleIcon,
                       color: "danger",
                       render: (
-                        <ConfirmationDialog
-                          title="Tolak Surat"
-                          message="Masukkan alasan penolakan:"
-                          confirmLabel="Tolak"
-                          confirmColor="danger"
-                          loadingText="Menolak..."
-                          onConfirm={async () => {
-                            const alasan = prompt("Masukkan alasan penolakan:");
-
-                            if (alasan) {
-                              await tolakSurat({ id: item.id, alasan });
-                            } else {
-                              showToast({
-                                title: "Dibatalkan",
-                                description: "Alasan penolakan tidak diisi.",
-                                color: "warning",
-                              });
-                            }
+                        <Button
+                          size="sm"
+                          variant="flat"
+                          color="danger"
+                          isDisabled={isAnyLoading || isRejecting}
+                          startContent={<XCircleIcon className="w-4 h-4" />}
+                          onPress={() => {
+                            setSelectedSurat(item);
+                            onPenolakanOpen();
                           }}
-                          trigger={
-                            <Button
-                              size="sm"
-                              variant="flat"
-                              color="danger"
-                              isLoading={isRejecting}
-                              isDisabled={isAnyLoading}
-                              startContent={<XCircleIcon className="w-4 h-4" />}
-                            >
-                              Tolak
-                            </Button>
-                          }
-                        />
+                        >
+                          Tolak
+                        </Button>
                       ),
                     },
                   ]}
@@ -330,6 +378,148 @@ export default function PengajuanSuratPage() {
           </div>
         </div>
       )}
+
+      {/* Modal Verifikasi */}
+      <Modal
+        isOpen={isVerifikasiOpen}
+        onOpenChange={onVerifikasiOpenChange}
+        placement="top-center"
+        backdrop="blur"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <CheckCircleIcon className="w-6 h-6 text-success" />
+                  <span>Verifikasi Surat</span>
+                </div>
+              </ModalHeader>
+              <ModalBody>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-default-600">
+                      Anda akan memverifikasi surat berikut:
+                    </p>
+                    <div className="bg-default-100 p-3 rounded-lg mt-2">
+                      <p className="font-medium">{selectedSurat?.jenisSurat}</p>
+                      <p className="text-sm text-default-600">
+                        Pemohon: {selectedSurat?.namaLengkap}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Input
+                    label="Nomor Surat"
+                    placeholder="Masukkan nomor surat (contoh: 001/KEL/2024)"
+                    value={noSurat}
+                    onValueChange={setNoSurat}
+                    isInvalid={!!formErrors.noSurat}
+                    errorMessage={formErrors.noSurat}
+                    isRequired
+                    variant="bordered"
+                  />
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="danger"
+                  variant="light"
+                  onPress={() => {
+                    onClose();
+                    resetForms();
+                  }}
+                  isDisabled={isVerifying}
+                >
+                  Batal
+                </Button>
+                <Button
+                  color="success"
+                  onPress={handleVerifikasiSubmit}
+                  isLoading={isVerifying}
+                  startContent={
+                    !isVerifying && <CheckCircleIcon className="w-4 h-4" />
+                  }
+                >
+                  {isVerifying ? "Memverifikasi..." : "Verifikasi"}
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      {/* Modal Penolakan */}
+      <Modal
+        isOpen={isPenolakanOpen}
+        onOpenChange={onPenolakanOpenChange}
+        placement="top-center"
+        backdrop="blur"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <XCircleIcon className="w-6 h-6 text-danger" />
+                  <span>Tolak Surat</span>
+                </div>
+              </ModalHeader>
+              <ModalBody>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-default-600">
+                      Anda akan menolak surat berikut:
+                    </p>
+                    <div className="bg-default-100 p-3 rounded-lg mt-2">
+                      <p className="font-medium">{selectedSurat?.jenisSurat}</p>
+                      <p className="text-sm text-default-600">
+                        Pemohon: {selectedSurat?.namaLengkap}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Textarea
+                    label="Alasan Penolakan"
+                    placeholder="Jelaskan alasan penolakan surat ini..."
+                    value={alasanPenolakan}
+                    onValueChange={setAlasanPenolakan}
+                    isInvalid={!!formErrors.alasanPenolakan}
+                    errorMessage={formErrors.alasanPenolakan}
+                    isRequired
+                    variant="bordered"
+                    minRows={3}
+                    maxRows={6}
+                  />
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="default"
+                  variant="light"
+                  onPress={() => {
+                    onClose();
+                    resetForms();
+                  }}
+                  isDisabled={isRejecting}
+                >
+                  Batal
+                </Button>
+                <Button
+                  color="danger"
+                  onPress={handlePenolakanSubmit}
+                  isLoading={isRejecting}
+                  startContent={
+                    !isRejecting && <XCircleIcon className="w-4 h-4" />
+                  }
+                >
+                  {isRejecting ? "Menolak..." : "Tolak Surat"}
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
 
       <ListGrid
         title="Pengajuan Surat"
