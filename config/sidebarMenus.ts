@@ -72,11 +72,25 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       iconSolid: ArchiveBoxIcon,
     },
     {
+      title: "Data Kartu Keluarga",
+      href: "/staff/daftar-kartu-keluarga",
+      icon: DocumentTextIcon,
+      iconSolid: DocumentSolidIcon,
+    },
+
+    {
       title: "Data Warga",
-      href: "/staff/warga",
+      href: "/staff/daftar-warga",
       icon: UserGroupIcon,
       iconSolid: UserGroupSolidIcon,
     },
+    {
+      title: "Data RT",
+      href: "/staff/data-rt",
+      icon: DocumentTextIcon,
+      iconSolid: DocumentSolidIcon,
+    },
+
 
     {
       title: "Profile",
@@ -109,8 +123,28 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
     },
 
     {
+      title: "Data Kartu Keluarga",
+      href: "/lurah/daftar-kartu-keluarga",
+      icon: DocumentTextIcon,
+      iconSolid: DocumentSolidIcon,
+    },
+
+    {
+      title: "Data Warga",
+      href: "/lurah/daftar-warga",
+      icon: UserGroupIcon,
+      iconSolid: UserGroupSolidIcon,
+    },
+    {
+      title: "Data RT",
+      href: "/lurah/data-rt",
+      icon: DocumentTextIcon,
+      iconSolid: DocumentSolidIcon,
+    },
+
+    {
       title: "Profile Anda",
-      href: "/warga/profile",
+      href: "/lurah/profile",
       icon: UserIcon,
       iconSolid: UserIcon,
     },

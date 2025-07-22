@@ -1,7 +1,7 @@
+// SuperAdminLayoutClient.tsx (Improved)
 "use client";
 
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
 import Header from "@/components/partials/Header";
 import Footer from "@/components/partials/Footer";
 import Sidebar from "@/components/partials/Sidebar";
@@ -13,19 +13,66 @@ export default function SuperAdminLayoutClient({
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // Close sidebar when clicking outside on mobile
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const sidebar = document.getElementById("mobile-sidebar");
+      const toggleButton = document.getElementById("sidebar-toggle");
+
+      if (
+        isSidebarOpen &&
+        sidebar &&
+        !sidebar.contains(event.target as Node) &&
+        toggleButton &&
+        !toggleButton.contains(event.target as Node)
+      ) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    if (isSidebarOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSidebarOpen]);
+
+  // Close sidebar on escape key
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isSidebarOpen) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isSidebarOpen]);
+
   return (
-    <div className="relative flex min-h-screen bg-gray-50">
+    <div className="relative flex min-h-screen">
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <div
+        id="mobile-sidebar"
         className={`${
-          isSidebarOpen ? "block" : "hidden"
-        } fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg lg:static lg:block`}
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:block`}
       >
         <Sidebar userRole="SUPERADMIN" />
       </div>
 
       {/* Main Layout */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         <Header
           userName="Super Admin"
           userRole="SUPERADMIN"
@@ -33,8 +80,8 @@ export default function SuperAdminLayoutClient({
         />
 
         {/* Main Content */}
-        <main className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-7xl mx-auto">{children}</div>
+        <main className="flex-1 p-4 sm:p-6 overflow-y-auto">
+          <div className="max-w-7xl mx-auto w-full">{children}</div>
         </main>
 
         <Footer userRole="SUPERADMIN" />

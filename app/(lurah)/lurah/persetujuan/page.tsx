@@ -1,29 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import {
   CheckCircleIcon,
   DocumentIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/button";
-import { Spinner } from "@heroui/react";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { ListGrid } from "@/components/ui/ListGrid";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
+import { TableActionsInline } from "@/components/common/TableActionsInline";
+import { ListGrid } from "@/components/ui/ListGrid";
+import LoadingScreen from "@/components/ui/loading/LoadingScreen";
 import {
   getSuratForLurah,
+  previewSuratPdf,
   previewSuratPengantar,
   verifySuratByLurah,
 } from "@/services/suratService";
 import { formatDateIndo } from "@/utils/common";
-import { TableActionsInline } from "@/components/common/TableActionsInline";
-import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { showToast } from "@/utils/toastHelper";
-import LoadingScreen from "@/components/ui/loading/LoadingScreen";
 
 
 
@@ -89,7 +89,7 @@ export default function PersetujuanPage() {
                 icon: DocumentIcon,
                 color: "primary",
                 onClick: async () => {
-                  await handlePreview(item.id, "surat");
+                  await previewSuratPdf(item.id);
                 },
               },
               {

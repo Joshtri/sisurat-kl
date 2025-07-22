@@ -7,6 +7,7 @@ import { Providers } from "./providers";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import "react-datepicker/dist/react-datepicker.css";
+import GlobalLoading from "@/components/GlobalLoading";
 
 export const metadata: Metadata = {
   title: {
@@ -19,13 +20,6 @@ export const metadata: Metadata = {
   },
 };
 
-// export const viewport: Viewport = {
-//   themeColor: [
-//     { media: "(prefers-color-scheme: light)", color: "white" },
-//     { media: "(prefers-color-scheme: dark)", color: "black" },
-//   ],
-// };
-
 export default function RootLayout({
   children,
 }: {
@@ -36,8 +30,8 @@ export default function RootLayout({
       <head />
       <body
         className={clsx(
-          "min-h-screen text-foreground bg-background font-sans antialiased",
-          fontSans.variable,
+          "min-h-screen text-foreground  font-sans antialiased",
+          fontSans.variable
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>

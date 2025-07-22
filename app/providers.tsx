@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastProvider } from "@heroui/toast";
 
 import { AuthProvider } from "@/contexts/AuthContext"; // Tambahkan ini
+import GlobalLoading from "@/components/GlobalLoading";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -32,6 +33,8 @@ export function Providers({ children, themeProps }: ProvidersProps) {
       <HeroUIProvider navigate={router.push}>
         <ToastProvider placement="top-right" />
         <ThemeProvider {...themeProps}>
+          <GlobalLoading />
+
           <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>
       </HeroUIProvider>
