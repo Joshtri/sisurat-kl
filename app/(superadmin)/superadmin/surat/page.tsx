@@ -75,7 +75,7 @@ export default function SuratPage() {
                     color: "error",
                   });
                 }
-              },
+            },
             },
             {
               key: "previewPengantar",

@@ -25,22 +25,38 @@ import {
 import { formatDateIndo } from "@/utils/common";
 import { showToast } from "@/utils/toastHelper";
 
-
-
 export default function PersetujuanPage() {
   const router = useRouter();
-  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+
+  // Loading states untuk berbagai preview actions
+  const [loadingStates, setLoadingStates] = useState({
+    previewSurat: null, // akan berisi ID surat yang sedang loading
+    previewPengantar: null, // akan berisi ID surat yang sedang loading
+  });
 
   const { data = [], isLoading } = useQuery({
     queryKey: ["surat"],
     queryFn: getSuratForLurah,
   });
 
-  // Function to handle preview with loading
-  const handlePreview = async (suratId, type = "surat") => {
+  // Helper function untuk set loading state
+  const setPreviewLoading = (type, suratId = null) => {
+    setLoadingStates((prev) => ({
+      ...prev,
+      [type]: suratId,
+    }));
+  };
+
+  // Check if any loading is active
+  const isAnyLoading = Object.values(loadingStates).some(
+    (state) => state !== null
+  );
+
+  // Function to handle preview surat PDF with loading
+  const handlePreviewSurat = async (suratId) => {
     try {
-      setIsLoadingPreview(true);
-      await previewSuratPengantar(suratId);
+      setPreviewLoading("previewSurat", suratId);
+      await previewSuratPdf(suratId);
     } catch (error) {
       console.error("Error previewing surat:", error);
       showToast({
@@ -49,7 +65,24 @@ export default function PersetujuanPage() {
         color: "error",
       });
     } finally {
-      setIsLoadingPreview(false);
+      setPreviewLoading("previewSurat", null);
+    }
+  };
+
+  // Function to handle preview surat pengantar with loading
+  const handlePreviewPengantar = async (suratId) => {
+    try {
+      setPreviewLoading("previewPengantar", suratId);
+      await previewSuratPengantar(suratId);
+    } catch (error) {
+      console.error("Error previewing surat pengantar:", error);
+      showToast({
+        title: "Error",
+        description: "Gagal memuat preview surat pengantar",
+        color: "error",
+      });
+    } finally {
+      setPreviewLoading("previewPengantar", null);
     }
   };
 
@@ -89,8 +122,23 @@ export default function PersetujuanPage() {
                 icon: DocumentIcon,
                 color: "primary",
                 onClick: async () => {
-                  await previewSuratPdf(item.id);
+                  await handlePreviewSurat(item.id);
                 },
+                render: (
+                  <Button
+                    size="sm"
+                    variant="flat"
+                    color="primary"
+                    startContent={<DocumentIcon className="w-4 h-4" />}
+                    isLoading={loadingStates.previewSurat === item.id}
+                    isDisabled={isAnyLoading}
+                    onPress={() => handlePreviewSurat(item.id)}
+                  >
+                    {loadingStates.previewSurat === item.id
+                      ? "Loading..."
+                      : "Preview Surat"}
+                  </Button>
+                ),
               },
               {
                 key: "preview",
@@ -98,8 +146,23 @@ export default function PersetujuanPage() {
                 icon: DocumentIcon,
                 color: "primary",
                 onClick: async () => {
-                  await handlePreview(item.id, "pengantar");
+                  await handlePreviewPengantar(item.id);
                 },
+                render: (
+                  <Button
+                    size="sm"
+                    variant="flat"
+                    color="secondary"
+                    startContent={<DocumentIcon className="w-4 h-4" />}
+                    isLoading={loadingStates.previewPengantar === item.id}
+                    isDisabled={isAnyLoading}
+                    onPress={() => handlePreviewPengantar(item.id)}
+                  >
+                    {loadingStates.previewPengantar === item.id
+                      ? "Loading..."
+                      : "Surat Pengantar"}
+                  </Button>
+                ),
               },
               {
                 key: "verifikasi",
@@ -108,44 +171,42 @@ export default function PersetujuanPage() {
                 color: "success",
                 onClick: async () => {},
                 render: (
-                  <>
-                    <ConfirmationDialog
-                      title="Verifikasi Surat"
-                      message={`Apakah Anda yakin ingin memverifikasi surat ${item.noSurat}?`}
-                      onConfirm={async () => {
-                        try {
-                          await verifySuratByLurah(item.id as string, {
-                            status: "DIVERIFIKASI_LURAH",
-                          });
-                          showToast({
-                            title: "Berhasil",
-                            description: "Surat berhasil diverifikasi.",
-                            color: "success",
-                          });
-                          router.refresh();
-                        } catch (error) {
-                          showToast({
-                            title: "Error",
-                            description: "Gagal memverifikasi surat",
-                            color: "error",
-                          });
-                        }
-                      }}
-                      trigger={
-                        <Button
-                          size="sm"
-                          variant="flat"
-                          color="success"
-                          startContent={<CheckCircleIcon className="w-4 h-4" />}
-                        >
-                          Verifikasi
-                        </Button>
+                  <ConfirmationDialog
+                    title="Verifikasi Surat"
+                    message={`Apakah Anda yakin ingin memverifikasi surat ${item.noSurat}?`}
+                    onConfirm={async () => {
+                      try {
+                        await verifySuratByLurah(item.id as string, {
+                          status: "DIVERIFIKASI_LURAH",
+                        });
+                        showToast({
+                          title: "Berhasil",
+                          description: "Surat berhasil diverifikasi.",
+                          color: "success",
+                        });
+                        router.refresh();
+                      } catch (error) {
+                        showToast({
+                          title: "Error",
+                          description: "Gagal memverifikasi surat",
+                          color: "error",
+                        });
                       }
-                    />
-                  </>
+                    }}
+                    trigger={
+                      <Button
+                        size="sm"
+                        variant="flat"
+                        color="success"
+                        startContent={<CheckCircleIcon className="w-4 h-4" />}
+                        isDisabled={isAnyLoading}
+                      >
+                        Verifikasi
+                      </Button>
+                    }
+                  />
                 ),
               },
-
               {
                 key: "tolak",
                 label: "Tolak",
@@ -195,6 +256,7 @@ export default function PersetujuanPage() {
                         variant="flat"
                         color="danger"
                         startContent={<XCircleIcon className="w-4 h-4" />}
+                        isDisabled={isAnyLoading}
                       >
                         Tolak
                       </Button>
@@ -209,10 +271,28 @@ export default function PersetujuanPage() {
     ),
   }));
 
+  // Determine loading message based on active loading state
+  const getLoadingMessage = () => {
+    if (loadingStates.previewSurat) return "Memuat preview surat...";
+    if (loadingStates.previewPengantar) return "Memuat surat pengantar...";
+    return "Memuat...";
+  };
+
   return (
     <>
-      {/* Loading Screen Overlay */}
-      {isLoadingPreview && <LoadingScreen />}
+      {/* Loading Screen Overlay dengan dynamic message */}
+      {isAnyLoading && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-4 animate-pulse">
+            <div className="w-40 h-40">
+              <LoadingScreen />
+            </div>
+            <p className="text-white text-sm font-medium">
+              {getLoadingMessage()}
+            </p>
+          </div>
+        </div>
+      )}
 
       <ListGrid
         actions={null}

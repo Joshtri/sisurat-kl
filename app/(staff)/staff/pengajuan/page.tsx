@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   DocumentIcon,
   CheckCircleIcon,
   XCircleIcon,
+  DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/button";
 
@@ -15,9 +16,11 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
 import { TableActionsInline } from "@/components/common/TableActionsInline";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
+import LoadingScreen from "@/components/ui/loading/LoadingScreen";
 import {
   getSuratForStaff,
   previewSuratPdf,
+  previewSuratPengantar,
   verifySuratByStaff,
 } from "@/services/suratService";
 import { formatDateIndo } from "@/utils/common";
@@ -27,10 +30,63 @@ export default function PengajuanSuratPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
+  // Loading states untuk berbagai preview actions
+  const [loadingStates, setLoadingStates] = useState({
+    previewPdf: null, // akan berisi ID surat yang sedang loading
+    previewPengantar: null, // akan berisi ID surat yang sedang loading
+  });
+
   const { data = [], isLoading } = useQuery({
     queryKey: ["surat-staff"],
     queryFn: getSuratForStaff,
   });
+
+  // Helper function untuk set loading state
+  const setPreviewLoading = (type, suratId = null) => {
+    setLoadingStates((prev) => ({
+      ...prev,
+      [type]: suratId,
+    }));
+  };
+
+  // Check if any loading is active
+  const isAnyLoading = Object.values(loadingStates).some(
+    (state) => state !== null
+  );
+
+  // Function to handle preview PDF with loading
+  const handlePreviewPdf = async (suratId) => {
+    try {
+      setPreviewLoading("previewPdf", suratId);
+      const blob = await previewSuratPdf(suratId);
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, "_blank");
+    } catch (err) {
+      showToast({
+        title: "Gagal Preview",
+        description: err.message,
+        color: "error",
+      });
+    } finally {
+      setPreviewLoading("previewPdf", null);
+    }
+  };
+
+  // Function to handle preview surat pengantar with loading
+  const handlePreviewPengantar = async (suratId) => {
+    try {
+      setPreviewLoading("previewPengantar", suratId);
+      await previewSuratPengantar(suratId);
+    } catch (err) {
+      showToast({
+        title: "Gagal Preview",
+        description: err.message || "Gagal memuat surat pengantar",
+        color: "error",
+      });
+    } finally {
+      setPreviewLoading("previewPengantar", null);
+    }
+  };
 
   const { mutateAsync: verifikasiSurat, isPending: isVerifying } = useMutation({
     mutationFn: ({ id, noSurat }: { id: string; noSurat: string }) =>
@@ -85,10 +141,17 @@ export default function PengajuanSuratPage() {
     { key: "actions", label: "", align: "end" as const },
   ];
 
+  // Determine loading message based on active loading state
+  const getLoadingMessage = () => {
+    if (loadingStates.previewPdf) return "Memuat preview PDF...";
+    if (loadingStates.previewPengantar) return "Memuat surat pengantar...";
+    return "Memuat...";
+  };
+
   const rows = Array.isArray(data)
     ? data.map((item: any) => {
         const sudahDiproses = ["DIVERIFIKASI_STAFF", "DITOLAK_STAFF"].includes(
-          item.status,
+          item.status
         );
 
         return {
@@ -140,6 +203,7 @@ export default function PengajuanSuratPage() {
                               variant="flat"
                               color="success"
                               isLoading={isVerifying}
+                              isDisabled={isAnyLoading}
                               startContent={
                                 <CheckCircleIcon className="w-4 h-4" />
                               }
@@ -181,6 +245,7 @@ export default function PengajuanSuratPage() {
                               variant="flat"
                               color="danger"
                               isLoading={isRejecting}
+                              isDisabled={isAnyLoading}
                               startContent={<XCircleIcon className="w-4 h-4" />}
                             >
                               Tolak
@@ -199,21 +264,48 @@ export default function PengajuanSuratPage() {
                     key: "preview",
                     label: "Preview PDF",
                     icon: DocumentIcon,
+                    color: "primary",
                     onClick: async () => {
-                      try {
-                        const blob = await previewSuratPdf(item.id);
-
-                        const blobUrl = URL.createObjectURL(blob);
-
-                        window.open(blobUrl, "_blank");
-                      } catch (err: any) {
-                        showToast({
-                          title: "Gagal Preview",
-                          description: err.message,
-                          color: "error",
-                        });
-                      }
+                      await handlePreviewPdf(item.id);
                     },
+                    render: (
+                      <Button
+                        size="sm"
+                        variant="flat"
+                        color="primary"
+                        startContent={<DocumentIcon className="w-4 h-4" />}
+                        isLoading={loadingStates.previewPdf === item.id}
+                        isDisabled={isAnyLoading}
+                        onPress={() => handlePreviewPdf(item.id)}
+                      >
+                        {loadingStates.previewPdf === item.id
+                          ? "Loading..."
+                          : "Preview PDF"}
+                      </Button>
+                    ),
+                  },
+                  {
+                    key: "previewPengantar",
+                    label: "Preview Pengantar",
+                    icon: DocumentTextIcon,
+                    onClick: async () => {
+                      await handlePreviewPengantar(item.id);
+                    },
+                    render: (
+                      <Button
+                        size="sm"
+                        variant="flat"
+                        color="secondary"
+                        startContent={<DocumentTextIcon className="w-4 h-4" />}
+                        isLoading={loadingStates.previewPengantar === item.id}
+                        isDisabled={isAnyLoading}
+                        onPress={() => handlePreviewPengantar(item.id)}
+                      >
+                        {loadingStates.previewPengantar === item.id
+                          ? "Loading..."
+                          : "Preview Pengantar"}
+                      </Button>
+                    ),
                   },
                 ]}
               />
@@ -224,35 +316,51 @@ export default function PengajuanSuratPage() {
     : [];
 
   return (
-    <ListGrid
-      title="Pengajuan Surat"
-      breadcrumbs={[
-        { label: "Dashboard", href: "/staff/dashboard" },
-        { label: "Pengajuan Surat" },
-      ]}
-      description="Daftar surat yang diajukan oleh warga dan siap diverifikasi oleh staff."
-      columns={columns}
-      rows={rows}
-      loading={isLoading}
-      pageSize={10}
-      searchPlaceholder="Cari surat..."
-      showPagination
-      onSearch={(query) => {
-        queryClient.setQueryData(["surat-staff"], (oldData: any) => {
-          if (!Array.isArray(oldData)) return oldData;
+    <>
+      {/* Loading Screen Overlay dengan dynamic message */}
+      {isAnyLoading && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-4 animate-pulse">
+            <div className="w-40 h-40">
+              <LoadingScreen />
+            </div>
+            <p className="text-white text-sm font-medium">
+              {getLoadingMessage()}
+            </p>
+          </div>
+        </div>
+      )}
 
-          return oldData.filter((item: any) =>
-            item.jenisSurat.toLowerCase().includes(query.toLowerCase()),
-          );
-        });
-      }}
-      empty={
-        <EmptyState
-          icon={<DocumentIcon className="w-6 h-6" />}
-          title="Belum ada pengajuan"
-          description="Tidak ada surat baru untuk diverifikasi."
-        />
-      }
-    />
+      <ListGrid
+        title="Pengajuan Surat"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/staff/dashboard" },
+          { label: "Pengajuan Surat" },
+        ]}
+        description="Daftar surat yang diajukan oleh warga dan siap diverifikasi oleh staff."
+        columns={columns}
+        rows={rows}
+        loading={isLoading}
+        pageSize={10}
+        searchPlaceholder="Cari surat..."
+        showPagination
+        onSearch={(query) => {
+          queryClient.setQueryData(["surat-staff"], (oldData: any) => {
+            if (!Array.isArray(oldData)) return oldData;
+
+            return oldData.filter((item: any) =>
+              item.jenisSurat.toLowerCase().includes(query.toLowerCase())
+            );
+          });
+        }}
+        empty={
+          <EmptyState
+            icon={<DocumentIcon className="w-6 h-6" />}
+            title="Belum ada pengajuan"
+            description="Tidak ada surat baru untuk diverifikasi."
+          />
+        }
+      />
+    </>
   );
 }
