@@ -229,16 +229,31 @@ export async function downloadSuratPdf(id: string): Promise<void> {
   }, 1000);
 }
 // Get PDF preview as blob and open in new tab
+// Preview surat pengantar - SAMA DENGAN PREVIEW PDF
 export async function previewSuratPengantar(id: string) {
-  const res = await axios.get(`/api/surat/history/${id}/pengantar`, {
-    responseType: "blob",
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`/api/surat/history/${id}/pengantar`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`, // atau sesuaikan dengan skema auth kamu
+      Authorization: `Bearer ${token}`,
+      Accept: "text/html", // Accept HTML like other previews
     },
   });
 
-  const blob = new Blob([res.data], { type: "application/pdf" });
-  const url = URL.createObjectURL(blob);
+  if (!response.ok) {
+    throw new Error("Failed to fetch surat pengantar");
+  }
 
-  window.open(url);
+  // Get HTML content
+  const htmlContent = await response.text();
+
+  // Open HTML in new tab - CONSISTENT BEHAVIOR
+  const printWindow = window.open("", "_blank");
+  printWindow?.document.write(htmlContent);
+  printWindow?.document.close();
+
+  // Auto print dialog
+  setTimeout(() => {
+    printWindow?.print();
+  }, 1000);
 }

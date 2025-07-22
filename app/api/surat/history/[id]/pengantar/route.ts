@@ -3,7 +3,7 @@ import path from "path";
 
 import { NextRequest, NextResponse } from "next/server";
 import Handlebars from "handlebars";
-import puppeteer from "puppeteer";
+// REMOVE PUPPETEER - return HTML instead
 
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
@@ -71,26 +71,63 @@ export async function GET(
       tanggal,
     });
 
-    const browser = await puppeteer.launch({ headless: "new" });
-    const page = await browser.newPage();
+    // RETURN HTML WITH PRINT STYLING - CONSISTENT WITH PREVIEW API
+    const styledHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Surat Pengantar RT</title>
+        <style>
+          @page {
+            size: A4;
+            margin: 0;
+          }
+          
+          body {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0;
+            padding: 20mm;
+            box-sizing: border-box;
+            font-family: 'Times New Roman', serif;
+            background: white;
+          }
+          
+          @media print {
+            body {
+              width: 210mm;
+              height: 297mm;
+              margin: 0;
+              padding: 20mm;
+            }
+            @page {
+              size: A4 portrait;
+              margin: 0;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        ${html}
+      </body>
+      </html>
+    `;
 
-    await page.setContent(html, { waitUntil: "networkidle0" });
-
-    const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
-
-    await browser.close();
-
-    return new NextResponse(pdfBuffer, {
+    // RETURN HTML INSTEAD OF PDF
+    return new Response(styledHtml, {
+      status: 200,
       headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": "inline; filename=surat-pengantar.pdf",
+        "Content-Type": "text/html; charset=utf-8",
+        "Content-Disposition": "inline",
       },
     });
+
   } catch (error) {
     console.error("[API] Surat Pengantar:", error);
 
     return NextResponse.json(
-      { message: "Gagal generate PDF" },
+      { message: "Gagal generate HTML" },
       { status: 500 },
     );
   }
