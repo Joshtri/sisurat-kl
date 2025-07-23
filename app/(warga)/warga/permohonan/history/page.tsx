@@ -84,7 +84,7 @@ export default function HistorySuratPermohonanPage() {
 
   // Check if any loading is active
   const isAnyLoading = Object.values(loadingStates).some(
-    (state) => state !== null
+    (state) => state !== null,
   );
 
   // Function to handle download PDF with loading
@@ -145,7 +145,7 @@ export default function HistorySuratPermohonanPage() {
 
   const paginatedHistory = history.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   const totalPages = Math.ceil(history.length / itemsPerPage);
@@ -163,6 +163,7 @@ export default function HistorySuratPermohonanPage() {
     if (loadingStates.downloadPdf) return "Mengunduh surat PDF...";
     if (loadingStates.previewPdf) return "Memuat preview surat...";
     if (loadingStates.previewPengantar) return "Memuat surat pengantar...";
+
     return "Memuat...";
   };
 

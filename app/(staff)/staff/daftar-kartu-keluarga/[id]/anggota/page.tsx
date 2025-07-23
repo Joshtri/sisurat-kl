@@ -2,14 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Chip,
-  Divider,
-  Skeleton,
-} from "@heroui/react";
+import { Card, CardBody, CardHeader, Chip, Divider } from "@heroui/react";
 import {
   UserIcon,
   IdentificationIcon,
@@ -66,7 +59,7 @@ export default function KartuKeluargaAnggotaPage() {
 
   const familyCardInfo = anggota[0]?.kartuKeluarga;
   const kepalaKeluarga = anggota.find(
-    (member) => member.peranDalamKK === "KEPALA_KELUARGA"
+    (member) => member.peranDalamKK === "KEPALA_KELUARGA",
   );
 
   if (isLoading) {

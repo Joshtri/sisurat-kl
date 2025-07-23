@@ -4,12 +4,12 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { UserIcon } from "@heroicons/react/24/outline";
+import { Button } from "@heroui/button";
 
 import { getAllWarga } from "@/services/wargaService";
 import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { formatDateIndo } from "@/utils/common";
-import { Button } from "@heroui/button";
 
 export default function DaftarWargaPage() {
   const router = useRouter();

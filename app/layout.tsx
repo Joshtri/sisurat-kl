@@ -7,7 +7,6 @@ import { Providers } from "./providers";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import "react-datepicker/dist/react-datepicker.css";
-import GlobalLoading from "@/components/GlobalLoading";
 
 export const metadata: Metadata = {
   title: {
@@ -31,7 +30,7 @@ export default function RootLayout({
       <body
         className={clsx(
           "min-h-screen text-foreground  font-sans antialiased",
-          fontSans.variable
+          fontSans.variable,
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>

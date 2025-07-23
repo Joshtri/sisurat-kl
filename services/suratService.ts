@@ -186,6 +186,7 @@ export const previewSuratPdf = async (id: string) => {
 
   // Convert HTML to PDF using browser's print function
   const printWindow = window.open("", "_blank");
+
   printWindow?.document.write(htmlContent);
   printWindow?.document.close();
 
@@ -212,6 +213,7 @@ export async function downloadSuratPdf(id: string): Promise<void> {
 
   if (!res.ok) {
     const err = await res.json();
+
     throw new Error(err.message || "Gagal mendownload PDF");
   }
 
@@ -220,6 +222,7 @@ export async function downloadSuratPdf(id: string): Promise<void> {
 
   // Open HTML in new tab - SAMA DENGAN PREVIEW
   const printWindow = window.open("", "_blank");
+
   printWindow?.document.write(htmlContent);
   printWindow?.document.close();
 
@@ -249,6 +252,7 @@ export async function previewSuratPengantar(id: string) {
 
   // Open HTML in new tab - CONSISTENT BEHAVIOR
   const printWindow = window.open("", "_blank");
+
   printWindow?.document.write(htmlContent);
   printWindow?.document.close();
 

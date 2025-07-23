@@ -49,7 +49,7 @@ export default function PersetujuanPage() {
 
   // Check if any loading is active
   const isAnyLoading = Object.values(loadingStates).some(
-    (state) => state !== null
+    (state) => state !== null,
   );
 
   // Function to handle preview surat PDF with loading
@@ -275,6 +275,7 @@ export default function PersetujuanPage() {
   const getLoadingMessage = () => {
     if (loadingStates.previewSurat) return "Memuat preview surat...";
     if (loadingStates.previewPengantar) return "Memuat surat pengantar...";
+
     return "Memuat...";
   };
 

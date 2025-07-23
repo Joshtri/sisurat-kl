@@ -62,6 +62,8 @@ model User {
   numberWhatsApp String? @unique
 
   rememberToken     String?
+  resetToken        String?   // For password reset tokens
+  resetTokenExpiry  DateTime? // When the reset token expires
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
   extraRoles        Role[]

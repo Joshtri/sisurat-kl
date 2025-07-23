@@ -45,7 +45,7 @@ export default function WargaDetailPage() {
     warga?.kartuKeluarga?.kepalaKeluargaId === warga?.id
       ? "(Diri Sendiri)"
       : warga?.kartuKeluarga?.anggota?.find(
-          (w: any) => w.id === warga.kartuKeluarga.kepalaKeluargaId
+          (w: any) => w.id === warga.kartuKeluarga.kepalaKeluargaId,
         )?.namaLengkap;
 
   return (

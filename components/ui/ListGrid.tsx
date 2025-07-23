@@ -22,7 +22,6 @@ import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { PageHeader } from "@/components/common/PageHeader";
 import SearchBar from "@/components/ui/SearchBar";
 import { SkeletonTable } from "@/components/ui/skeleton/SkeletonTable";
-import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 
 interface Column {
   key: string;
@@ -122,8 +121,8 @@ export function ListGrid({
 
       filtered = filtered.filter((row) =>
         Object.values(row).some(
-          (val) => typeof val === "string" && val.toLowerCase().includes(q)
-        )
+          (val) => typeof val === "string" && val.toLowerCase().includes(q),
+        ),
       );
     }
 
@@ -160,7 +159,7 @@ export function ListGrid({
         className="relative bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
       >
         {/* Blue top border */}
-        <div className="h-1 bg-blue-500"></div>
+        <div className="h-1 bg-blue-500" />
 
         <div className="p-4 space-y-3">
           {columns.map((column, columnIndex) => (
@@ -193,8 +192,9 @@ export function ListGrid({
                   aria-label="Options menu"
                   onAction={(key) => {
                     const menuItem = optionsMenu.find(
-                      (item) => item.key === key
+                      (item) => item.key === key,
                     );
+
                     if (menuItem && menuItem.onPress) {
                       menuItem.onPress();
                     }
@@ -226,15 +226,15 @@ export function ListGrid({
           key={index}
           className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
         >
-          <div className="h-1 bg-gray-200 animate-pulse"></div>
+          <div className="h-1 bg-gray-200 animate-pulse" />
           <div className="p-4 space-y-3">
             {columns.map((_, columnIndex) => (
               <div
                 key={columnIndex}
                 className={`${columnIndex !== columns.length - 1 ? "pb-3 border-b border-gray-100" : ""}`}
               >
-                <div className="h-3 bg-gray-200 rounded w-1/3 mb-2 animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/3 mb-2 animate-pulse" />
+                <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse" />
               </div>
             ))}
           </div>

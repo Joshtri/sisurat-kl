@@ -25,7 +25,6 @@ import { ListGrid } from "@/components/ui/ListGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import { TableActions } from "@/components/common/TableActions";
 import { TableActionsInline } from "@/components/common/TableActionsInline";
-import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import LoadingScreen from "@/components/ui/loading/LoadingScreen";
 import {
   getSuratForStaff,
@@ -82,7 +81,7 @@ export default function PengajuanSuratPage() {
 
   // Check if any loading is active
   const isAnyLoading = Object.values(loadingStates).some(
-    (state) => state !== null
+    (state) => state !== null,
   );
 
   // Reset form states
@@ -104,6 +103,7 @@ export default function PengajuanSuratPage() {
     }
 
     setFormErrors(errors);
+
     return isValid;
   };
 
@@ -117,6 +117,7 @@ export default function PengajuanSuratPage() {
     }
 
     setFormErrors(errors);
+
     return isValid;
   };
 
@@ -126,6 +127,7 @@ export default function PengajuanSuratPage() {
       setPreviewLoading("previewPdf", suratId);
       const blob = await previewSuratPdf(suratId);
       const blobUrl = URL.createObjectURL(blob);
+
       window.open(blobUrl, "_blank");
     } catch (err) {
       showToast({
@@ -235,13 +237,14 @@ export default function PengajuanSuratPage() {
   const getLoadingMessage = () => {
     if (loadingStates.previewPdf) return "Memuat preview PDF...";
     if (loadingStates.previewPengantar) return "Memuat surat pengantar...";
+
     return "Memuat...";
   };
 
   const rows = Array.isArray(data)
     ? data.map((item: any) => {
         const sudahDiproses = ["DIVERIFIKASI_STAFF", "DITOLAK_STAFF"].includes(
-          item.status
+          item.status,
         );
 
         return {
@@ -539,7 +542,7 @@ export default function PengajuanSuratPage() {
             if (!Array.isArray(oldData)) return oldData;
 
             return oldData.filter((item: any) =>
-              item.jenisSurat.toLowerCase().includes(query.toLowerCase())
+              item.jenisSurat.toLowerCase().includes(query.toLowerCase()),
             );
           });
         }}

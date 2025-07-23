@@ -77,11 +77,11 @@ export function SystemOverview({
   });
 
   // Wrapper component for tooltip functionality
-  const TooltipWrapper = ({ 
-    children, 
-    content, 
-    showTooltip = false, 
-    placement = "bottom" 
+  const TooltipWrapper = ({
+    children,
+    content,
+    showTooltip = false,
+    placement = "bottom",
   }: {
     children: React.ReactNode;
     content: string;
@@ -91,12 +91,11 @@ export function SystemOverview({
     if (showTooltip) {
       return (
         <Tooltip content={content} placement={placement}>
-          <div className="inline-block">
-            {children}
-          </div>
+          <div className="inline-block">{children}</div>
         </Tooltip>
       );
     }
+
     return <>{children}</>;
   };
 
@@ -105,8 +104,8 @@ export function SystemOverview({
       <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <h3 className="text-lg font-semibold">System Overview</h3>
         <div className="flex gap-2 justify-end self-end sm:self-auto">
-          <TooltipWrapper 
-            content="Check System Health" 
+          <TooltipWrapper
+            content="Check System Health"
             showTooltip={isMobile}
             placement="bottom"
           >
@@ -122,17 +121,25 @@ export function SystemOverview({
                   size="sm"
                   color="primary"
                   variant="flat"
-                  startContent={isMobile ? undefined : <ServerStackIcon className="w-4 h-4" />}
+                  startContent={
+                    isMobile ? undefined : (
+                      <ServerStackIcon className="w-4 h-4" />
+                    )
+                  }
                 >
-                  {isMobile ? <ServerStackIcon className="w-4 h-4" /> : "Check System Health"}
+                  {isMobile ? (
+                    <ServerStackIcon className="w-4 h-4" />
+                  ) : (
+                    "Check System Health"
+                  )}
                 </Button>
               }
               onConfirm={handleCheckHealth}
             />
           </TooltipWrapper>
 
-          <TooltipWrapper 
-            content="Restart System" 
+          <TooltipWrapper
+            content="Restart System"
             showTooltip={isMobile}
             placement="bottom"
           >
@@ -149,7 +156,9 @@ export function SystemOverview({
                   color="primary"
                   size="sm"
                   variant="flat"
-                  startContent={isMobile ? undefined : <ArrowPathIcon className="w-4 h-4" />}
+                  startContent={
+                    isMobile ? undefined : <ArrowPathIcon className="w-4 h-4" />
+                  }
                 >
                   {isMobile ? <ArrowPathIcon className="w-4 h-4" /> : "Restart"}
                 </Button>
@@ -161,8 +170,10 @@ export function SystemOverview({
             />
           </TooltipWrapper>
 
-          <TooltipWrapper 
-            content={isMaintenance ? "Disable Maintenance" : "Enable Maintenance"} 
+          <TooltipWrapper
+            content={
+              isMaintenance ? "Disable Maintenance" : "Enable Maintenance"
+            }
             showTooltip={isMobile}
             placement="bottom"
           >
@@ -182,7 +193,9 @@ export function SystemOverview({
                   ? "This will disable maintenance mode and restore normal access to the system."
                   : "This will enable maintenance mode. All users will be temporarily blocked."
               }
-              title={isMaintenance ? "Disable Maintenance" : "Enable Maintenance"}
+              title={
+                isMaintenance ? "Disable Maintenance" : "Enable Maintenance"
+              }
               trigger={
                 <Button
                   isIconOnly={isMobile}
@@ -190,9 +203,19 @@ export function SystemOverview({
                   size="sm"
                   variant="flat"
                   isLoading={isToggling}
-                  startContent={isMobile ? undefined : <ShieldExclamationIcon className="w-4 h-4" />}
+                  startContent={
+                    isMobile ? undefined : (
+                      <ShieldExclamationIcon className="w-4 h-4" />
+                    )
+                  }
                 >
-                  {isMobile ? <ShieldExclamationIcon className="w-4 h-4" /> : (isMaintenance ? "Disable Maintenance" : "Maintenance")}
+                  {isMobile ? (
+                    <ShieldExclamationIcon className="w-4 h-4" />
+                  ) : isMaintenance ? (
+                    "Disable Maintenance"
+                  ) : (
+                    "Maintenance"
+                  )}
                 </Button>
               }
               onConfirm={() => toggleMaintenance(!isMaintenance)}
@@ -235,8 +258,8 @@ export function SystemOverview({
             <span className="text-default-600">
               {backupStatus || "Loading..."}
             </span>
-            <TooltipWrapper 
-              content="Create Backup" 
+            <TooltipWrapper
+              content="Create Backup"
               showTooltip={isMobile}
               placement="left"
             >

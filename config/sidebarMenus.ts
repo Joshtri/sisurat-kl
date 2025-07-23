@@ -91,7 +91,6 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       iconSolid: DocumentSolidIcon,
     },
 
-
     {
       title: "Profile",
       href: "/staff/profile",

@@ -2,7 +2,6 @@ import { readFile } from "fs/promises";
 import path from "path";
 
 // GANTI KE jsPDF + html2canvas untuk pure JavaScript solution
-import { JSDOM } from "jsdom";
 import Handlebars from "handlebars";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -345,7 +344,6 @@ export async function GET(
         "Content-Disposition": "inline",
       },
     });
-
   } catch (error) {
     console.error("HTML Generation error:", error);
 

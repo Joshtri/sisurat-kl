@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+
 import "@/styles/globals.css";
 import Header from "@/components/partials/Header";
 import Footer from "@/components/partials/Footer";
@@ -48,6 +49,7 @@ export default function StaffLayout({
     };
 
     document.addEventListener("keydown", handleEscape);
+
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isSidebarOpen]);
 

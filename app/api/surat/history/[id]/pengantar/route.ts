@@ -122,7 +122,6 @@ export async function GET(
         "Content-Disposition": "inline",
       },
     });
-
   } catch (error) {
     console.error("[API] Surat Pengantar:", error);
 

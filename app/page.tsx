@@ -245,17 +245,11 @@ export default function LoginPage() {
                   </Switch>
                   <Link
                     className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                    href="#"
+                    href="/forgot-password"
                   >
                     Lupa password?
                   </Link>
                 </div>
-
-                {/* {getErrorMessage() && (
-                  <div className="text-red-500 text-sm text-center">
-                    {getErrorMessage()}
-                  </div>
-                )} */}
 
                 <Button
                   className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 text-lg shadow-lg transform hover:scale-[1.02] transition-all duration-200"

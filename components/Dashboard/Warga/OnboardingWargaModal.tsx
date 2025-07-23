@@ -56,6 +56,7 @@ export default function OnboardingWargaModal({
     const k = 1024;
     const sizes = ["B", "KB", "MB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
+
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
   };
 
@@ -157,6 +158,7 @@ export default function OnboardingWargaModal({
         type: "manual",
         message: ktpValidation,
       });
+
       return;
     }
 
@@ -165,6 +167,7 @@ export default function OnboardingWargaModal({
         type: "manual",
         message: kkValidation,
       });
+
       return;
     }
 
@@ -182,7 +185,7 @@ export default function OnboardingWargaModal({
       const files = e.target.files;
       const validation = validateFile(
         files,
-        fieldName === "fileKtp" ? "KTP" : "Kartu Keluarga"
+        fieldName === "fileKtp" ? "KTP" : "Kartu Keluarga",
       );
 
       if (validation === true) {
