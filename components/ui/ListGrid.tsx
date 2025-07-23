@@ -69,7 +69,7 @@ interface ListGridProps {
   loading?: boolean;
   empty?: ReactNode;
   onOptionsClick?: () => void | ReactNode;
-  optionsMenu?: OptionsMenuItem[]; // New prop for options menu items
+  optionsMenu?: OptionsMenuItem[];
   pageSize?: number;
   showPagination?: boolean;
   isMobile?: boolean;
@@ -100,7 +100,6 @@ export function ListGrid({
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Define onPageChange function properly
   const onPageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -123,8 +122,8 @@ export function ListGrid({
 
       filtered = filtered.filter((row) =>
         Object.values(row).some(
-          (val) => typeof val === "string" && val.toLowerCase().includes(q),
-        ),
+          (val) => typeof val === "string" && val.toLowerCase().includes(q)
+        )
       );
     }
 
@@ -154,24 +153,68 @@ export function ListGrid({
     setCurrentPage(1);
   }, [searchQuery, rows]);
 
-  const renderMobileCard = (item: Row) => {
+  const renderMobileCard = (item: Row, index: number) => {
     return (
       <div
         key={item.key}
-        className="mb-4 p-4 border rounded-lg shadow-sm bg-white"
+        className="relative bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
       >
-        {columns.map((column) => (
-          <div key={`${item.key}-${column.key}`} className="mb-2 last:mb-0">
-            <div className="text-sm font-medium text-gray-500">
-              {column.label}
+        {/* Blue top border */}
+        <div className="h-1 bg-blue-500"></div>
+
+        <div className="p-4 space-y-3">
+          {columns.map((column, columnIndex) => (
+            <div
+              key={`${item.key}-${column.key}`}
+              className={`flex flex-col ${columnIndex !== columns.length - 1 ? "pb-3 border-b border-gray-100" : ""}`}
+            >
+              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                {column.label}
+              </div>
+              <div className="text-sm text-gray-900 font-medium">
+                {typeof item[column.key] === "object" &&
+                item[column.key] !== null
+                  ? item[column.key]
+                  : getKeyValue(item, column.key) || "-"}
+              </div>
             </div>
-            <div className="text-sm text-gray-800">
-              {typeof item[column.key] === "object" && item[column.key] !== null
-                ? item[column.key]
-                : getKeyValue(item, column.key)}
+          ))}
+
+          {/* Options menu for mobile cards */}
+          {optionsMenu.length > 0 && (
+            <div className="flex justify-end pt-2 border-t border-gray-100">
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button isIconOnly variant="light" size="sm">
+                    <EllipsisVerticalIcon className="w-4 h-4 text-gray-400" />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu
+                  aria-label="Options menu"
+                  onAction={(key) => {
+                    const menuItem = optionsMenu.find(
+                      (item) => item.key === key
+                    );
+                    if (menuItem && menuItem.onPress) {
+                      menuItem.onPress();
+                    }
+                  }}
+                >
+                  {optionsMenu.map((item) => (
+                    <DropdownItem
+                      key={item.key}
+                      color={item.color}
+                      variant={item.variant}
+                      startContent={item.icon}
+                    >
+                      {item.label}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </Dropdown>
             </div>
-          </div>
-        ))}
+          )}
+        </div>
       </div>
     );
   };
@@ -179,12 +222,27 @@ export function ListGrid({
   const renderMobileSkeleton = () => (
     <div className="space-y-4">
       {Array.from({ length: pageSize }).map((_, index) => (
-        <SkeletonCard key={index} />
+        <div
+          key={index}
+          className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
+        >
+          <div className="h-1 bg-gray-200 animate-pulse"></div>
+          <div className="p-4 space-y-3">
+            {columns.map((_, columnIndex) => (
+              <div
+                key={columnIndex}
+                className={`${columnIndex !== columns.length - 1 ? "pb-3 border-b border-gray-100" : ""}`}
+              >
+                <div className="h-3 bg-gray-200 rounded w-1/3 mb-2 animate-pulse"></div>
+                <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+              </div>
+            ))}
+          </div>
+        </div>
       ))}
     </div>
   );
 
-  // Render options menu button
   const renderOptionsMenu = () => {
     if (optionsMenu.length === 0) return null;
 
@@ -221,11 +279,11 @@ export function ListGrid({
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       <PageHeader
         actions={
           <div className="flex items-center gap-2">
-            {renderOptionsMenu()}
+            {!isMobile && renderOptionsMenu()}
             {actions}
           </div>
         }
@@ -252,20 +310,24 @@ export function ListGrid({
           <SkeletonTable rows={pageSize} columns={columns.length} />
         )
       ) : filteredRows.length === 0 ? (
-        (empty ?? <div className="text-center text-gray-400">Data kosong.</div>)
+        (empty ?? (
+          <div className="text-center py-12">
+            <div className="text-gray-400 text-sm">Data kosong.</div>
+          </div>
+        ))
       ) : isMobile ? (
-        <>
-          <div className="space-y-3">
-            {paginatedRows.map((item) => renderMobileCard(item))}
+        <div className="space-y-4">
+          <div className="grid gap-4">
+            {paginatedRows.map((item, index) => renderMobileCard(item, index))}
           </div>
 
           {showPagination && totalPages > 1 && (
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center pt-4">
               <Pagination
                 showControls
                 showShadow
                 classNames={{
-                  wrapper: "gap-2",
+                  wrapper: "gap-1",
                   item: "w-8 h-8 text-small",
                   cursor: "font-bold",
                 }}
@@ -276,16 +338,16 @@ export function ListGrid({
               />
             </div>
           )}
-        </>
+        </div>
       ) : (
-        <>
+        <div className="space-y-4">
           <Table aria-label="Tabel">
             <TableHeader columns={columns}>
               {(column) => (
                 <TableColumn
                   key={column.key}
                   align={column.align ?? "start"}
-                  className="cursor-pointer select-none"
+                  className="cursor-pointer select-none hover:bg-gray-50"
                   onClick={() => handleSort(column.key)}
                 >
                   {column.label}
@@ -296,7 +358,7 @@ export function ListGrid({
             </TableHeader>
             <TableBody items={paginatedRows}>
               {(item) => (
-                <TableRow key={item.key}>
+                <TableRow key={item.key} className="hover:bg-gray-50">
                   {(columnKey) => (
                     <TableCell>
                       {typeof item[columnKey] === "object" &&
@@ -311,7 +373,7 @@ export function ListGrid({
           </Table>
 
           {showPagination && totalPages > 1 && (
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center pt-4">
               <Pagination
                 showControls
                 showShadow
@@ -327,7 +389,7 @@ export function ListGrid({
               />
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );
