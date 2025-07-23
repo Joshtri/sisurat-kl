@@ -140,7 +140,7 @@ export default function DashboardSuperAdmin() {
           color="warning"
           action={
             <Button color="warning" size="sm">
-              Review
+              Lihat Surat
             </Button>
           }
           icon={<ShieldExclamationIcon className="w-6 h-6 text-warning" />}
