@@ -177,12 +177,7 @@ export default function Header({
             >
               Profil
             </DropdownItem>
-            <DropdownItem
-              key="help"
-              href={`/${userRole.toLowerCase()}/bantuan`}
-            >
-              Bantuan
-            </DropdownItem>
+
             <DropdownItem
               onClick={handleLogout}
               key="logout"

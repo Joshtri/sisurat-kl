@@ -3,7 +3,18 @@
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button, Card, CardBody, Chip, Image } from "@heroui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  Chip,
+  Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@heroui/react";
 import {
   CheckCircleIcon,
   DocumentTextIcon,
@@ -32,7 +43,7 @@ export default function DetailPersetujuanPage() {
   // Loading states for preview buttons
   const [isLoadingSuratPdf, setIsLoadingSuratPdf] = useState(false);
   const [isLoadingSuratPengantar, setIsLoadingSuratPengantar] = useState(false);
-
+  const [previewFileUrl, setPreviewFileUrl] = useState<string | null>(null);
   const {
     data: surat,
     isLoading,
@@ -224,6 +235,31 @@ export default function DetailPersetujuanPage() {
             />
           </CardBody>
         </Card>
+
+        <h3 className="text-lg font-semibold text-gray-800">Data Pendukung</h3>
+
+        <div className="flex flex-wrap gap-2">
+          {surat.pemohon.profil.fileKtp && (
+            <Button
+              size="sm"
+              variant="flat"
+              color="secondary"
+              onPress={() => setPreviewFileUrl(surat.pemohon.profil.fileKtp!)}
+            >
+              Lihat File KTP
+            </Button>
+          )}
+          {surat.pemohon.profil.fileKk && (
+            <Button
+              size="sm"
+              variant="flat"
+              color="secondary"
+              onPress={() => setPreviewFileUrl(surat.pemohon.profil.fileKk!)}
+            >
+              Lihat File KK
+            </Button>
+          )}
+        </div>
 
         {/* Alasan Pengajuan */}
         {surat.alasanPengajuan && (
@@ -446,6 +482,42 @@ export default function DetailPersetujuanPage() {
                     }
                   />
                 </>
+              )}
+
+              {previewFileUrl && (
+                <Modal
+                  isOpen={!!previewFileUrl}
+                  onClose={() => setPreviewFileUrl(null)}
+                  size="3xl"
+                  placement="center"
+                >
+                  <ModalContent>
+                    <ModalHeader>Pratinjau Dokumen</ModalHeader>
+                    <ModalBody>
+                      {previewFileUrl.endsWith(".pdf") ? (
+                        <iframe
+                          title="Preview PDF"
+                          src={previewFileUrl}
+                          className="w-full h-[80vh] rounded-md"
+                        />
+                      ) : (
+                        <Image
+                          src={previewFileUrl}
+                          alt="Preview Dokumen"
+                          className="w-full max-h-[80vh] object-contain rounded-md"
+                        />
+                      )}
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button
+                        color="primary"
+                        onPress={() => setPreviewFileUrl(null)}
+                      >
+                        Tutup
+                      </Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </Modal>
               )}
             </div>
           </CardBody>

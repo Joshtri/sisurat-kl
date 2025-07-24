@@ -3,7 +3,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/button";
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  DocumentTextIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/outline";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { ListGrid } from "@/components/ui/ListGrid";
@@ -11,12 +15,19 @@ import { TableActions } from "@/components/common/TableActions";
 import { TableActionsInline } from "@/components/common/TableActionsInline";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { showToast } from "@/utils/toastHelper";
-import { getSuratByRT, verifySuratByRT } from "@/services/suratService";
+import {
+  getSuratByRT,
+  previewSuratPengantar,
+  verifySuratByRT,
+} from "@/services/suratService";
 import { formatDateIndo } from "@/utils/common";
+import { useState } from "react";
 
 export default function DaftarPengajuanPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const [previewFileUrl, setPreviewFileUrl] = useState<string | null>(null);
 
   const { data = [], isLoading } = useQuery({
     queryKey: ["rt-surat"],
@@ -94,82 +105,94 @@ export default function DaftarPengajuanPage() {
             onView={() => router.push(`/rt/pengajuan/${item.id}`)}
           />
 
-          {!sudahDitangani && (
-            <TableActionsInline
-              customActions={[
-                {
-                  key: "verifikasi",
-                  label: "Verifikasi",
-                  icon: CheckCircleIcon,
-                  color: "success",
-                  onClick: () => {},
-                  render: (
-                    <ConfirmationDialog
-                      confirmLabel="Verifikasi"
-                      confirmColor="success"
-                      message="Yakin ingin memverifikasi surat ini?"
-                      title="Verifikasi Surat"
-                      loadingText="Memverifikasi..."
-                      onConfirm={async () => {
-                        await verifikasiSurat(item.id);
-                      }}
-                      trigger={
-                        <Button
-                          size="sm"
-                          variant="flat"
-                          color="success"
-                          isLoading={isVerifying}
-                          startContent={<CheckCircleIcon className="w-4 h-4" />}
-                        >
-                          Verifikasi
-                        </Button>
-                      }
-                    />
-                  ),
+          <TableActionsInline
+            customActions={[
+              {
+                key: "previewPengantar",
+                label: "Preview Pengantar",
+                icon: DocumentTextIcon,
+                onClick: async () => {
+                  await previewSuratPengantar(item.id);
                 },
-                {
-                  key: "tolak",
-                  label: "Tolak",
-                  icon: XCircleIcon,
-                  color: "danger",
-                  onClick: () => {},
-                  render: (
-                    <ConfirmationDialog
-                      confirmLabel="Tolak"
-                      confirmColor="danger"
-                      title="Tolak Surat"
-                      loadingText="Menolak..."
-                      message="Masukkan alasan penolakan dalam prompt yang akan muncul."
-                      onConfirm={async () => {
-                        const alasan = prompt("Masukkan alasan penolakan:");
+              },
+              ...(!sudahDitangani
+                ? [
+                    {
+                      key: "verifikasi",
+                      label: "Verifikasi",
+                      icon: CheckCircleIcon,
+                      color: "success" as "success",
+                      onClick: () => {},
+                      render: (
+                        <ConfirmationDialog
+                          confirmLabel="Verifikasi"
+                          confirmColor="success"
+                          message="Yakin ingin memverifikasi surat ini?"
+                          title="Verifikasi Surat"
+                          loadingText="Memverifikasi..."
+                          onConfirm={async () => {
+                            await verifikasiSurat(item.id);
+                          }}
+                          trigger={
+                            <Button
+                              size="sm"
+                              variant="flat"
+                              color="success"
+                              isLoading={isVerifying}
+                              startContent={
+                                <CheckCircleIcon className="w-4 h-4" />
+                              }
+                            >
+                              Verifikasi
+                            </Button>
+                          }
+                        />
+                      ),
+                    },
+                    {
+                      key: "tolak",
+                      label: "Tolak",
+                      icon: XCircleIcon,
+                      color: "danger" as "danger",
+                      onClick: () => {},
+                      render: (
+                        <ConfirmationDialog
+                          confirmLabel="Tolak"
+                          confirmColor="danger"
+                          title="Tolak Surat"
+                          loadingText="Menolak..."
+                          message="Masukkan alasan penolakan dalam prompt yang akan muncul."
+                          onConfirm={async () => {
+                            const alasan = prompt("Masukkan alasan penolakan:");
 
-                        if (alasan) {
-                          await tolakSurat({ id: item.id, alasan });
-                        } else {
-                          showToast({
-                            title: "Dibatalkan",
-                            description: "Alasan penolakan tidak diisi.",
-                            color: "warning",
-                          });
-                        }
-                      }}
-                      trigger={
-                        <Button
-                          size="sm"
-                          variant="flat"
-                          color="danger"
-                          isLoading={isRejecting}
-                          startContent={<XCircleIcon className="w-4 h-4" />}
-                        >
-                          Tolak
-                        </Button>
-                      }
-                    />
-                  ),
-                },
-              ]}
-            />
-          )}
+                            if (alasan) {
+                              await tolakSurat({ id: item.id, alasan });
+                            } else {
+                              showToast({
+                                title: "Dibatalkan",
+                                description: "Alasan penolakan tidak diisi.",
+                                color: "warning",
+                              });
+                            }
+                          }}
+                          trigger={
+                            <Button
+                              size="sm"
+                              variant="flat"
+                              color="danger"
+                              isLoading={isRejecting}
+                              startContent={<XCircleIcon className="w-4 h-4" />}
+                            >
+                              Tolak
+                            </Button>
+                          }
+                        />
+                      ),
+                    },
+                  ]
+                : []),
+            ]}
+          />
         </div>
       ),
     };

@@ -1,9 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button, Card, CardBody, Chip, Image, Link } from "@heroui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  Chip,
+  Image,
+  Link,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@heroui/react";
 import {
   CheckCircleIcon,
   XCircleIcon,
@@ -25,6 +37,8 @@ export default function DetailPengajuanStaffPage() {
   const { id } = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const [previewFileUrl, setPreviewFileUrl] = useState<string | null>(null);
 
   const {
     data: surat,
@@ -183,6 +197,31 @@ export default function DetailPengajuanStaffPage() {
           </CardBody>
         </Card>
 
+        <h3 className="text-lg font-semibold text-gray-800">Data Pendukung</h3>
+
+        <div className="flex flex-wrap gap-2">
+          {surat.pemohon.profil.fileKtp && (
+            <Button
+              size="sm"
+              variant="flat"
+              color="secondary"
+              onPress={() => setPreviewFileUrl(surat.pemohon.profil.fileKtp!)}
+            >
+              Lihat File KTP
+            </Button>
+          )}
+          {surat.pemohon.profil.fileKk && (
+            <Button
+              size="sm"
+              variant="flat"
+              color="secondary"
+              onPress={() => setPreviewFileUrl(surat.pemohon.profil.fileKk!)}
+            >
+              Lihat File KK
+            </Button>
+          )}
+        </div>
+
         {/* Alasan Pengajuan */}
         {surat.alasanPengajuan && (
           <Card>
@@ -195,46 +234,7 @@ export default function DetailPengajuanStaffPage() {
           </Card>
         )}
 
-        {/* Lampiran Dokumen */}
-        {(surat.fileKtp || surat.fileKk) && (
-          <Card>
-            <CardBody>
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                Lampiran Dokumen
-              </h2>
-              <div className="flex flex-col sm:flex-row gap-4">
-                {surat.fileKtp && (
-                  <Link
-                    href={`/uploads/${surat.fileKtp}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    showAnchorIcon
-                    color="primary"
-                    className="flex items-center gap-2"
-                  >
-                    <DocumentArrowDownIcon className="h-5 w-5" />
-                    Lihat KTP
-                  </Link>
-                )}
-                {surat.fileKk && (
-                  <Link
-                    href={`/uploads/${surat.fileKk}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    showAnchorIcon
-                    color="primary"
-                    className="flex items-center gap-2"
-                  >
-                    <DocumentArrowDownIcon className="h-5 w-5" />
-                    Lihat KK
-                  </Link>
-                )}
-              </div>
-            </CardBody>
-          </Card>
-        )}
 
-        {/* Data Tambahan */}
         {/* Data Tambahan */}
         {surat.dataSurat && Object.keys(surat.dataSurat).length > 0 && (
           <Card>
@@ -407,6 +407,39 @@ export default function DetailPengajuanStaffPage() {
               </div>
             </CardBody>
           </Card>
+        )}
+
+        {previewFileUrl && (
+          <Modal
+            isOpen={!!previewFileUrl}
+            onClose={() => setPreviewFileUrl(null)}
+            size="3xl"
+            placement="center"
+          >
+            <ModalContent>
+              <ModalHeader>Pratinjau Dokumen</ModalHeader>
+              <ModalBody>
+                {previewFileUrl.endsWith(".pdf") ? (
+                  <iframe
+                    title="Preview PDF"
+                    src={previewFileUrl}
+                    className="w-full h-[80vh] rounded-md"
+                  />
+                ) : (
+                  <Image
+                    src={previewFileUrl}
+                    alt="Preview Dokumen"
+                    className="w-full max-h-[80vh] object-contain rounded-md"
+                  />
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="primary" onPress={() => setPreviewFileUrl(null)}>
+                  Tutup
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
         )}
       </div>
     </>
