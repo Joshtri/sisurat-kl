@@ -8,6 +8,7 @@ import { Chip } from "@heroui/chip";
 import { Link } from "@heroui/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useIsMobile } from "@/hooks/useIsMobile"; // ⬅️ Tambahkan ini
 
 import { sidebarMenus } from "@/config/sidebarMenus";
 
