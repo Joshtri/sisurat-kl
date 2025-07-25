@@ -22,39 +22,92 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const { rt } = rtProfile;
+    const { rt, rw } = rtProfile;
 
-    const [totalWarga, totalSuratMasuk, totalSuratVerified] = await Promise.all(
-      [
-        // ✅ ambil warga yang kartu keluarganya RT-nya sama
-        prisma.warga.count({
-          where: {
-            kartuKeluarga: {
-              rt: rt,
-            },
-          },
-        }),
-        prisma.surat.count({
-          where: {
-            idRT: userId,
-            status: "DIAJUKAN", // yang masih menunggu
-          },
-        }),
-        prisma.surat.count({
-          where: {
-            idRT: userId,
-            status: {
-              in: ["DIVERIFIKASI_RT", "DITOLAK_RT"],
-            },
-          },
-        }),
-      ],
-    );
-
-    return NextResponse.json({
+    const [
       totalWarga,
+      totalKK,
       totalSuratMasuk,
       totalSuratVerified,
+      totalSuratDitolak
+    ] = await Promise.all([
+      // Total warga di RT ini
+      prisma.warga.count({
+        where: {
+          kartuKeluarga: {
+            rt: rt,
+          },
+        },
+      }),
+
+      // Total Kartu Keluarga di RT ini
+      prisma.kartuKeluarga.count({
+        where: {
+          rt: rt,
+        },
+      }),
+
+      // Surat yang masih menunggu verifikasi RT
+      prisma.surat.count({
+        where: {
+          pemohon: {
+            profil: {
+              kartuKeluarga: {
+                rt: rt,
+              },
+            },
+          },
+          status: "DIAJUKAN",
+        },
+      }),
+
+      // Surat yang sudah diverifikasi RT
+      prisma.surat.count({
+        where: {
+          pemohon: {
+            profil: {
+              kartuKeluarga: {
+                rt: rt,
+              },
+            },
+          },
+          status: "DIVERIFIKASI_RT",
+        },
+      }),
+
+      // Surat yang ditolak RT
+      prisma.surat.count({
+        where: {
+          pemohon: {
+            profil: {
+              kartuKeluarga: {
+                rt: rt,
+              },
+            },
+          },
+          status: "DITOLAK_RT",
+        },
+      }),
+    ]);
+
+    // Rata-rata warga per KK
+    const avgWargaPerKK = totalKK > 0 ? Math.round((totalWarga / totalKK) * 10) / 10 : 0;
+
+    return NextResponse.json({
+      wilayah: {
+        rt: rt,
+        rw: rw,
+        namaRT: rtProfile.namaLengkap,
+      },
+      statistik: {
+        totalWarga,
+        totalKK,
+        avgWargaPerKK,
+        totalSuratMasuk,
+        totalSuratVerified,
+        totalSuratDitolak,
+        totalSuratProses: totalSuratMasuk + totalSuratVerified + totalSuratDitolak,
+      },
     });
   } catch (error: any) {
     console.error("[API] Dashboard RT error:", error);

@@ -69,7 +69,7 @@ export function mapDataSurat(data: Record<string, any>, kode: string) {
 
     case "TIDAK_DI_TEMPAT":
       return {
-        idPasangan: data.idPasangan,
+        namaPasangan: data.namaPasangan,
         namaYangTidakDiTempat: data.namaYangTidakDiTempat,
         hubungan: data.hubungan,
         alasanTidakDiTempat: data.alasanTidakDiTempat,

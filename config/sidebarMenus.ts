@@ -227,6 +227,12 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       icon: UserGroupIcon,
       iconSolid: UserGroupSolidIcon,
     },
+    {
+      title: "Data Kartu Keluarga",
+      href: "/rt/daftar-kartu-keluarga",
+      icon: DocumentTextIcon,
+      iconSolid: DocumentSolidIcon,
+    },
 
     {
       title: "Riwayat",

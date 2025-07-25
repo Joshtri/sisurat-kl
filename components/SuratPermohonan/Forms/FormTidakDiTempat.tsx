@@ -22,7 +22,7 @@ export default function FormTidakDiTempat({ kartuKeluargaId }: Props) {
     formState: { errors },
   } = useFormContext();
 
-  const [selectedId, setSelectedId] = useState("");
+  const [selectedNama, setSelectedNama] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["anggota-kk", kartuKeluargaId],
@@ -32,14 +32,16 @@ export default function FormTidakDiTempat({ kartuKeluargaId }: Props) {
 
   const anggotaKeluarga = (data?.data || []).filter(
     (a: any) =>
-      a.peranDalamKK === "KEPALA_KELUARGA" || a.peranDalamKK === "ISTRI",
+      a.peranDalamKK === "KEPALA_KELUARGA" || a.peranDalamKK === "ISTRI"
   );
 
-  const selected = anggotaKeluarga.find((a: any) => a.id === selectedId);
+  const selected = anggotaKeluarga.find(
+    (a: any) => a.namaLengkap === selectedNama
+  );
   const suketFile = watch("dataSurat.suketPribadiPasangan");
 
   useEffect(() => {
-    register("dataSurat.idPasangan");
+    register("dataSurat.namaPasangan");
     register("dataSurat.namaYangTidakDiTempat");
     register("dataSurat.suketPribadiPasangan");
     register("dataSurat.hubungan");
@@ -50,7 +52,7 @@ export default function FormTidakDiTempat({ kartuKeluargaId }: Props) {
     register("dataSurat.suketPribadiPasanganBase64");
 
     if (selected) {
-      setValue("dataSurat.idPasangan", selected.id);
+      setValue("dataSurat.namaPasangan", selected.namaLengkap);
       setValue("dataSurat.namaYangTidakDiTempat", selected.namaLengkap);
     }
   }, [selected, register, setValue]);
@@ -95,19 +97,23 @@ export default function FormTidakDiTempat({ kartuKeluargaId }: Props) {
       <Select
         label="Pilih Pasangan yang Tidak di Tempat"
         placeholder="Pilih Kepala Keluarga atau Istri"
-        onChange={(e) => setSelectedId(e.target.value)}
+        selectedKeys={selectedNama ? new Set([selectedNama]) : new Set()}
+        onSelectionChange={(keys) => {
+          const nama = Array.from(keys)[0] as string;
+          setSelectedNama(nama);
+        }}
         isLoading={isLoading}
         variant="bordered"
         radius="md"
         size="lg"
-        name="idPasangan"
       >
         {anggotaKeluarga.map((a: any) => (
           <SelectItem
-            key={a.id}
+            key={a.namaLengkap}
+            value={a.namaLengkap}
             textValue={`${a.namaLengkap} - ${a.peranDalamKK}`}
           >
-            {a.namaLengkap} - {a.nik}
+            {a.namaLengkap} - {a.peranDalamKK} ({a.nik})
           </SelectItem>
         ))}
       </Select>
@@ -156,27 +162,26 @@ export default function FormTidakDiTempat({ kartuKeluargaId }: Props) {
           size="lg"
           variant="bordered"
         />
+      </div>
 
-        <div className="col-span-1 md:col-span-2 space-y-1">
-          <label className="text-sm font-medium text-gray-700">
-            Upload Surat Pribadi Pasangan{" "}
-            <span className="text-gray-500">(gambar/pdf, max 1MB)</span>
-          </label>
-          <Input
-            {...register("dataSurat.suketPribadiPasangan")}
-            label=""
-            type="file"
-            accept="application/pdf,image/*"
-            radius="md"
-            size="lg"
-            variant="bordered"
-          />
-          {errors.dataSurat?.suketPribadiPasangan && (
-            <p className="text-sm text-red-500">
-              {errors.dataSurat.suketPribadiPasangan.message as string}
-            </p>
-          )}
-        </div>
+      <div className="space-y-1">
+        <label className="text-sm font-medium text-gray-700">
+          Upload Surat Pribadi Pasangan{" "}
+          <span className="text-gray-500">(gambar/pdf, max 1MB)</span>
+        </label>
+        <Input
+          {...register("dataSurat.suketPribadiPasangan")}
+          type="file"
+          accept="application/pdf,image/*"
+          radius="md"
+          size="lg"
+          variant="bordered"
+        />
+        {errors.dataSurat?.suketPribadiPasangan && (
+          <p className="text-sm text-red-500">
+            {errors.dataSurat.suketPribadiPasangan.message as string}
+          </p>
+        )}
       </div>
     </div>
   );

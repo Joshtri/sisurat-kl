@@ -34,23 +34,37 @@ export default function FormOrangTua({ userId }: Props) {
 
   useEffect(() => {
     if (data) {
-      setValue("dataSurat.namaAyah", data.namaAyah || "");
-      setValue("dataSurat.pekerjaanAyah", data.pekerjaanAyah || "");
-      setValue("dataSurat.namaIbu", data.namaIbu || "");
-      setValue("dataSurat.pekerjaanIbu", data.pekerjaanIbu || "");
-      setValue("dataSurat.alamatOrtu", data.alamatOrtu || "");
-      setValue("dataSurat.namaAnak", data.namaAnak || "");
-      setValue(
-        "dataSurat.tanggalLahirAnak",
-        data.tanggalLahirAnak?.slice(0, 10) || "",
-      );
+      // Set value only if field is empty (tidak override jika user sudah mengisi)
+      const currentNamaAyah = watch("dataSurat.namaAyah");
+      const currentPekerjaanAyah = watch("dataSurat.pekerjaanAyah");
+      const currentNamaIbu = watch("dataSurat.namaIbu");
+      const currentPekerjaanIbu = watch("dataSurat.pekerjaanIbu");
+      const currentAlamatOrtu = watch("dataSurat.alamatOrtu");
+      const currentNamaAnak = watch("dataSurat.namaAnak");
+      const currentTanggalLahirAnak = watch("dataSurat.tanggalLahirAnak");
+
+      if (!currentNamaAyah) setValue("dataSurat.namaAyah", data.namaAyah || "");
+      if (!currentPekerjaanAyah)
+        setValue("dataSurat.pekerjaanAyah", data.pekerjaanAyah || "");
+      if (!currentNamaIbu) setValue("dataSurat.namaIbu", data.namaIbu || "");
+      if (!currentPekerjaanIbu)
+        setValue("dataSurat.pekerjaanIbu", data.pekerjaanIbu || "");
+      if (!currentAlamatOrtu)
+        setValue("dataSurat.alamatOrtu", data.alamatOrtu || "");
+      if (!currentNamaAnak) setValue("dataSurat.namaAnak", data.namaAnak || "");
+      if (!currentTanggalLahirAnak) {
+        setValue(
+          "dataSurat.tanggalLahirAnak",
+          data.tanggalLahirAnak?.slice(0, 10) || ""
+        );
+      }
     }
-  }, [data, setValue]);
+  }, [data, setValue, watch]);
 
   const handleFileValidation = async (
     file: File,
     fieldName: string,
-    base64Field: string,
+    base64Field: string
   ) => {
     const isValidType =
       file.type === "application/pdf" || file.type.startsWith("image/");
@@ -84,7 +98,7 @@ export default function FormOrangTua({ userId }: Props) {
       handleFileValidation(
         fileKtpAyah,
         "dataSurat.fileKtpAyah",
-        "dataSurat.fileKtpAyahBase64",
+        "dataSurat.fileKtpAyahBase64"
       );
     }
   }, [fileKtpAyah]);
@@ -94,7 +108,7 @@ export default function FormOrangTua({ userId }: Props) {
       handleFileValidation(
         fileKtpIbu,
         "dataSurat.fileKtpIbu",
-        "dataSurat.fileKtpIbuBase64",
+        "dataSurat.fileKtpIbuBase64"
       );
     }
   }, [fileKtpIbu]);
@@ -104,134 +118,176 @@ export default function FormOrangTua({ userId }: Props) {
       handleFileValidation(
         fileAktaLahir,
         "dataSurat.fileAktaLahirAnak",
-        "dataSurat.fileAktaLahirAnakBase64",
+        "dataSurat.fileAktaLahirAnakBase64"
       );
     }
   }, [fileAktaLahir]);
 
   return (
     <div className="space-y-6">
-      <Input
-        {...register("dataSurat.namaAyah")}
-        label="Nama Ayah"
-        readOnly
-        radius="md"
-        size="lg"
-        variant="bordered"
-        isLoading={isLoading}
-      />
-      <Input
-        {...register("dataSurat.pekerjaanAyah")}
-        label="Pekerjaan Ayah"
-        readOnly
-        radius="md"
-        size="lg"
-        variant="bordered"
-        isLoading={isLoading}
-      />
+      <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-l-blue-500">
+        <h3 className="text-lg font-semibold text-blue-800 mb-2">
+          📋 Data Orang Tua
+        </h3>
+        <p className="text-sm text-blue-600">
+          {isLoading
+            ? "⏳ Memuat data dari KK..."
+            : "✏️ Data di bawah dapat diedit sesuai kebutuhan. Data awal diambil dari Kartu Keluarga."}
+        </p>
+      </div>
 
-      <Input
-        {...register("dataSurat.namaIbu")}
-        label="Nama Ibu"
-        readOnly
-        radius="md"
-        size="lg"
-        variant="bordered"
-        isLoading={isLoading}
-      />
-      <Input
-        {...register("dataSurat.pekerjaanIbu")}
-        label="Pekerjaan Ibu"
-        readOnly
-        radius="md"
-        size="lg"
-        variant="bordered"
-        isLoading={isLoading}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Input
+          {...register("dataSurat.namaAyah")}
+          label="Nama Ayah"
+          placeholder="Masukkan nama ayah"
+          radius="md"
+          size="lg"
+          variant="bordered"
+          isLoading={isLoading}
+          description="Data dari KK, dapat diedit"
+        />
+        <Input
+          {...register("dataSurat.pekerjaanAyah")}
+          label="Pekerjaan Ayah"
+          placeholder="Masukkan pekerjaan ayah"
+          radius="md"
+          size="lg"
+          variant="bordered"
+          isLoading={isLoading}
+          description="Data dari KK, dapat diedit"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Input
+          {...register("dataSurat.namaIbu")}
+          label="Nama Ibu"
+          placeholder="Masukkan nama ibu"
+          radius="md"
+          size="lg"
+          variant="bordered"
+          isLoading={isLoading}
+          description="Data dari KK, dapat diedit"
+        />
+        <Input
+          {...register("dataSurat.pekerjaanIbu")}
+          label="Pekerjaan Ibu"
+          placeholder="Masukkan pekerjaan ibu"
+          radius="md"
+          size="lg"
+          variant="bordered"
+          isLoading={isLoading}
+          description="Data dari KK, dapat diedit"
+        />
+      </div>
 
       <Input
         {...register("dataSurat.alamatOrtu")}
         label="Alamat Orang Tua"
-        readOnly
+        placeholder="Masukkan alamat orang tua"
         radius="md"
         size="lg"
         variant="bordered"
         isLoading={isLoading}
+        description="Data dari KK, dapat diedit"
       />
 
-      <Input
-        {...register("dataSurat.namaAnak")}
-        label="Nama Anak"
-        placeholder="Contoh: Siti Aminah"
-        radius="md"
-        size="lg"
-        variant="bordered"
-      />
-      <Input
-        {...register("dataSurat.tanggalLahirAnak")}
-        type="date"
-        label="Tanggal Lahir Anak"
-        radius="md"
-        size="lg"
-        variant="bordered"
-      />
-
-      <h3 className="text-lg font-semibold text-gray-800">
-        Data Pendukung Orang Tua
-      </h3>
-
-      <div className="space-y-1">
-        <Input
-          {...register("dataSurat.fileKtpAyah")}
-          type="file"
-          label="KTP Ayah"
-          placeholder="Contoh: upload file KTP Ayah"
-          accept="application/pdf,image/*"
-          radius="md"
-          size="lg"
-          variant="bordered"
-        />
-        {errors.dataSurat?.fileKtpAyah && (
-          <p className="text-sm text-red-500">
-            {errors.dataSurat.fileKtpAyah.message as string}
-          </p>
-        )}
+      <div className="bg-green-50 p-4 rounded-lg border-l-4 border-l-green-500">
+        <h3 className="text-lg font-semibold text-green-800 mb-2">
+          👶 Data Anak
+        </h3>
+        <p className="text-sm text-green-600">
+          Masukkan data lengkap anak yang membutuhkan surat keterangan orang
+          tua.
+        </p>
       </div>
 
-      <div className="space-y-1">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
-          {...register("dataSurat.fileKtpIbu")}
-          type="file"
-          label="KTP Ibu"
-          placeholder="Contoh: upload file KTP Ibu"
-          accept="application/pdf,image/*"
+          {...register("dataSurat.namaAnak")}
+          label="Nama Lengkap Anak"
+          placeholder="Contoh: Siti Aminah"
           radius="md"
           size="lg"
           variant="bordered"
+          isRequired
         />
-        {errors.dataSurat?.fileKtpIbu && (
-          <p className="text-sm text-red-500">
-            {errors.dataSurat.fileKtpIbu.message as string}
-          </p>
-        )}
+        <Input
+          {...register("dataSurat.tanggalLahirAnak")}
+          type="date"
+          label="Tanggal Lahir Anak"
+          radius="md"
+          size="lg"
+          variant="bordered"
+          isRequired
+        />
       </div>
 
-      <div className="space-y-1">
-        <Input
-          {...register("dataSurat.fileAktaLahirAnak")}
-          type="file"
-          label="Akta Lahir Anak"
-          placeholder="Contoh: upload file Akta Lahir Anak"
-          accept="application/pdf,image/*"
-          radius="md"
-          size="lg"
-          variant="bordered"
-        />
-        {errors.dataSurat?.fileAktaLahirAnak && (
-          <p className="text-sm text-red-500">
-            {errors.dataSurat.fileAktaLahirAnak.message as string}
-          </p>
-        )}
+      <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-l-orange-500">
+        <h3 className="text-lg font-semibold text-orange-800 mb-4">
+          📎 Data Pendukung
+        </h3>
+        <p className="text-sm text-orange-600 mb-4">
+          Upload dokumen pendukung dalam format PDF atau gambar (maksimal 1MB
+          per file).
+        </p>
+
+        <div className="space-y-4">
+          <div className="space-y-1">
+            <Input
+              {...register("dataSurat.fileKtpAyah")}
+              type="file"
+              label="📄 KTP Ayah"
+              placeholder="Pilih file KTP Ayah"
+              accept="application/pdf,image/*"
+              radius="md"
+              size="lg"
+              variant="bordered"
+            />
+            {errors.dataSurat?.fileKtpAyah && (
+              <p className="text-sm text-red-500">
+                {errors.dataSurat.fileKtpAyah.message as string}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-1">
+            <Input
+              {...register("dataSurat.fileKtpIbu")}
+              type="file"
+              label="📄 KTP Ibu"
+              placeholder="Pilih file KTP Ibu"
+              accept="application/pdf,image/*"
+              radius="md"
+              size="lg"
+              variant="bordered"
+            />
+            {errors.dataSurat?.fileKtpIbu && (
+              <p className="text-sm text-red-500">
+                {errors.dataSurat.fileKtpIbu.message as string}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-1">
+            <Input
+              {...register("dataSurat.fileAktaLahirAnak")}
+              type="file"
+              label="📋 Akta Lahir Anak"
+              placeholder="Pilih file Akta Lahir Anak"
+              accept="application/pdf,image/*"
+              radius="md"
+              size="lg"
+              variant="bordered"
+            />
+            {errors.dataSurat?.fileAktaLahirAnak && (
+              <p className="text-sm text-red-500">
+                {errors.dataSurat.fileAktaLahirAnak.message as string}
+              </p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -165,11 +165,11 @@ model Surat {
   tanggalVerifikasiLurah DateTime?
 
   // File Umum
-  fileKtp            String?
-  fileKk             String?
-  noSuratPengantar   String?
-  fileSuratPengantar String?
-  fileSuratTerbit    String?
+  // fileKtp            String?
+  // fileKk             String?
+  // noSuratPengantar   String?
+  // fileSuratPengantar String?
+  // fileSuratTerbit    String?
 
   noSurat String? @unique
   userId  String? @map("srt_user_id")

@@ -5,6 +5,7 @@ interface StatsCardProps {
   title: string;
   value: string | number;
   color: string;
+  description?: string;
   icon?: React.ReactNode;
   action?: React.ReactNode;
   isLoading?: boolean;
@@ -14,6 +15,7 @@ export function StatsCard({
   title,
   value,
   color,
+  description,
   icon,
   action,
   isLoading = false,
@@ -30,6 +32,9 @@ export function StatsCard({
           <>
             <div className={`text-2xl font-bold text-${color}`}>{value}</div>
             <div className="text-sm text-default-600">{title}</div>
+            {description && (
+              <div className="text-xs text-gray-500">{description}</div>
+            )}
           </>
         )}
 
