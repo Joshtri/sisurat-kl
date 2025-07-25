@@ -22,11 +22,20 @@ export function mapDataSurat(data: Record<string, any>, kode: string) {
       };
 
     case "AHLI_WARIS":
+      // Ambil semua field yang dimulai dengan aktaLahirAnak_
+      const aktaLahirFiles: Record<string, any> = {};
+      Object.keys(data).forEach(key => {
+        if (key.startsWith('aktaLahirAnak_') && key.includes('_Base64')) {
+          aktaLahirFiles[key] = data[key];
+        }
+      });
+
       return {
         daftarAnak: data.daftarAnak,
         aktaNikahBase64: data.aktaNikahBase64,
-        aktaLahirAnakBase64: data.aktaLahirAnakBase64,
         ktpSaksiBase64: data.ktpSaksiBase64,
+        // Spread semua akta lahir files
+        ...aktaLahirFiles,
       };
 
     case "KELAHIRAN":
@@ -107,6 +116,10 @@ export function mapDataSurat(data: Record<string, any>, kode: string) {
         tempatMeninggal: data.tempatMeninggal,
         penyebab: data.penyebab,
         statusPerkawinan: data.statusPerkawinan,
+
+        // Tambahan untuk file upload
+        // aktaKematianSuamiIstri: data.aktaKematianSuamiIstri,
+        aktaKematianSuamiIstriBase64: data.aktaKematianSuamiIstriBase64,
       };
 
     case "SKTM":

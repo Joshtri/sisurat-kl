@@ -37,7 +37,6 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
 
   const aktaNikah = watch("dataSurat.aktaNikah")?.[0];
   const ktpSaksi = watch("dataSurat.ktpSaksi")?.[0];
-  const aktaLahirFiles = watch("dataSurat.aktaLahirAnak") || [];
 
   useEffect(() => {
     if (!kartuKeluargaId) return;
@@ -48,7 +47,7 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
         const semuaAnggota: AnakWaris[] = res.data;
 
         const anak = semuaAnggota.filter(
-          (item) => item.peranDalamKK === "ANAK" && item.userId !== userId,
+          (item) => item.peranDalamKK === "ANAK" && item.userId !== userId
         );
 
         setAnakList(anak);
@@ -74,7 +73,7 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
   const validateAndConvert = async (
     file: File,
     fieldName: string,
-    targetField: string,
+    targetField: string
   ) => {
     const isValidType =
       file.type === "application/pdf" || file.type.startsWith("image/");
@@ -103,36 +102,37 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
     setValue(targetField, base64);
   };
 
+  // Handle akta nikah
   useEffect(() => {
     if (aktaNikah) {
       validateAndConvert(
         aktaNikah,
         "dataSurat.aktaNikah",
-        "dataSurat.aktaNikahBase64",
+        "dataSurat.aktaNikahBase64"
       );
     }
   }, [aktaNikah]);
 
+  // Handle KTP saksi
   useEffect(() => {
     if (ktpSaksi) {
       validateAndConvert(
         ktpSaksi,
         "dataSurat.ktpSaksi",
-        "dataSurat.ktpSaksiBase64",
+        "dataSurat.ktpSaksiBase64"
       );
     }
   }, [ktpSaksi]);
 
-  useEffect(() => {
-    aktaLahirFiles.forEach(async (file: File, index: number) => {
-      if (file) {
-        const field = `dataSurat.aktaLahirAnak.${index}`;
-        const base64Field = `dataSurat.aktaLahirAnakBase64.${index}`;
+  // Handle akta lahir tiap anak
+  const handleAktaLahirChange = async (file: File, index: number) => {
+    if (file) {
+      const fieldName = `dataSurat.aktaLahirAnak_${index}`;
+      const base64Field = `dataSurat.aktaLahirAnak_${index}_Base64`;
 
-        await validateAndConvert(file, field, base64Field);
-      }
-    });
-  }, [aktaLahirFiles]);
+      await validateAndConvert(file, fieldName, base64Field);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -189,14 +189,19 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
             <input
               type="file"
               accept="application/pdf,image/*"
-              {...register(`dataSurat.aktaLahirAnak.${index}`)}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  handleAktaLahirChange(file, index);
+                }
+              }}
               className="block w-full text-sm file:mr-4 file:py-2 file:px-4
                 file:rounded-md file:border-0 file:bg-green-50 file:text-green-700
                 hover:file:bg-green-100"
             />
-            {errors.dataSurat?.aktaLahirAnak?.[index] && (
+            {errors.dataSurat?.[`aktaLahirAnak_${index}`] && (
               <p className="text-sm text-red-500">
-                {errors.dataSurat.aktaLahirAnak[index].message as string}
+                {errors.dataSurat[`aktaLahirAnak_${index}`].message as string}
               </p>
             )}
           </div>

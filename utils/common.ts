@@ -92,3 +92,21 @@ export function formatKeyLabel(key: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase())
     .trim();
 }
+
+
+// Function to check if file is base64 image
+export const isBase64Image = (value: any): boolean => {
+  return (
+    typeof value === "string" &&
+    (value.startsWith("data:image/") ||
+      value.startsWith("data:application/pdf"))
+  );
+};
+
+// Function to get file name from base64 field
+export const getFileNameFromBase64Field = (key: string): string => {
+  if (key.includes("Base64")) {
+    return key.replace("Base64", "");
+  }
+  return key;
+};

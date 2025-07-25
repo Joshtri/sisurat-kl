@@ -24,7 +24,7 @@ import {
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
-import { formatDateIndo, formatKeyLabel } from "@/utils/common";
+import { formatDateIndo, formatKeyLabel, getFileNameFromBase64Field, isBase64Image } from "@/utils/common";
 import { showToast } from "@/utils/toastHelper";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import {
@@ -234,121 +234,166 @@ export default function DetailPengajuanStaffPage() {
           </Card>
         )}
 
-
         {/* Data Tambahan */}
+        {/* Data Tambahan Surat */}
         {surat.dataSurat && Object.keys(surat.dataSurat).length > 0 && (
           <Card>
-            <CardBody>
+            <CardBody className="space-y-4">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                Data Tambahan
+                Data Tambahan Surat
               </h2>
 
-              {surat.dataSurat.daftarAnak && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-medium text-gray-700 mb-3">
-                    Daftar Anak
-                  </h3>
-                  <div className="space-y-4">
-                    {surat.dataSurat.daftarAnak.map((anak, index) => (
-                      <div
-                        key={index}
-                        className="border rounded-lg p-4 space-y-4"
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {Object.entries(anak).map(([key, value]) => {
-                            const isBase64Image =
-                              typeof value === "string" &&
-                              value.startsWith("data:image");
+              <div className="space-y-4">
+                {Object.entries(surat.dataSurat).map(([key, value]) => {
+                  // Skip jika value kosong atau null
+                  if (!value) return null;
 
-                            if (isBase64Image) {
-                              return (
-                                <div key={key} className="space-y-2">
-                                  <p className="text-sm font-semibold text-gray-600">
-                                    {formatKeyLabel(key)}
-                                  </p>
-                                  <Image
-                                    src={value}
-                                    alt={formatKeyLabel(key)}
-                                    className="max-w-xs rounded border"
-                                  />
+                  // PRIORITAS 1: Handle array daftarAnak untuk surat ahli waris
+                  if (
+                    key === "daftarAnak" &&
+                    Array.isArray(value) &&
+                    value.length > 0
+                  ) {
+                    return (
+                      <div key={key} className="space-y-2">
+                        <label className="block text-lg font-semibold text-gray-800">
+                          {formatKeyLabel(key)}
+                        </label>
+                        <div className="bg-gray-50 p-4 rounded-lg border">
+                          <div className="space-y-3">
+                            {value.map((anak: any, index: number) => (
+                              <div
+                                key={index}
+                                className="bg-white p-4 rounded-lg border shadow-sm"
+                              >
+                                <h4 className="font-semibold text-gray-800 mb-3 text-base">
+                                  Anak ke-{index + 1}
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-medium text-gray-600">
+                                      Nama Lengkap
+                                    </span>
+                                    <span className="text-sm text-gray-800">
+                                      {anak.namaLengkap || "-"}
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-medium text-gray-600">
+                                      Jenis Kelamin
+                                    </span>
+                                    <span className="text-sm text-gray-800">
+                                      {anak.jenisKelamin || "-"}
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-medium text-gray-600">
+                                      Tempat Lahir
+                                    </span>
+                                    <span className="text-sm text-gray-800">
+                                      {anak.tempatLahir || "-"}
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-medium text-gray-600">
+                                      Tanggal Lahir
+                                    </span>
+                                    <span className="text-sm text-gray-800">
+                                      {anak.tanggalLahir
+                                        ? formatDateIndo(anak.tanggalLahir)
+                                        : "-"}
+                                    </span>
+                                  </div>
                                 </div>
-                              );
-                            }
-
-                            return (
-                              <ReadOnlyInput
-                                key={key}
-                                label={formatKeyLabel(key)}
-                                value={
-                                  key === "tanggalLahir"
-                                    ? formatDateIndo(value)
-                                    : typeof value === "string"
-                                      ? value.replace("_", " ")
-                                      : String(value)
-                                }
-                              />
-                            );
-                          })}
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                    );
+                  }
 
-              {/* Untuk data tambahan lainnya */}
-              {Object.entries(surat.dataSurat)
-                .filter(([key]) => key !== "daftarAnak")
-                .map(([key, value]) => {
-                  const isBase64Image =
-                    typeof value === "string" && value.startsWith("data:image");
+                  // PRIORITAS 2: Handle file base64 (file), tampilkan sebagai tombol preview
+                  if (isBase64Image(value)) {
+                    const fileName = getFileNameFromBase64Field(key);
+                    return (
+                      <div key={key} className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          {formatKeyLabel(fileName)}
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="flat"
+                            color="primary"
+                            onPress={() => setPreviewFileUrl(value as string)}
+                          >
+                            Lihat File
+                          </Button>
+                          <span className="text-sm text-gray-500">
+                            File tersedia
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  }
 
-                  const isBase64PDF =
+                  // PRIORITAS 3: Skip jika ini adalah field nama file biasa (tanpa base64)
+                  if (
                     typeof value === "string" &&
-                    value.startsWith("data:application/pdf");
+                    Object.keys(surat.dataSurat).includes(`${key}Base64`)
+                  ) {
+                    return null;
+                  }
 
-                  if (isBase64Image) {
+                  // PRIORITAS 4: Handle array lainnya jika ada
+                  if (Array.isArray(value) && value.length > 0) {
                     return (
-                      <div key={key} className="mb-4">
-                        <p className="text-sm font-semibold text-gray-600 mb-2">
+                      <div key={key} className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">
                           {formatKeyLabel(key)}
-                        </p>
-                        <Image
-                          src={value}
-                          alt={formatKeyLabel(key)}
-                          className="max-w-xs rounded border"
-                        />
+                        </label>
+                        <div className="bg-gray-50 p-3 rounded border">
+                          <ul className="space-y-1">
+                            {value.map((item: any, index: number) => (
+                              <li key={index} className="text-sm">
+                                {typeof item === "object"
+                                  ? JSON.stringify(item, null, 2)
+                                  : String(item)}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
                     );
                   }
 
-                  if (isBase64PDF) {
+                  // PRIORITAS 5: Handle object yang bukan array
+                  if (typeof value === "object" && !Array.isArray(value)) {
                     return (
-                      <div key={key} className="mb-4">
-                        <p className="text-sm font-semibold text-gray-600 mb-2">
+                      <div key={key} className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">
                           {formatKeyLabel(key)}
-                        </p>
-                        <a
-                          href={value}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center text-blue-600 underline text-sm"
-                        >
-                          📄 Lihat Dokumen PDF
-                        </a>
+                        </label>
+                        <div className="bg-gray-50 p-3 rounded border">
+                          <pre className="text-sm whitespace-pre-wrap">
+                            {JSON.stringify(value, null, 2)}
+                          </pre>
+                        </div>
                       </div>
                     );
                   }
 
+                  // PRIORITAS 6: Tampilkan sebagai input read-only untuk data string/number lainnya
                   return (
                     <ReadOnlyInput
                       key={key}
                       label={formatKeyLabel(key)}
                       value={String(value)}
-                      className="mb-4"
                     />
                   );
                 })}
+              </div>
             </CardBody>
           </Card>
         )}

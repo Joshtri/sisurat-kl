@@ -55,6 +55,7 @@ export default function CreateKartuKeluargaPage() {
     <>
       <PageHeader
         actions={[]}
+        title="Buat Kartu Keluarga"
         backHref="/superadmin/kartu-keluarga"
         breadcrumbs={[
           { label: "Dashboard", href: "/superadmin" },

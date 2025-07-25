@@ -23,7 +23,12 @@ import { useState } from "react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { ReadOnlyInput } from "@/components/ui/inputs/ReadOnlyInput";
 import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
-import { formatDateIndo, formatKeyLabel } from "@/utils/common";
+import {
+  formatDateIndo,
+  formatKeyLabel,
+  getFileNameFromBase64Field,
+  isBase64Image,
+} from "@/utils/common";
 import {
   downloadSuratPdf,
   getSuratHistoryById,
@@ -266,14 +271,65 @@ export default function DetailSuratSuperadminPage() {
             </Card>
           )}
 
+          {/* Data Tambahan Surat */}
           {surat.dataSurat && Object.keys(surat.dataSurat).length > 0 && (
             <Card>
-              <CardBody>
+              <CardBody className="space-y-4">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                  Data Tambahan
+                  Data Tambahan Surat
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {renderDataSuratTambahan(surat.dataSurat)}
+
+                <div className="space-y-4">
+                  {Object.entries(surat.dataSurat).map(([key, value]) => {
+                    // Skip jika value kosong atau null
+                    if (!value) return null;
+
+                    // Jika ini adalah field base64 (file), tampilkan sebagai tombol preview
+                    if (isBase64Image(value)) {
+                      const fileName = getFileNameFromBase64Field(key);
+                      return (
+                        <div key={key} className="space-y-2">
+                          <label className="block text-sm font-medium text-gray-700">
+                            {formatKeyLabel(fileName)}
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="flat"
+                              color="primary"
+                              onPress={() => setPreviewFileUrl(value as string)}
+                            >
+                              Lihat File
+                            </Button>
+                            <span className="text-sm text-gray-500">
+                              File tersedia
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    // Skip jika ini adalah field nama file biasa (tanpa base64)
+                    if (
+                      typeof value === "string" &&
+                      Object.keys(surat.dataSurat).includes(`${key}Base64`)
+                    ) {
+                      return null;
+                    }
+
+                    // Tampilkan sebagai input read-only untuk data lainnya
+                    return (
+                      <ReadOnlyInput
+                        key={key}
+                        label={formatKeyLabel(key)}
+                        value={
+                          typeof value === "object"
+                            ? JSON.stringify(value)
+                            : String(value)
+                        }
+                      />
+                    );
+                  })}
                 </div>
               </CardBody>
             </Card>
