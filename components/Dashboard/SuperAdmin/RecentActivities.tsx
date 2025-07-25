@@ -1,5 +1,6 @@
 "use client";
 
+import { toPascalCase } from "@/utils/common";
 import { Card, CardBody, CardHeader, Chip } from "@heroui/react";
 
 interface RecentActivity {
@@ -34,7 +35,7 @@ export function RecentActivities({ data }: RecentActivitiesProps) {
               >
                 <div className="text-sm text-gray-800">
                   <span className="font-semibold">{activity.nama}</span>{" "}
-                  mengajukan{" "}
+                  Mengajukan{" "}
                   <span className="font-medium text-primary">
                     {activity.jenis}
                   </span>
@@ -45,7 +46,7 @@ export function RecentActivities({ data }: RecentActivitiesProps) {
                     variant="flat"
                     color={getStatusColor(activity.status)}
                   >
-                    {activity.status.replaceAll("_", " ").toLowerCase()}
+                    {toPascalCase(activity.status)}
                   </Chip>
                   <span className="text-xs text-gray-400">
                     • {activity.waktu}

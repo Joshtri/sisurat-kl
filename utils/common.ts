@@ -110,3 +110,11 @@ export const getFileNameFromBase64Field = (key: string): string => {
   }
   return key;
 };
+
+
+export function toPascalCase(input: string): string {
+  return input
+    .split(/[\s_\-]+/) // Pisahkan berdasarkan spasi, underscore, atau hyphen
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join("");
+}

@@ -1,4 +1,4 @@
-// WargaLayout.tsx (Responsive)
+// WargaLayout.tsx (Enhanced with Mobile Auto-Close)
 "use client";
 
 import { useState, useEffect } from "react";
@@ -14,6 +14,18 @@ export default function WargaLayout({
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Close sidebar when clicking outside on mobile
   useEffect(() => {
@@ -32,14 +44,14 @@ export default function WargaLayout({
       }
     };
 
-    if (isSidebarOpen) {
+    if (isSidebarOpen && isMobile) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isSidebarOpen]);
+  }, [isSidebarOpen, isMobile]);
 
   // Close sidebar on escape key
   useEffect(() => {
@@ -50,14 +62,20 @@ export default function WargaLayout({
     };
 
     document.addEventListener("keydown", handleEscape);
-
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isSidebarOpen]);
+
+  // Handler for mobile menu click
+  const handleMobileMenuClick = () => {
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
+  };
 
   return (
     <div className="relative flex min-h-screen bg-gray-50">
       {/* Mobile Overlay */}
-      {isSidebarOpen && (
+      {isSidebarOpen && isMobile && (
         <div
           className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
@@ -71,7 +89,11 @@ export default function WargaLayout({
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:block`}
       >
-        <Sidebar userRole="WARGA" />
+        <Sidebar
+          userRole="WARGA"
+          isMobile={isMobile}
+          onMobileMenuClick={handleMobileMenuClick}
+        />
       </div>
 
       {/* Main Layout */}

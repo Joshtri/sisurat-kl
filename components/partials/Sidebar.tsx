@@ -8,7 +8,6 @@ import { Chip } from "@heroui/chip";
 import { Link } from "@heroui/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { useIsMobile } from "@/hooks/useIsMobile"; // ⬅️ Tambahkan ini
 
 import { sidebarMenus } from "@/config/sidebarMenus";
 
@@ -17,6 +16,9 @@ interface SidebarProps {
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
   className?: string;
+  // Tambahan props untuk mobile
+  isMobile?: boolean;
+  onMobileMenuClick?: () => void;
 }
 
 export default function Sidebar({
@@ -24,6 +26,8 @@ export default function Sidebar({
   isCollapsed = false,
   onToggleCollapse,
   className = "",
+  isMobile = false,
+  onMobileMenuClick,
 }: SidebarProps) {
   const pathname = usePathname();
   const [expandedSubmenus, setExpandedSubmenus] = useState<string[]>([]);
@@ -32,11 +36,18 @@ export default function Sidebar({
     setExpandedSubmenus((prev) =>
       prev.includes(menuTitle)
         ? prev.filter((item) => item !== menuTitle)
-        : [...prev, menuTitle],
+        : [...prev, menuTitle]
     );
   };
 
   const menuItems: MenuItem[] = sidebarMenus[userRole] ?? [];
+
+  // Function to handle menu click - auto close on mobile
+  const handleMenuClick = () => {
+    if (isMobile && onMobileMenuClick) {
+      onMobileMenuClick();
+    }
+  };
 
   // Function to check if a menu item is active
   const isMenuItemActive = (item: MenuItem): boolean => {
@@ -78,7 +89,7 @@ export default function Sidebar({
         item.submenu.some((subItem) => pathname === subItem.href)
       ) {
         setExpandedSubmenus((prev) =>
-          prev.includes(item.title) ? prev : [...prev, item.title],
+          prev.includes(item.title) ? prev : [...prev, item.title]
         );
       }
     });
@@ -87,16 +98,14 @@ export default function Sidebar({
   return (
     <aside
       className={`bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900
-    border-r border-blue-700/50 transition-all duration-500 ease-out
-    flex flex-col shadow-2xl
-    ${isCollapsed ? "w-16" : "w-64"}
-    ${className}
-    h-full  
-    fixed z-40 top-16 bottom-0 lg:static pt-0 lg:pt-0
-  `}
+        border-r border-blue-700/50 transition-all duration-500 ease-out
+        flex flex-col shadow-2xl h-full
+        ${isCollapsed ? "w-16" : "w-64"}
+        ${className}
+      `}
     >
       {/* Header */}
-      <div className="p-4 border-b border-blue-600/30 bg-gradient-to-r from-blue-800/50 to-blue-700/50 backdrop-blur-sm">
+      <div className="p-4 border-b border-blue-600/30 bg-gradient-to-r from-blue-800/50 to-blue-700/50 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center justify-between">
           {onToggleCollapse && (
             <Button
@@ -116,7 +125,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* Navigation Menu */}
+      {/* Navigation Menu - Scrollable */}
       <nav className="flex-1 p-2 overflow-y-auto">
         <ul className="space-y-2">
           {menuItems.map((item, index) => {
@@ -207,6 +216,7 @@ export default function Sidebar({
                           : "text-blue-100 hover:bg-gradient-to-r hover:from-blue-700/50 hover:to-blue-600/50 hover:text-white hover:shadow-md"
                       }`}
                       href={item.href}
+                      onClick={handleMenuClick} // Auto close on mobile
                     >
                       <div className="relative">
                         <item.icon
@@ -265,7 +275,7 @@ export default function Sidebar({
                     <ul className="mt-2 ml-8 space-y-1">
                       {item.submenu!.map((subItem, subIndex) => {
                         const isSubItemActive = isSubmenuItemActive(
-                          subItem.href,
+                          subItem.href
                         );
 
                         return (
@@ -289,6 +299,7 @@ export default function Sidebar({
                                   : "text-blue-200 hover:bg-gradient-to-r hover:from-blue-600/50 hover:to-blue-500/50 hover:text-white"
                               }`}
                               href={subItem.href}
+                              onClick={handleMenuClick} // Auto close on mobile untuk submenu juga
                             >
                               <div
                                 className={`w-2 h-2 rounded-full mr-3 transition-all duration-300 ${
@@ -326,7 +337,7 @@ export default function Sidebar({
 
       {/* Footer */}
       {!isCollapsed && (
-        <div className="p-4 border-t border-blue-600/30 bg-gradient-to-r from-blue-800/30 to-blue-700/30 backdrop-blur-sm animate-in slide-in-from-bottom duration-500">
+        <div className="p-4 border-t border-blue-600/30 bg-gradient-to-r from-blue-800/30 to-blue-700/30 backdrop-blur-sm animate-in slide-in-from-bottom duration-500 flex-shrink-0">
           <div className="text-center group">
             <p className="text-xs text-blue-200 transition-colors duration-300 group-hover:text-blue-100">
               © 2025 Kelurahan Liliba
