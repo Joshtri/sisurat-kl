@@ -1,6 +1,3 @@
-// ===============================================
-
-// SuperAdminLayoutClient.tsx (Enhanced with Mobile Auto-Close)
 "use client";
 
 import { useState, useEffect } from "react";
@@ -17,10 +14,10 @@ export default function SuperAdminLayoutClient({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detect mobile screen size
+  // Detect screen size
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+      setIsMobile(window.innerWidth < 1024);
     };
 
     checkMobile();
@@ -28,7 +25,7 @@ export default function SuperAdminLayoutClient({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Close sidebar when clicking outside on mobile
+  // Close sidebar on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const sidebar = document.getElementById("mobile-sidebar");
@@ -54,7 +51,7 @@ export default function SuperAdminLayoutClient({
     };
   }, [isSidebarOpen, isMobile]);
 
-  // Close sidebar on escape key
+  // Close sidebar on escape
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape" && isSidebarOpen) {
@@ -66,7 +63,6 @@ export default function SuperAdminLayoutClient({
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isSidebarOpen]);
 
-  // Handler for mobile menu click
   const handleMobileMenuClick = () => {
     if (isMobile) {
       setIsSidebarOpen(false);
@@ -74,16 +70,23 @@ export default function SuperAdminLayoutClient({
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex min-h-screen bg-white">
       {/* Mobile Overlay */}
       {isSidebarOpen && isMobile && (
         <div
           className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              setIsSidebarOpen(false);
+            }
+          }}
+          role="button"
+          tabIndex={0}
         />
       )}
 
-      {/* Sidebar - Fixed Position */}
+      {/* Sidebar */}
       <div
         id="mobile-sidebar"
         className={`${
@@ -98,8 +101,8 @@ export default function SuperAdminLayoutClient({
       </div>
 
       {/* Main Layout */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        {/* Header - Fixed at top */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header */}
         <div className="flex-shrink-0 z-10">
           <Header
             userName="Super Admin"
@@ -108,17 +111,13 @@ export default function SuperAdminLayoutClient({
           />
         </div>
 
-        {/* Main Content - Scrollable */}
-        <main className="flex-1 overflow-y-auto bg-gray-50">
-          <div className="p-4 sm:p-6">
-            <div className="max-w-7xl mx-auto w-full">{children}</div>
-          </div>
+        {/* Main Content */}
+        <main className="flex-1 bg-gray-50">
+          <div className="p-4 sm:p-6 max-w-7xl mx-auto w-full">{children}</div>
         </main>
 
-        {/* Footer - Fixed at bottom */}
-        <div className="flex-shrink-0">
-          <Footer userRole="SUPERADMIN" />
-        </div>
+        {/* Footer */}
+        <Footer userRole="SUPERADMIN" />
       </div>
     </div>
   );

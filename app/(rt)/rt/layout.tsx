@@ -1,4 +1,3 @@
-// RTLayout.tsx (Enhanced with Mobile Auto-Close)
 "use client";
 
 import { useState, useEffect } from "react";
@@ -69,16 +68,23 @@ export default function RTLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex min-h-screen bg-white">
       {/* Mobile Overlay */}
       {isSidebarOpen && isMobile && (
         <div
           className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              setIsSidebarOpen(false);
+            }
+          }}
+          role="button"
+          tabIndex={0}
         />
       )}
 
-      {/* Sidebar khusus RT - Fixed Position */}
+      {/* Sidebar - Fixed Position */}
       <div
         id="mobile-sidebar"
         className={`${
@@ -93,8 +99,8 @@ export default function RTLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Main Layout */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        {/* Header - Fixed at top */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header */}
         <div className="flex-shrink-0 z-10">
           <Header
             userName="RT User"
@@ -103,17 +109,13 @@ export default function RTLayout({ children }: { children: React.ReactNode }) {
           />
         </div>
 
-        {/* Main Content - Scrollable */}
-        <main className="flex-1 overflow-y-auto bg-gray-50">
-          <div className="p-4 sm:p-6">
-            <div className="max-w-7xl mx-auto w-full">{children}</div>
-          </div>
+        {/* Main Content */}
+        <main className="flex-1 bg-gray-50">
+          <div className="p-4 sm:p-6 max-w-7xl mx-auto w-full">{children}</div>
         </main>
 
-        {/* Footer - Fixed at bottom */}
-        <div className="flex-shrink-0">
-          <Footer userRole="RT" />
-        </div>
+        {/* Footer */}
+        <Footer userRole="RT" />
       </div>
     </div>
   );
