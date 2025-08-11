@@ -72,6 +72,7 @@ export default function FormJandaDuda() {
           accept="application/pdf,image/*"
           radius="md"
           size="lg"
+          required
           variant="bordered"
         />
         {errors.dataSurat?.aktaKematianSuamiIstri && (

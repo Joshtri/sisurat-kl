@@ -144,7 +144,7 @@ export default function FormOrangTua({ userId }: Props) {
           radius="md"
           size="lg"
           variant="bordered"
-          isLoading={isLoading}
+          // isLoading={isLoading}
           description="Data dari KK, dapat diedit"
         />
         <Input
@@ -154,7 +154,7 @@ export default function FormOrangTua({ userId }: Props) {
           radius="md"
           size="lg"
           variant="bordered"
-          isLoading={isLoading}
+          // isLoading={isLoading}
           description="Data dari KK, dapat diedit"
         />
       </div>
@@ -167,7 +167,7 @@ export default function FormOrangTua({ userId }: Props) {
           radius="md"
           size="lg"
           variant="bordered"
-          isLoading={isLoading}
+          // isLoading={isLoading}
           description="Data dari KK, dapat diedit"
         />
         <Input
@@ -177,7 +177,7 @@ export default function FormOrangTua({ userId }: Props) {
           radius="md"
           size="lg"
           variant="bordered"
-          isLoading={isLoading}
+          // isLoading={isLoading}
           description="Data dari KK, dapat diedit"
         />
       </div>
@@ -189,7 +189,7 @@ export default function FormOrangTua({ userId }: Props) {
         radius="md"
         size="lg"
         variant="bordered"
-        isLoading={isLoading}
+        // isLoading={isLoading}
         description="Data dari KK, dapat diedit"
       />
 
@@ -244,6 +244,7 @@ export default function FormOrangTua({ userId }: Props) {
               radius="md"
               size="lg"
               variant="bordered"
+              required
             />
             {errors.dataSurat?.fileKtpAyah && (
               <p className="text-sm text-red-500">
@@ -262,6 +263,7 @@ export default function FormOrangTua({ userId }: Props) {
               radius="md"
               size="lg"
               variant="bordered"
+              required
             />
             {errors.dataSurat?.fileKtpIbu && (
               <p className="text-sm text-red-500">
@@ -279,6 +281,7 @@ export default function FormOrangTua({ userId }: Props) {
               accept="application/pdf,image/*"
               radius="md"
               size="lg"
+              required
               variant="bordered"
             />
             {errors.dataSurat?.fileAktaLahirAnak && (

@@ -108,7 +108,7 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
       validateAndConvert(
         aktaNikah,
         "dataSurat.aktaNikah",
-        "dataSurat.aktaNikahBase64"
+        "dataSurat.aktaNikahBase64",
       );
     }
   }, [aktaNikah]);
@@ -119,7 +119,7 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
       validateAndConvert(
         ktpSaksi,
         "dataSurat.ktpSaksi",
-        "dataSurat.ktpSaksiBase64"
+        "dataSurat.ktpSaksiBase64",
       );
     }
   }, [ktpSaksi]);
@@ -161,6 +161,7 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
         </label>
         <input
           type="file"
+          required
           accept="application/pdf,image/*"
           {...register("dataSurat.aktaNikah")}
           className="block w-full text-sm file:mr-4 file:py-2 file:px-4
@@ -188,6 +189,7 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
             </p>
             <input
               type="file"
+              required
               accept="application/pdf,image/*"
               onChange={(e) => {
                 const file = e.target.files?.[0];
@@ -216,6 +218,7 @@ export default function FormAhliWaris({ kartuKeluargaId, userId }: Props) {
         </label>
         <input
           type="file"
+          required
           accept="application/pdf,image/*"
           {...register("dataSurat.ktpSaksi")}
           className="block w-full text-sm file:mr-4 file:py-2 file:px-4

@@ -176,6 +176,7 @@ export default function FormTidakDiTempat({ kartuKeluargaId }: Props) {
           radius="md"
           size="lg"
           variant="bordered"
+          required
         />
         {errors.dataSurat?.suketPribadiPasangan && (
           <p className="text-sm text-red-500">

@@ -136,6 +136,7 @@ export default function FormUsaha() {
           {...register("dataSurat.fotoUsaha")}
           radius="md"
           size="lg"
+          required
           variant="bordered"
         />
         {errors.dataSurat?.fotoUsaha && (

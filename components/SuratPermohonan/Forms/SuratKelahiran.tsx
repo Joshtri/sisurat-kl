@@ -179,6 +179,7 @@ export default function FormKelahiran() {
           accept="image/*"
           radius="md"
           size="lg"
+          required
           variant="bordered"
         />
       </div>
@@ -194,6 +195,7 @@ export default function FormKelahiran() {
           accept="image/*"
           radius="md"
           size="lg"
+          required
           variant="bordered"
         />
       </div>
