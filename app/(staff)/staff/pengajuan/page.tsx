@@ -34,6 +34,7 @@ import {
 } from "@/services/suratService";
 import { formatDateIndo } from "@/utils/common";
 import { showToast } from "@/utils/toastHelper";
+import { VerifikasiSuratModal } from "@/components/AddonsDialog/VerifikasiSuratModal";
 
 export default function PengajuanSuratPage() {
   const router = useRouter();
@@ -81,7 +82,7 @@ export default function PengajuanSuratPage() {
 
   // Check if any loading is active
   const isAnyLoading = Object.values(loadingStates).some(
-    (state) => state !== null,
+    (state) => state !== null
   );
 
   // Reset form states
@@ -241,10 +242,42 @@ export default function PengajuanSuratPage() {
     return "Memuat...";
   };
 
+  const handleVerifikasiSubmitWithValue = async (finalNoSurat: string) => {
+    const value = finalNoSurat?.trim();
+
+    if (!value) {
+      setFormErrors((prev) => ({
+        ...prev,
+        noSurat: "Nomor surat wajib diisi",
+      }));
+      return;
+    }
+
+    // (opsional) validasi ringan: harus mengandung tahun 4 digit di akhir
+    // if (!/\d{4}$/.test(value)) {
+    //   setFormErrors((prev) => ({ ...prev, noSurat: "Format tahun tidak valid" }));
+    //   return;
+    // }
+
+    if (!selectedSurat?.id) {
+      showToast({
+        title: "Gagal",
+        description: "Data surat tidak ditemukan.",
+        color: "error",
+      });
+      return;
+    }
+
+    await verifikasiSurat({
+      id: selectedSurat.id,
+      noSurat: value,
+    });
+  };
+
   const rows = Array.isArray(data)
     ? data.map((item: any) => {
         const sudahDiproses = ["DIVERIFIKASI_STAFF", "DITOLAK_STAFF"].includes(
-          item.status,
+          item.status
         );
 
         return {
@@ -383,7 +416,7 @@ export default function PengajuanSuratPage() {
       )}
 
       {/* Modal Verifikasi */}
-      <Modal
+      {/* <Modal
         isOpen={isVerifikasiOpen}
         onOpenChange={onVerifikasiOpenChange}
         placement="top-center"
@@ -407,7 +440,7 @@ export default function PengajuanSuratPage() {
                     <div className="bg-default-100 p-3 rounded-lg mt-2">
                       <p className="font-medium">{selectedSurat?.jenisSurat}</p>
                       <p className="text-sm text-default-600">
-                        Pemohon: {selectedSurat?.namaLengkap}
+                        Pemohon: {selectedSurat?.namaLengkap as never}
                       </p>
                     </div>
                   </div>
@@ -450,14 +483,29 @@ export default function PengajuanSuratPage() {
             </>
           )}
         </ModalContent>
-      </Modal>
+      </Modal> */}
+
+      <VerifikasiSuratModal
+        isOpen={isVerifikasiOpen}
+        onOpenChange={onVerifikasiOpenChange}
+        selectedSurat={selectedSurat}
+        isVerifying={isVerifying}
+        formError={formErrors.noSurat}
+        onSubmit={(noSurat) => {
+          // kirim ke mutation kamu
+          handleVerifikasiSubmitWithValue(noSurat);
+        }}
+        onCancel={resetForms}
+        numericOnly // opsional (default true)
+        padLength={3} // opsional
+      />
 
       {/* Modal Penolakan */}
       <Modal
         isOpen={isPenolakanOpen}
         onOpenChange={onPenolakanOpenChange}
         placement="top-center"
-        backdrop="blur"
+        backdrop="opaque"
       >
         <ModalContent>
           {(onClose) => (
@@ -542,7 +590,7 @@ export default function PengajuanSuratPage() {
             if (!Array.isArray(oldData)) return oldData;
 
             return oldData.filter((item: any) =>
-              item.jenisSurat.toLowerCase().includes(query.toLowerCase()),
+              item.jenisSurat.toLowerCase().includes(query.toLowerCase())
             );
           });
         }}
