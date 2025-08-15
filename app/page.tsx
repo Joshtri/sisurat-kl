@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
@@ -21,14 +21,129 @@ import { Image } from "@heroui/react";
 import { login } from "@/services/authService";
 import { showToast } from "@/utils/toastHelper";
 
+// ------------------------------
+// Progressive lock settings
+// After 3 wrong attempts → 1 minute lock.
+// Then every next wrong attempt increases to 2m → 5m → 15m (max).
+// Lock is tracked per identifier (NIK/email). Resets on successful login.
+// ------------------------------
+const LOCK_TIERS_MS = [0, 60_000, 120_000, 300_000, 900_000]; // index 1..4 = 1m,2m,5m,15m
+const MAX_LEVEL = 4; // 15 minutes
+
+interface LockState {
+  level: number; // 0 (no tier yet), 1,2,3,4
+  failureCount: number; // counts 1..3 only when level===0
+  lockedUntil: number; // epoch ms
+}
+
+function normalizeId(id?: string) {
+  const s = (id || "").trim().toLowerCase();
+  return s || "_default_";
+}
+
+function storageKey(id: string) {
+  return `loginLock:${id}`;
+}
+
+function readLockState(id: string): LockState {
+  try {
+    const raw = localStorage.getItem(storageKey(id));
+    if (!raw) return { level: 0, failureCount: 0, lockedUntil: 0 };
+    const parsed = JSON.parse(raw) as LockState;
+    return {
+      level: parsed?.level ?? 0,
+      failureCount: parsed?.failureCount ?? 0,
+      lockedUntil: parsed?.lockedUntil ?? 0,
+    };
+  } catch {
+    return { level: 0, failureCount: 0, lockedUntil: 0 };
+  }
+}
+
+function writeLockState(id: string, state: LockState) {
+  localStorage.setItem(storageKey(id), JSON.stringify(state));
+}
+
+function clearLockState(id: string) {
+  localStorage.removeItem(storageKey(id));
+}
+
+function isCurrentlyLocked(state: LockState) {
+  return Date.now() < (state.lockedUntil || 0);
+}
+
+function formatDuration(ms: number) {
+  const s = Math.max(0, Math.ceil(ms / 1000));
+  const m = Math.floor(s / 60)
+    .toString()
+    .padStart(2, "0");
+  const ss = (s % 60).toString().padStart(2, "0");
+  return `${m}:${ss}`;
+}
+
+// Record one failed attempt and compute/return the new lock state
+function recordFailure(id: string): LockState {
+  const now = Date.now();
+  let state = readLockState(id);
+
+  // If still locked, keep as-is
+  if (isCurrentlyLocked(state)) {
+    return state;
+  }
+
+  if (state.level === 0) {
+    // Still in pre-lock phase: accumulate failures to 3
+    const failures = (state.failureCount || 0) + 1;
+    if (failures >= 3) {
+      // Hit 3 → go to level 1 and lock for 1 minute
+      state = {
+        level: 1,
+        failureCount: 0,
+        lockedUntil: now + LOCK_TIERS_MS[1],
+      };
+    } else {
+      state = { ...state, failureCount: failures };
+    }
+  } else {
+    // Already past first lock: every failure escalates to next level (max 15m)
+    const nextLevel = Math.min(state.level + 1, MAX_LEVEL);
+    state = {
+      level: nextLevel,
+      failureCount: 0,
+      lockedUntil: now + LOCK_TIERS_MS[nextLevel],
+    };
+  }
+
+  writeLockState(id, state);
+  return state;
+}
+
+// Ensure that, after lock expires, we keep the level (so next failure escalates)
+// but we clear the lockedUntil so the user can try again.
+function clearExpiredLockButKeepLevel(id: string) {
+  const s = readLockState(id);
+  if (!isCurrentlyLocked(s) && s.lockedUntil) {
+    const updated: LockState = {
+      level: s.level,
+      failureCount: s.failureCount || 0,
+      lockedUntil: 0,
+    };
+    writeLockState(id, updated);
+    return updated;
+  }
+  return s;
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+
   const {
     control,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm({
     defaultValues: {
       nik: "",
@@ -36,19 +151,54 @@ export default function LoginPage() {
     },
   });
 
-  const toggleVisibility = () => setIsVisible(!isVisible);
+  const currentId = normalizeId(watch("nik"));
 
-  // const handleInputChange = (field: string, value: string) => {
-  //   setFormData((prev) => ({ ...prev, [field]: value }));
-  // };
+  const [isLocked, setIsLocked] = useState(false);
+  const [timeLeftMs, setTimeLeftMs] = useState(0);
+  const [lockLevel, setLockLevel] = useState(0);
+  const [prelockFailures, setPrelockFailures] = useState(0); // only meaningful when level===0
 
-  const {
-    mutate: loginMutate,
-    isPending,
-    error,
-  } = useMutation({
+  const toggleVisibility = () => setIsVisible((v) => !v);
+
+  // Track which identifier we just tried to log in with
+  const lastAttemptIdRef = useRef<string>("");
+
+  // Initialize/refresh lock state when identifier changes
+  useEffect(() => {
+    const s = clearExpiredLockButKeepLevel(currentId);
+    const now = Date.now();
+    const remaining = Math.max(0, (s.lockedUntil || 0) - now);
+    setIsLocked(remaining > 0);
+    setTimeLeftMs(remaining);
+    setLockLevel(s.level || 0);
+    setPrelockFailures(s.level === 0 ? s.failureCount || 0 : 0);
+  }, [currentId]);
+
+  // Countdown timer while locked
+  useEffect(() => {
+    if (!isLocked) return;
+    const t = setInterval(() => {
+      setTimeLeftMs((ms) => {
+        const next = Math.max(0, ms - 1000);
+        if (next <= 0) {
+          setIsLocked(false);
+          // After unlock, keep level but clear lockedUntil in storage
+          clearExpiredLockButKeepLevel(currentId);
+          clearInterval(t);
+        }
+        return next;
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [isLocked, currentId]);
+
+  const { mutate: loginMutate, isPending } = useMutation({
     mutationFn: login,
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
+      // Successful login: reset lock state for this identifier
+      const id = lastAttemptIdRef.current || currentId;
+      clearLockState(id);
+
       localStorage.setItem("token", data.token);
       showToast({
         title: "Login Berhasil",
@@ -57,22 +207,62 @@ export default function LoginPage() {
       });
       router.push(data.redirect);
     },
-
     onError: (err: any) => {
-      const msg =
-        err?.response?.data?.message || "Terjadi kesalahan saat login";
+      const id = lastAttemptIdRef.current || currentId;
+      const newState = recordFailure(id);
+      const now = Date.now();
 
-      showToast({
-        title: "Login Gagal",
-        description: msg,
-        color: "error",
-      });
+      if (isCurrentlyLocked(newState)) {
+        const remaining = Math.max(0, newState.lockedUntil - now);
+        setIsLocked(true);
+        setTimeLeftMs(remaining);
+        setLockLevel(newState.level);
+        setPrelockFailures(0);
+
+        const minutes = Math.round(LOCK_TIERS_MS[newState.level] / 60_000);
+        showToast({
+          title: "Terlalu banyak percobaan",
+          description: `Akun dikunci selama ${minutes} menit. Coba lagi dalam ${formatDuration(remaining)}.`,
+          color: "error",
+        });
+      } else {
+        // Still in pre-lock phase (level 0): update remaining failures
+        setPrelockFailures(newState.failureCount || 0);
+        showToast({
+          title: "Login Gagal",
+          description:
+            newState.failureCount >= 1
+              ? `NIK/Email atau password salah. Percobaan: ${newState.failureCount}/3 sebelum terkunci 1 menit.`
+              : `Terjadi kesalahan saat login`,
+          color: "error",
+        });
+      }
     },
   });
 
-  const onSubmit = (data: { nik: string; password: string }) => {
+  function handleSubmitLogin(data: { nik: string; password: string }) {
+    const id = normalizeId(data.nik);
+    // If currently locked, block immediately on client side
+    const s = readLockState(id);
+    if (isCurrentlyLocked(s)) {
+      const remaining = Math.max(0, s.lockedUntil - Date.now());
+      setIsLocked(true);
+      setTimeLeftMs(remaining);
+      setLockLevel(s.level);
+      showToast({
+        title: "Akun sedang dikunci",
+        description: `Silakan coba lagi dalam ${formatDuration(remaining)}.`,
+        color: "warning",
+      });
+      return;
+    }
+
+    lastAttemptIdRef.current = id;
     loginMutate(data);
-  };
+  }
+
+  // Disable all inputs while locked or loading
+  const disableForm = isLocked || isPending;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 flex items-center justify-center p-4 relative overflow-hidden">
@@ -89,15 +279,13 @@ export default function LoginPage() {
         <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 flex-col justify-center p-12 text-white">
           <div className="max-w-lg">
             <div className="flex items-center mb-8">
-              {/* <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center mr-4 shadow-lg"> */}
               <Image
                 alt="Logo Kota Kupang"
                 src="/img/kotakupanglogo.png"
                 width={80}
                 radius="full"
                 className=" object-cover"
-              />{" "}
-              {/* </div> */}
+              />
               <div>
                 <h2 className="text-2xl font-bold text-yellow-300">SI SURAT</h2>
                 <p className="text-blue-200">Kelurahan Liliba</p>
@@ -155,28 +343,24 @@ export default function LoginPage() {
             <CardBody className="px-8 pb-8">
               <form
                 className="flex flex-col gap-6"
-                onSubmit={handleSubmit(onSubmit)}
+                onSubmit={handleSubmit(handleSubmitLogin)}
               >
                 <Controller
                   control={control}
                   name="nik"
-                  rules={{
-                    required: "NIK atau Email wajib diisi",
-                    // opsional: kamu bisa tambahkan validasi regex jika ingin validasi lebih lanjut
-                  }}
+                  rules={{ required: "NIK atau Email wajib diisi" }}
                   render={({ field }) => (
                     <Input
                       {...field}
                       type="text"
                       value={field.value}
-                      onChange={(e) => {
-                        field.onChange(e.target.value); // izinkan string bebas (NIK atau email)
-                      }}
+                      onChange={(e) => field.onChange(e.target.value)}
                       label="NIK / Email"
                       labelPlacement="outside"
                       placeholder="Masukkan NIK atau Email Anda"
                       isInvalid={!!errors.nik}
                       errorMessage={errors.nik?.message}
+                      isDisabled={disableForm}
                       classNames={{
                         label: "text-gray-700 font-semibold",
                         input: "text-gray-800 text-base",
@@ -203,6 +387,7 @@ export default function LoginPage() {
                       placeholder="Masukkan password"
                       isInvalid={!!errors.password}
                       errorMessage={errors.password?.message}
+                      isDisabled={disableForm}
                       classNames={{
                         label: "text-gray-700 font-semibold",
                         input: "text-gray-800 text-base",
@@ -217,6 +402,7 @@ export default function LoginPage() {
                           className="focus:outline-none"
                           type="button"
                           onClick={toggleVisibility}
+                          disabled={disableForm}
                         >
                           {isVisible ? (
                             <EyeSlashIcon className="w-5 h-5 text-gray-400 pointer-events-none" />
@@ -238,6 +424,7 @@ export default function LoginPage() {
                     isSelected={rememberMe}
                     size="sm"
                     onValueChange={setRememberMe}
+                    isDisabled={disableForm}
                   >
                     <span className="text-sm text-gray-600 font-medium ml-2">
                       Ingat saya
@@ -251,12 +438,35 @@ export default function LoginPage() {
                   </Link>
                 </div>
 
+                {/* Lock info / countdown */}
+                {isLocked ? (
+                  <div className="text-center text-sm text-red-600 font-medium bg-red-50 border border-red-200 rounded-lg py-2">
+                    Akun terkunci. Coba lagi dalam{" "}
+                    <span className="font-bold">
+                      {formatDuration(timeLeftMs)}
+                    </span>
+                    {lockLevel >= 1 && (
+                      <span className="block text-xs text-red-500 mt-1">
+                        Tier: {lockLevel} ({LOCK_TIERS_MS[lockLevel] / 60_000}{" "}
+                        menit)
+                      </span>
+                    )}
+                  </div>
+                ) : lockLevel === 0 && prelockFailures > 0 ? (
+                  <div className="text-center text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg py-2">
+                    Percobaan gagal:{" "}
+                    <span className="font-semibold">{prelockFailures}/3</span> —
+                    terkunci 1 menit jika mencapai 3.
+                  </div>
+                ) : null}
+
                 <Button
                   className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 text-lg shadow-lg transform hover:scale-[1.02] transition-all duration-200"
                   radius="lg"
                   size="lg"
                   type="submit"
                   isLoading={isPending}
+                  isDisabled={disableForm}
                 >
                   Masuk
                 </Button>
