@@ -84,7 +84,7 @@ export default function HistorySuratPermohonanPage() {
 
   // Check if any loading is active
   const isAnyLoading = Object.values(loadingStates).some(
-    (state) => state !== null,
+    (state) => state !== null
   );
 
   // Function to handle download PDF with loading
@@ -145,7 +145,7 @@ export default function HistorySuratPermohonanPage() {
 
   const paginatedHistory = history.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
   const totalPages = Math.ceil(history.length / itemsPerPage);
@@ -307,7 +307,7 @@ export default function HistorySuratPermohonanPage() {
                     )}
 
                     {/* Preview Surat Pengantar Button - Available when RT verified */}
-                    {surat.idRT && (
+                    {surat.idRT && surat.status !== "DITOLAK_RT" && (
                       <Button
                         variant="flat"
                         color="warning"
