@@ -271,7 +271,6 @@ export default function OnboardingWargaModal({
                 label="Nomor WhatsApp"
                 placeholder="Contoh: 08123456789"
                 {...register("numberWhatsApp", {
-                  required: "Nomor WhatsApp wajib diisi",
                   pattern: {
                     value: /^[\d+\-\s()]+$/,
                     message: "Format nomor tidak valid",
@@ -282,8 +281,7 @@ export default function OnboardingWargaModal({
                 }
                 isInvalid={!!errors.numberWhatsApp}
                 errorMessage={errors.numberWhatsApp?.message}
-                isRequired
-                description="Nomor aktif untuk komunikasi langsung"
+                description="Nomor aktif untuk komunikasi langsung (opsional)"
               />
 
               {/* File KTP */}

@@ -26,10 +26,10 @@ export async function PATCH(request: NextRequest) {
     const email = formData.get("email") as string;
     const numberWhatsApp = formData.get("numberWhatsApp") as string;
 
-    // Validasi input basic
-    if (!email || !numberWhatsApp) {
+    // Validasi input basic - only email is required, phone number is optional
+    if (!email) {
       return NextResponse.json(
-        { message: "Email dan nomor WhatsApp wajib diisi" },
+        { message: "Email wajib diisi" },
         { status: 400 },
       );
     }
@@ -76,13 +76,18 @@ export async function PATCH(request: NextRequest) {
       uploads[key] = url;
     }
 
-    // Update data user
+    // Update data user - only update phone number if it's provided
+    const updateData: any = {
+      email: email.trim(),
+    };
+
+    if (numberWhatsApp) {
+      updateData.numberWhatsApp = numberWhatsApp.trim();
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: {
-        email: email.trim(),
-        numberWhatsApp: numberWhatsApp.trim(),
-      },
+      data: updateData,
     });
 
     // Cari atau buat profil warga

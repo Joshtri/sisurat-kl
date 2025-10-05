@@ -86,7 +86,7 @@ export default function UsersCreatePage() {
 
           <TextInput
             label="No. Telepon"
-            name="numberWhatsapp"
+            name="numberWhatsApp"
             isRequired={false}
           />
           <TextInput

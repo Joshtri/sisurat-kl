@@ -28,10 +28,30 @@ export async function middleware(request: NextRequest) {
   if (isApi || isStatic) return NextResponse.next();
 
   // Check current maintenance status
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/maintenance`,
-  );
-  const { isMaintenance } = await res.json();
+  let isMaintenance = false; // Default to false in case of error
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/maintenance`,
+      {
+        cache: 'no-store', // Prevent caching to get fresh maintenance status
+      }
+    );
+    
+    if (res.ok) {
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const data = await res.json();
+        isMaintenance = data.isMaintenance;
+      } else {
+        // If response is not JSON, log error but continue with default value
+        console.warn('Maintenance API did not return JSON:', await res.text());
+      }
+    } else {
+      console.warn('Maintenance API request failed with status:', res.status);
+    }
+  } catch (error) {
+    console.error('Error fetching maintenance status:', error);
+  }
 
   const isSuperadmin = userRole === "superadmin";
 

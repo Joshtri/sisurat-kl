@@ -46,8 +46,61 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   try {
+    const userId = params.id;
+
+    // Delete related surat records where user is the applicant (pemohon)
+    await prisma.surat.deleteMany({
+      where: { 
+        idPemohon: userId 
+      },
+    });
+
+    // Delete related surat records where user is staff verifier
+    await prisma.surat.deleteMany({
+      where: { 
+        idStaff: userId 
+      },
+    });
+
+    // Delete related surat records where user is RT verifier
+    await prisma.surat.deleteMany({
+      where: { 
+        idRT: userId 
+      },
+    });
+
+    // Delete related surat records where user is lurah verifier
+    await prisma.surat.deleteMany({
+      where: { 
+        idLurah: userId 
+      },
+    });
+
+    // Delete related surat records where user has other relation
+    await prisma.surat.deleteMany({
+      where: { 
+        userId: userId 
+      },
+    });
+
+    // Delete related profiles based on role
+    // Delete RT profile if exists
+    await prisma.rTProfile.deleteMany({
+      where: { 
+        userId: userId 
+      },
+    });
+
+    // Delete Warga profile if exists
+    await prisma.warga.deleteMany({
+      where: { 
+        userId: userId 
+      },
+    });
+
+    // Finally, delete the user
     await prisma.user.delete({
-      where: { id: params.id },
+      where: { id: userId },
     });
 
     return NextResponse.json({ message: "User berhasil dihapus" });
