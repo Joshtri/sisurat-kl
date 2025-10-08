@@ -8,7 +8,6 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { CardContainer } from "@/components/common/CardContainer";
 import { FormWrapper } from "@/components/FormWrapper";
 import { TextInput } from "@/components/ui/inputs/TextInput";
-import { SelectInput } from "@/components/ui/inputs/SelectInput";
 import { CreateOrEditButtons } from "@/components/ui/CreateOrEditButtons";
 import {
   kartuKeluargaSchema,
@@ -17,6 +16,7 @@ import {
 import { getAllWarga } from "@/services/wargaService";
 import { createKartuKeluarga } from "@/services/kartuKeluargaService";
 import { showToast } from "@/utils/toastHelper"; // kalau pakai
+import { AutoCompleteInput } from "@/components/ui/inputs/AutoCompleteInput";
 
 export default function CreateKartuKeluargaPage() {
   const router = useRouter();
@@ -78,12 +78,25 @@ export default function CreateKartuKeluargaPage() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextInput label="Nomor KK" name="nomorKK" maxLength={16} />
-            <SelectInput
+            {/* <SelectInput
               isLoading={isLoading}
               label="Kepala Keluarga"
               name="kepalaKeluargaId"
               options={[
                 { label: "-- Pilih Kepala Keluarga --", value: "" },
+                ...wargaList.map((w) => ({
+                  label: w.namaLengkap,
+                  value: w.id,
+                })),
+              ]}
+            /> */}
+
+            <AutoCompleteInput
+              isLoading={isLoading}
+              label="Kepala Keluarga"
+              name="kepalaKeluargaId"
+              options={[
+                // { label: "", value: "" },
                 ...wargaList.map((w) => ({
                   label: w.namaLengkap,
                   value: w.id,

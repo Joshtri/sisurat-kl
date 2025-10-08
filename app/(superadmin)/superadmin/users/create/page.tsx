@@ -14,6 +14,7 @@ import { CardContainer } from "@/components/common/CardContainer";
 import { createUser } from "@/services/userService";
 import { showToast } from "@/utils/toastHelper";
 import { CreateOrEditButtons } from "@/components/ui/CreateOrEditButtons";
+import { AutoCompleteInput } from "@/components/ui/inputs/AutoCompleteInput";
 
 export default function UsersCreatePage() {
   const router = useRouter();
@@ -101,7 +102,8 @@ export default function UsersCreatePage() {
             type="password"
             showPasswordToggle
           />
-          <SelectInput
+
+          <AutoCompleteInput
             label="Role"
             name="role"
             options={[
@@ -112,6 +114,17 @@ export default function UsersCreatePage() {
               { label: "Admin", value: "SUPERADMIN" },
             ]}
           />
+          {/* <SelectInput
+            label="Role"
+            name="role"
+            options={[
+              { label: "Warga", value: "WARGA" },
+              { label: "RT", value: "RT" },
+              { label: "Staff", value: "STAFF" },
+              { label: "Lurah", value: "LURAH" },
+              { label: "Admin", value: "SUPERADMIN" },
+            ]}
+          /> */}
 
           <div className="flex justify-end space-x-3 pt-6">
             <CreateOrEditButtons

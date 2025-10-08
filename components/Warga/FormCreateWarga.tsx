@@ -7,6 +7,7 @@ import { useFormContext } from "react-hook-form"; // Tambahkan ini
 
 import { CreateOrEditButtons } from "../ui/CreateOrEditButtons";
 import { DateInput } from "../ui/inputs/DateInput";
+import { AutoCompleteInput } from "../ui/inputs/AutoCompleteInput";
 
 import { CardContainer } from "@/components/common/CardContainer";
 import { FormWrapper } from "@/components/FormWrapper";
@@ -140,7 +141,20 @@ export default function FormCreateWarga({
         <AutoSetGender peran={peran} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <SelectInput
+          {/* <SelectInput
+            label="Akun Pengguna"
+            name="userId"
+            placeholder="Pilih akun pengguna"
+            isLoading={loadingUsers}
+            options={users
+              .filter((user: any) => !user.isWarga) // ✅ hanya yang belum punya profil warga
+              .map((user: any) => ({
+                label: `${user.username} | (${user.email || "-"})`,
+                value: user.id,
+              }))}
+          /> */}
+
+          <AutoCompleteInput
             label="Akun Pengguna"
             name="userId"
             placeholder="Pilih akun pengguna"
@@ -153,7 +167,7 @@ export default function FormCreateWarga({
               }))}
           />
 
-          <SelectInput
+          <AutoCompleteInput
             label="Peran dalam Keluarga"
             onChange={(val) => setPeran(val as string)}
             name="peranDalamKK"
@@ -165,6 +179,19 @@ export default function FormCreateWarga({
               { label: "Famili Lainnya", value: "FAMILI_LAINNYA" },
             ]}
           />
+
+          {/* <SelectInput
+            label="Peran dalam Keluarga"
+            onChange={(val) => setPeran(val as string)}
+            name="peranDalamKK"
+            options={[
+              { label: "Kepala Keluarga", value: "KEPALA_KELUARGA" },
+              { label: "Istri", value: "ISTRI" },
+              { label: "Anak", value: "ANAK" },
+              { label: "Orang Tua", value: "ORANG_TUA" },
+              { label: "Famili Lainnya", value: "FAMILI_LAINNYA" },
+            ]}
+          /> */}
 
           {peran !== "KEPALA_KELUARGA" && (
             <div className="col-span-1 md:col-span-2">
