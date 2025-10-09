@@ -33,12 +33,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    // Cek kelengkapan data yang wajib
-    const requiredUserFields = {
-      email: user.email,
-      numberWhatsApp: user.numberWhatsApp,
-    };
-
+    // Cek kelengkapan data yang wajib (hanya file KTP dan KK)
     const requiredProfilFields = user.profil
       ? {
           fileKtp: user.profil.fileKtp,
@@ -50,15 +45,11 @@ export async function GET(request: NextRequest) {
         };
 
     // Tentukan field mana yang kosong/null
-    const missingUserFields = Object.entries(requiredUserFields)
-      .filter(([key, value]) => !value || value.trim() === "")
-      .map(([key]) => key);
-
     const missingProfilFields = Object.entries(requiredProfilFields)
       .filter(([key, value]) => !value || value.trim() === "")
       .map(([key]) => key);
 
-    const allMissingFields = [...missingUserFields, ...missingProfilFields];
+    const allMissingFields = [...missingProfilFields];
 
     const isComplete = allMissingFields.length === 0;
 

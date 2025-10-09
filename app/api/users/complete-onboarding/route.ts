@@ -27,12 +27,12 @@ export async function PATCH(request: NextRequest) {
     const numberWhatsApp = formData.get("numberWhatsApp") as string;
 
     // Validasi input basic - only email is required, phone number is optional
-    if (!email) {
-      return NextResponse.json(
-        { message: "Email wajib diisi" },
-        { status: 400 },
-      );
-    }
+    // if (!email) {
+    //   return NextResponse.json(
+    //     { message: "Email wajib diisi" },
+    //     { status: 400 },
+    //   );
+    // }
 
     // Upload files ke Supabase Storage
     const uploads: Record<string, string> = {};

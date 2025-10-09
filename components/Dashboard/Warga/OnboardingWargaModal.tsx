@@ -251,7 +251,6 @@ export default function OnboardingWargaModal({
                 placeholder="Masukkan alamat email Anda"
                 type="email"
                 {...register("email", {
-                  required: "Email wajib diisi",
                   pattern: {
                     value: /\S+@\S+\.\S+/,
                     message: "Format email tidak valid",
@@ -262,8 +261,7 @@ export default function OnboardingWargaModal({
                 }
                 isInvalid={!!errors.email}
                 errorMessage={errors.email?.message}
-                isRequired
-                description="Email akan digunakan untuk notifikasi status surat"
+                description="Email untuk notifikasi status surat (opsional)"
               />
 
               {/* Nomor WhatsApp */}
