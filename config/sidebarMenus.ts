@@ -1,5 +1,6 @@
 import {
   ArchiveBoxIcon,
+  ChartBarIcon,
   DocumentTextIcon,
   HomeIcon,
   ShieldCheckIcon,
@@ -7,6 +8,7 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import {
+  ChartBarIcon as ChartBarSolidIcon,
   DocumentTextIcon as DocumentSolidIcon,
   HomeIcon as HomeSolidIcon,
   UserGroupIcon as UserGroupSolidIcon,
@@ -205,6 +207,12 @@ export const sidebarMenus: Record<string, MenuItem[]> = {
       icon: DocumentTextIcon,
       iconSolid: DocumentSolidIcon,
     },
+    {
+      title: "Laporan & Statistik",
+      href: "/superadmin/laporan",
+      icon: ChartBarIcon,
+      iconSolid: ChartBarSolidIcon,
+    }
   ],
 
   RT: [
