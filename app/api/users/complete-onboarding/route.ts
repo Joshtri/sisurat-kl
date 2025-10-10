@@ -127,12 +127,12 @@ export async function PATCH(request: NextRequest) {
     console.error("Error completing onboarding:", error);
 
     // Handle specific prisma errors
-    if (error.code === "P2002") {
-      return NextResponse.json(
-        { message: "Email atau nomor WhatsApp sudah digunakan" },
-        { status: 400 },
-      );
-    }
+    // if (error.code === "P2002") {
+    //   return NextResponse.json(
+    //     { message: "Email atau nomor WhatsApp sudah digunakan" },
+    //     { status: 400 },
+    //   );
+    // }
 
     return NextResponse.json(
       { message: "Internal Server Error" },
