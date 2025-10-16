@@ -42,13 +42,16 @@ export default function FormCreateWarga({
   // const effectiveUserId = defaultUserId || userIdFromQuery;
 
   const [userIdFromQuery, setUserIdFromQuery] = useState<string>("");
+  const [kkIdFromQuery, setKkIdFromQuery] = useState<string>("");
   const [peran, setPeran] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
     const uid = sp.get("userId");
+    const kkId = sp.get("kkId");
 
     if (uid) setUserIdFromQuery(uid);
+    if (kkId) setKkIdFromQuery(kkId);
   }, []);
   4;
 
@@ -123,7 +126,7 @@ export default function FormCreateWarga({
           // alamat: "",
           //   foto: "",
           statusHidup: "HIDUP",
-          kartuKeluargaId: undefined,
+          kartuKeluargaId: kkIdFromQuery || undefined,
           peranDalamKK: undefined,
         }}
         schema={wargaSchema}

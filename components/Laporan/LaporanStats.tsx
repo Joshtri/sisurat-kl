@@ -6,7 +6,10 @@ import {
   ClockIcon,
   DocumentTextIcon,
   XCircleIcon,
+  StarIcon,
 } from "@heroicons/react/24/outline";
+
+import { StarRating } from "@/components/ui/StarRating";
 
 interface LaporanStatsProps {
   summary: {
@@ -15,9 +18,13 @@ interface LaporanStatsProps {
     ditolak: number;
     menunggu: number;
   };
+  ratingStats?: {
+    totalRating: number;
+    averageRating: number;
+  };
 }
 
-export function LaporanStats({ summary }: LaporanStatsProps) {
+export function LaporanStats({ summary, ratingStats }: LaporanStatsProps) {
   const stats = [
     {
       title: "Total Surat",
@@ -50,25 +57,50 @@ export function LaporanStats({ summary }: LaporanStatsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {stats.map((stat, index) => {
-        const Icon = stat.icon;
-        return (
-          <Card key={index}>
-            <CardBody>
-              <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-lg ${stat.bgColor}`}>
-                  <Icon className={`w-6 h-6 ${stat.color}`} />
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, index) => {
+          const Icon = stat.icon;
+
+          return (
+            <Card key={index}>
+              <CardBody>
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-lg ${stat.bgColor}`}>
+                    <Icon className={`w-6 h-6 ${stat.color}`} />
+                  </div>
+                  <div>
+                    <p className="text-sm text-default-600">{stat.title}</p>
+                    <p className="text-2xl font-bold">{stat.value}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-default-600">{stat.title}</p>
-                  <p className="text-2xl font-bold">{stat.value}</p>
+              </CardBody>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Rating Statistics Card */}
+      {ratingStats && ratingStats.totalRating > 0 && (
+        <Card className="mt-4">
+          <CardBody>
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-lg bg-warning/10">
+                <StarIcon className="w-6 h-6 text-warning" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-default-600 mb-1">Kepuasan Layanan</p>
+                <div className="flex items-center gap-3">
+                  <StarRating value={ratingStats.averageRating} readonly size="sm" />
+                  <span className="text-xs text-default-500">
+                    ({ratingStats.totalRating} penilaian)
+                  </span>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        );
-      })}
-    </div>
+            </div>
+          </CardBody>
+        </Card>
+      )}
+    </>
   );
 }

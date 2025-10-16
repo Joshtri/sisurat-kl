@@ -13,6 +13,23 @@ function getDateRange(period: string, customStart?: string, customEnd?: string) 
       startDate.setHours(0, 0, 0, 0);
       endDate.setHours(23, 59, 59, 999);
       break;
+    case "thisweek":
+      // Minggu ini: dari Senin hingga sekarang
+      const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, ...
+      const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1; // Handle Sunday
+      startDate.setDate(now.getDate() - daysFromMonday);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+      break;
+    case "lastweek":
+      // Minggu lalu: Senin - Minggu minggu lalu
+      const lastWeekDay = now.getDay();
+      const daysFromLastMonday = lastWeekDay === 0 ? 6 : lastWeekDay - 1;
+      startDate.setDate(now.getDate() - daysFromLastMonday - 7);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setDate(now.getDate() - daysFromLastMonday - 1);
+      endDate.setHours(23, 59, 59, 999);
+      break;
     case "week":
       startDate.setDate(now.getDate() - 7);
       startDate.setHours(0, 0, 0, 0);

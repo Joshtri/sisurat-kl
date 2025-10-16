@@ -25,7 +25,7 @@ export default function LaporanPage() {
   const handlePeriodChange = (
     newPeriod: string,
     newStartDate?: string,
-    newEndDate?: string
+    newEndDate?: string,
   ) => {
     setPeriod(newPeriod);
     setStartDate(newStartDate);
@@ -98,7 +98,7 @@ export default function LaporanPage() {
       {isLoading ? (
         <SkeletonCard rows={1} />
       ) : data ? (
-        <LaporanStats summary={data.summary} />
+        <LaporanStats summary={data.summary} ratingStats={data.ratingStats} />
       ) : null}
 
       {/* Charts */}
@@ -110,6 +110,9 @@ export default function LaporanPage() {
           statusBreakdown={data.statusBreakdown}
           trending={data.trending}
           trendPerBulan={data.trendPerBulan}
+          period={period}
+          startDate={startDate}
+          endDate={endDate}
         />
       ) : null}
 

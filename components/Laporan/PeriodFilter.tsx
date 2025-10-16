@@ -14,6 +14,8 @@ interface PeriodFilterProps {
 
 const periodOptions = [
   { key: "today", label: "Hari Ini" },
+  { key: "thisweek", label: "Minggu Ini" },
+  { key: "lastweek", label: "Minggu Lalu" },
   { key: "week", label: "7 Hari Terakhir" },
   { key: "month", label: "30 Hari Terakhir" },
   { key: "3months", label: "3 Bulan Terakhir" },

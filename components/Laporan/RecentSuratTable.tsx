@@ -12,6 +12,8 @@ import {
   TableRow,
 } from "@heroui/table";
 
+import { StarRating } from "@/components/ui/StarRating";
+
 interface RecentSuratTableProps {
   data: Array<{
     id: string;
@@ -20,6 +22,10 @@ interface RecentSuratTableProps {
     status: string;
     tanggal: Date;
     noSurat: string;
+    penilaian?: {
+      rating: number;
+      deskripsi?: string;
+    } | null;
   }>;
 }
 
@@ -59,6 +65,7 @@ export function RecentSuratTable({ data }: RecentSuratTableProps) {
             <TableColumn>JENIS SURAT</TableColumn>
             <TableColumn>PEMOHON</TableColumn>
             <TableColumn>STATUS</TableColumn>
+            <TableColumn>RATING</TableColumn>
             <TableColumn>TANGGAL</TableColumn>
           </TableHeader>
           <TableBody emptyContent="Tidak ada data surat">
@@ -75,6 +82,15 @@ export function RecentSuratTable({ data }: RecentSuratTableProps) {
                   >
                     {statusLabels[item.status] || item.status}
                   </Chip>
+                </TableCell>
+                <TableCell>
+                  {item.penilaian ? (
+                    <div className="flex items-center gap-2">
+                      <StarRating value={item.penilaian.rating} readonly size="sm" />
+                    </div>
+                  ) : (
+                    <span className="text-xs text-default-400">-</span>
+                  )}
                 </TableCell>
                 <TableCell>
                   {new Date(item.tanggal).toLocaleDateString("id-ID", {

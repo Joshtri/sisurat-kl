@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@heroui/react";
-import { UsersIcon } from "@heroicons/react/24/outline";
+import { UsersIcon, UserPlusIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 // import { KartuKeluarga } from "@prisma/client";
@@ -56,6 +56,14 @@ export default function KartuKeluargaPage() {
     ),
     actions: (
       <TableActions
+        customActions={[
+          {
+            key: "tambah-anggota",
+            label: "Tambah Anggota",
+            icon: UserPlusIcon,
+            onClick: () => router.push(`/superadmin/warga/create?kkId=${item.id}`),
+          },
+        ]}
         onDelete={{
           title: "Hapus Kartu Keluarga",
           message: `Apakah Anda yakin ingin menghapus kartu keluarga "${item.nomorKK}"?`,

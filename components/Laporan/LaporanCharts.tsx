@@ -2,6 +2,8 @@
 
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
+import { useState } from "react";
+import { DetailModal } from "./DetailModal";
 
 interface LaporanChartsProps {
   jenisBreakdown: Array<{
@@ -22,6 +24,9 @@ interface LaporanChartsProps {
     month: string;
     count: number;
   }>;
+  period: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 const statusLabels: Record<string, string> = {
@@ -40,7 +45,26 @@ export function LaporanCharts({
   statusBreakdown,
   trending,
   trendPerBulan,
+  period,
+  startDate,
+  endDate,
 }: LaporanChartsProps) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState<{
+    type: "jenis" | "status" | null;
+    value: string;
+  }>({ type: null, value: "" });
+
+  const handleClick = (type: "jenis" | "status", value: string) => {
+    setSelectedFilter({ type, value });
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedFilter({ type: null, value: "" });
+  };
+
   // Calculate total for percentage
   const totalJenis = jenisBreakdown.reduce((sum, item) => sum + item.count, 0);
   const totalStatus = statusBreakdown.reduce((sum, item) => sum + item.count, 0);
@@ -59,7 +83,11 @@ export function LaporanCharts({
               trending.map((item, index) => {
                 const percentage = totalJenis > 0 ? (item.count / totalJenis) * 100 : 0;
                 return (
-                  <div key={index}>
+                  <div
+                    key={index}
+                    className="cursor-pointer hover:bg-default-100 p-2 rounded-lg transition-colors"
+                    onClick={() => handleClick("jenis", item.jenis)}
+                  >
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-sm font-medium">
                         {item.jenis} ({item.kode})
@@ -98,7 +126,11 @@ export function LaporanCharts({
               statusBreakdown.map((item, index) => {
                 const percentage = totalStatus > 0 ? (item.count / totalStatus) * 100 : 0;
                 return (
-                  <div key={index}>
+                  <div
+                    key={index}
+                    className="cursor-pointer hover:bg-default-100 p-2 rounded-lg transition-colors"
+                    onClick={() => handleClick("status", item.status)}
+                  >
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-sm font-medium">
                         {statusLabels[item.status] || item.status}
@@ -137,7 +169,8 @@ export function LaporanCharts({
               jenisBreakdown.map((item, index) => (
                 <div
                   key={index}
-                  className="flex justify-between items-center py-2 border-b border-default-200 last:border-0"
+                  className="flex justify-between items-center py-2 border-b border-default-200 last:border-0 cursor-pointer hover:bg-default-100 px-2 rounded transition-colors"
+                  onClick={() => handleClick("jenis", item.jenis)}
                 >
                   <span className="text-sm">
                     {item.jenis} <span className="text-default-400">({item.kode})</span>
@@ -189,6 +222,17 @@ export function LaporanCharts({
           </div>
         </CardBody>
       </Card>
+
+      {/* Detail Modal */}
+      <DetailModal
+        isOpen={modalOpen}
+        onClose={handleCloseModal}
+        filterType={selectedFilter.type}
+        filterValue={selectedFilter.value}
+        period={period}
+        startDate={startDate}
+        endDate={endDate}
+      />
     </div>
   );
 }

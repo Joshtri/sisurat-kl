@@ -13,6 +13,23 @@ function getDateRange(period: string, customStart?: string, customEnd?: string) 
       startDate.setHours(0, 0, 0, 0);
       endDate.setHours(23, 59, 59, 999);
       break;
+    case "thisweek":
+      // Minggu ini: dari Senin hingga sekarang
+      const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, ...
+      const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1; // Handle Sunday
+      startDate.setDate(now.getDate() - daysFromMonday);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+      break;
+    case "lastweek":
+      // Minggu lalu: Senin - Minggu minggu lalu
+      const lastWeekDay = now.getDay();
+      const daysFromLastMonday = lastWeekDay === 0 ? 6 : lastWeekDay - 1;
+      startDate.setDate(now.getDate() - daysFromLastMonday - 7);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setDate(now.getDate() - daysFromLastMonday - 1);
+      endDate.setHours(23, 59, 59, 999);
+      break;
     case "week":
       startDate.setDate(now.getDate() - 7);
       startDate.setHours(0, 0, 0, 0);
@@ -152,6 +169,7 @@ export async function GET(request: NextRequest) {
               profil: true,
             },
           },
+          penilaian: true,
         },
         orderBy: { createdAt: "desc" },
         take: 10,
@@ -228,7 +246,24 @@ export async function GET(request: NextRequest) {
       status: s.status,
       tanggal: s.createdAt,
       noSurat: s.noSurat || "-",
+      penilaian: s.penilaian ? {
+        rating: s.penilaian.rating,
+        deskripsi: s.penilaian.deskripsi,
+      } : null,
     }));
+
+    // Get rating statistics in the date range
+    const ratingStats = await prisma.penilaian.aggregate({
+      where: {
+        surat: dateFilter,
+      },
+      _avg: {
+        rating: true,
+      },
+      _count: {
+        rating: true,
+      },
+    });
 
     return NextResponse.json({
       period,
@@ -241,6 +276,10 @@ export async function GET(request: NextRequest) {
         diterbitkan: suratDiterbitkan,
         ditolak: suratDitolak,
         menunggu: suratMenunggu,
+      },
+      ratingStats: {
+        totalRating: ratingStats._count.rating || 0,
+        averageRating: ratingStats._avg.rating || 0,
       },
       statusBreakdown,
       jenisBreakdown,
