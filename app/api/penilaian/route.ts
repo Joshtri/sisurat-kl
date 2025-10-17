@@ -1,17 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { TahapPenilaian } from "@prisma/client";
 
-// POST - Create penilaian
+// POST - Create penilaian per tahap
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { idSurat, rating, deskripsi } = body;
+    const { idSurat, tahapRole, rating, deskripsi } = body;
 
     // Validasi
     if (!idSurat) {
       return NextResponse.json(
         { message: "ID Surat harus disertakan" },
+        { status: 400 },
+      );
+    }
+
+    if (!tahapRole || !["RT", "STAFF", "LURAH"].includes(tahapRole)) {
+      return NextResponse.json(
+        { message: "Tahap role harus RT, STAFF, atau LURAH" },
         { status: 400 },
       );
     }
@@ -43,43 +51,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Cek apakah sudah ada penilaian
+    // Cek apakah sudah ada penilaian untuk tahap ini
     const existingPenilaian = await prisma.penilaian.findUnique({
-      where: { idSurat },
+      where: {
+        idSurat_tahapRole: {
+          idSurat,
+          tahapRole: tahapRole as TahapPenilaian,
+        }
+      },
     });
 
     if (existingPenilaian) {
-      // Update existing
-      const updatedPenilaian = await prisma.penilaian.update({
-        where: { idSurat },
-        data: {
-          rating,
-          deskripsi: deskripsi || null,
-        },
-      });
-
-      return NextResponse.json({
-        message: "Penilaian berhasil diperbarui",
-        data: updatedPenilaian,
-      });
-    } else {
-      // Create new
-      const newPenilaian = await prisma.penilaian.create({
-        data: {
-          idSurat,
-          rating,
-          deskripsi: deskripsi || null,
-        },
-      });
-
       return NextResponse.json(
-        {
-          message: "Penilaian berhasil disimpan",
-          data: newPenilaian,
-        },
-        { status: 201 },
+        { message: `Penilaian untuk tahap ${tahapRole} sudah diberikan sebelumnya` },
+        { status: 400 },
       );
     }
+
+    // Create new penilaian
+    const newPenilaian = await prisma.penilaian.create({
+      data: {
+        idSurat,
+        tahapRole: tahapRole as TahapPenilaian,
+        rating,
+        deskripsi: deskripsi || null,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        message: `Penilaian untuk tahap ${tahapRole} berhasil disimpan`,
+        data: newPenilaian,
+      },
+      { status: 201 },
+    );
   } catch (error) {
     console.error("Penilaian Error:", error);
 
@@ -93,7 +98,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET - Get penilaian by surat ID
+// GET - Get all penilaian for a surat (grouped by tahap)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -106,7 +111,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const penilaian = await prisma.penilaian.findUnique({
+    const penilaianList = await prisma.penilaian.findMany({
       where: { idSurat },
       include: {
         surat: {
@@ -120,17 +125,14 @@ export async function GET(request: NextRequest) {
           },
         },
       },
+      orderBy: {
+        createdAt: 'asc',
+      }
     });
 
-    if (!penilaian) {
-      return NextResponse.json(
-        { message: "Penilaian tidak ditemukan" },
-        { status: 404 },
-      );
-    }
-
+    // Return array, bisa kosong jika belum ada penilaian
     return NextResponse.json({
-      data: penilaian,
+      data: penilaianList,
     });
   } catch (error) {
     console.error("Get Penilaian Error:", error);

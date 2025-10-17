@@ -1,36 +1,19 @@
-Filter Mingguan dengan Opsi Rentang Tanggal:
+Prompt ke Claude:
 
+Tambahkan fitur penilaian bintang dan deskripsi pada sistem permohonan warga.
 
-Tambahkan filter tanggal yang memungkinkan pengguna melihat data per minggu. Utk sebelumnya memang sudah ada fitur laporant ersebut. 
+Fitur ini hanya muncul di halaman warga/permohonan/history jika status permohonan sudah DIVERIFIKASI_LURAH.
 
+Penilaian dilakukan per tahap proses: RT, Staf, dan Lurah.
 
-Sertakan juga opsi pemilihan rentang tanggal khusus agar pengguna bisa menyaring data berdasarkan tanggal yang diinginkan.
-jadi  intinya pada fitur poin 1 itu cuman sdiit adjusment.
+Setiap tahap memiliki penilaian masing-masing (bintang 1–5 dan deskripsi opsional).
 
+Rating hanya bisa diberikan 1 kali per tahap oleh warga. Setelah rating diberikan, tampilkan hasilnya, bukan form-nya lagi.
 
-Tampilan Statistik dengan Detail yang Bisa Diklik:
+Buat API untuk menyimpan dan mengambil data rating tersebut, serta validasi agar tidak bisa memberi rating dua kali di tahap yang sama.
 
+Buat komponen frontend untuk tombol “Beri Penilaian”, modal/form bintang dan deskripsi, serta tampilan hasil rating per tahap.
 
-Di halaman statistik, buat agar data bisa diklik.
+Integrasikan dengan sistem autentikasi user yang sudah ada.
 
-
-Ketika pengguna mengklik salah satu item data (misalnya jumlah surat), tampilkan rekapan atau rincian detail dari data tersebut. Jadi saat klik itu langsung muncul data surat itu gimana, jdi misal jenis surat A,B,C pas klik itu lngsung muncul gitu bro. 
-
-
-Peningkatan pada Tabel KK (Kartu Keluarga):
-
-
-Saat memilih data KK, pengguna bisa langsung menambahkan anggota keluarga dari tampilan tabel tersebut.
-
-
-Tambahkan tombol atau fitur untuk menambah anggota keluarga baru ke dalam KK yang sedang dipilih. Iya jdi ada fitur action tambahan  utk tambah warga di KK tersebut di page superadmin/kepala-keluarga
-
-
-Fitur Penilaian Bintang dan Deskripsi:
-
-
-Implementasikan sistem penilaian dengan bintang untuk mengevaluasi (misalnya layanan, pengguna, dll).
-
-
-Izinkan pengguna memberikan deskripsi atau komentar tambahan bersama penilaian mereka.
-Jadi pada poin 4 ini sepertinya ada tambahan prisma schema, jdi tiap user sudah selesai buat surat, maka nnti di bagian itu ada fitur tuk beri bintang atau penilaian dengan deskripsi gitu, tpi deskripsi opsional.  Jdi bintang itu dri 1 sampai 5 gitu.  Itu hnya akan muncul bintang teresbu klo sudah selesai atau  DIVERIFIKASI_LURAH di page  warga/permohonan/history 
+Pastikan UX-nya mulus: begitu rating diberikan, hasil langsung muncul tanpa perlu reload manual.

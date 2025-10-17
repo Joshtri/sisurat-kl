@@ -19,7 +19,6 @@ import {
   EyeIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  StarIcon,
 } from "@heroicons/react/24/outline";
 import { Surat, JenisSurat } from "@prisma/client";
 
@@ -33,8 +32,7 @@ import {
 } from "@/services/suratService";
 import SuratProgress from "@/components/SuratPermohonan/SuratProgress";
 import { showToast } from "@/utils/toastHelper";
-import { PenilaianModal } from "@/components/Penilaian/PenilaianModal";
-import { StarRating } from "@/components/ui/StarRating";
+import { PenilaianPerTahap } from "@/components/Penilaian/PenilaianPerTahap";
 
 type SuratWithJenis = Surat & { jenis: JenisSurat };
 
@@ -69,10 +67,6 @@ export default function HistorySuratPermohonanPage() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
-  // State untuk modal penilaian
-  const [penilaianModalOpen, setPenilaianModalOpen] = useState(false);
-  const [selectedSurat, setSelectedSurat] = useState<SuratWithJenis | null>(null);
 
   // Loading states untuk berbagai actions
   const [loadingStates, setLoadingStates] = useState({
@@ -329,52 +323,15 @@ export default function HistorySuratPermohonanPage() {
                           : "Lihat Surat Pengantar"}
                       </Button>
                     )}
-
-                    {/* Tombol Beri Penilaian - Hanya untuk surat yang sudah DIVERIFIKASI_LURAH */}
-                    {surat.status === "DIVERIFIKASI_LURAH" && (
-                      <Button
-                        variant="flat"
-                        color="warning"
-                        size="sm"
-                        startContent={<StarIcon className="h-4 w-4" />}
-                        isDisabled={isAnyLoading}
-                        onPress={() => {
-                          setSelectedSurat(surat);
-                          setPenilaianModalOpen(true);
-                        }}
-                      >
-                        Beri Penilaian
-                      </Button>
-                    )}
                   </div>
 
-                  {/* Tampilkan rating jika sudah ada penilaian */}
-                  {surat.status === "DIVERIFIKASI_LURAH" && surat.penilaian && (
-                    <div className="mt-4 p-3 bg-warning-50 rounded-lg border border-warning-200">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-warning-800 mb-2">
-                            Penilaian Anda:
-                          </p>
-                          <StarRating value={surat.penilaian.rating} readonly size="sm" />
-                          {surat.penilaian.deskripsi && (
-                            <p className="text-xs text-warning-700 mt-2 italic">
-                              "{surat.penilaian.deskripsi}"
-                            </p>
-                          )}
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="light"
-                          color="warning"
-                          onPress={() => {
-                            setSelectedSurat(surat);
-                            setPenilaianModalOpen(true);
-                          }}
-                        >
-                          Ubah
-                        </Button>
-                      </div>
+                  {/* Komponen Penilaian Per Tahap - Hanya untuk surat yang sudah DIVERIFIKASI_LURAH */}
+                  {surat.status === "DIVERIFIKASI_LURAH" && (
+                    <div className="mt-4">
+                      <PenilaianPerTahap
+                        suratId={surat.id}
+                        suratNomor={surat.noSurat || undefined}
+                      />
                     </div>
                   )}
                 </CardBody>
@@ -414,21 +371,6 @@ export default function HistorySuratPermohonanPage() {
           </>
         )}
       </div>
-
-      {/* Modal Penilaian */}
-      {selectedSurat && (
-        <PenilaianModal
-          isOpen={penilaianModalOpen}
-          onClose={() => {
-            setPenilaianModalOpen(false);
-            setSelectedSurat(null);
-          }}
-          suratId={selectedSurat.id}
-          suratNomor={selectedSurat.noSurat || undefined}
-          existingRating={selectedSurat.penilaian?.rating}
-          existingDeskripsi={selectedSurat.penilaian?.deskripsi || undefined}
-        />
-      )}
     </>
   );
 }

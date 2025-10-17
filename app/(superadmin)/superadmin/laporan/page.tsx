@@ -8,6 +8,7 @@ import { PeriodFilter } from "@/components/Laporan/PeriodFilter";
 import { LaporanStats } from "@/components/Laporan/LaporanStats";
 import { LaporanCharts } from "@/components/Laporan/LaporanCharts";
 import { RecentSuratTable } from "@/components/Laporan/RecentSuratTable";
+import { RatingPerRole } from "@/components/Laporan/RatingPerRole";
 import { exportLaporan, getLaporanData } from "@/services/laporanService";
 import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 
@@ -99,6 +100,13 @@ export default function LaporanPage() {
         <SkeletonCard rows={1} />
       ) : data ? (
         <LaporanStats summary={data.summary} ratingStats={data.ratingStats} />
+      ) : null}
+
+      {/* Rating Per Role */}
+      {isLoading ? (
+        <SkeletonCard rows={1} />
+      ) : data && data.ratingPerRole && data.ratingPerRole.length > 0 ? (
+        <RatingPerRole data={data.ratingPerRole} />
       ) : null}
 
       {/* Charts */}

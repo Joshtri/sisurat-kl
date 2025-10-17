@@ -265,6 +265,27 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    // Get rating per role (tahap)
+    const ratingPerRole = await prisma.penilaian.groupBy({
+      by: ["tahapRole"],
+      where: {
+        surat: dateFilter,
+      },
+      _avg: {
+        rating: true,
+      },
+      _count: {
+        rating: true,
+      },
+    });
+
+    // Format rating per role stats
+    const ratingPerRoleFormatted = ratingPerRole.map((item) => ({
+      role: item.tahapRole,
+      averageRating: item._avg.rating || 0,
+      totalRating: item._count.rating || 0,
+    }));
+
     return NextResponse.json({
       period,
       dateRange: {
@@ -281,6 +302,7 @@ export async function GET(request: NextRequest) {
         totalRating: ratingStats._count.rating || 0,
         averageRating: ratingStats._avg.rating || 0,
       },
+      ratingPerRole: ratingPerRoleFormatted,
       statusBreakdown,
       jenisBreakdown,
       rtBreakdown,

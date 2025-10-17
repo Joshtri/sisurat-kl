@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 
 import { StarRating } from "@/components/ui/StarRating";
-import { createOrUpdatePenilaian } from "@/services/penilaianService";
+import { createPenilaian, TahapPenilaian } from "@/services/penilaianService";
 import { showToast } from "@/utils/toastHelper";
 
 interface PenilaianModalProps {
@@ -15,8 +15,7 @@ interface PenilaianModalProps {
   onClose: () => void;
   suratId: string;
   suratNomor?: string;
-  existingRating?: number;
-  existingDeskripsi?: string;
+  tahapRole: TahapPenilaian;
 }
 
 export function PenilaianModal({
@@ -24,26 +23,26 @@ export function PenilaianModal({
   onClose,
   suratId,
   suratNomor,
-  existingRating,
-  existingDeskripsi,
+  tahapRole,
 }: PenilaianModalProps) {
-  const [rating, setRating] = useState(existingRating || 0);
-  const [deskripsi, setDeskripsi] = useState(existingDeskripsi || "");
+  const [rating, setRating] = useState(0);
+  const [deskripsi, setDeskripsi] = useState("");
   const queryClient = useQueryClient();
 
+  // Reset form saat modal dibuka
   useEffect(() => {
     if (isOpen) {
-      setRating(existingRating || 0);
-      setDeskripsi(existingDeskripsi || "");
+      setRating(0);
+      setDeskripsi("");
     }
-  }, [isOpen, existingRating, existingDeskripsi]);
+  }, [isOpen]);
 
   const { mutate: submitPenilaian, isPending } = useMutation({
-    mutationFn: createOrUpdatePenilaian,
+    mutationFn: createPenilaian,
     onSuccess: () => {
       showToast({
         title: "Berhasil",
-        description: "Penilaian Anda berhasil disimpan",
+        description: `Penilaian untuk tahap ${tahapRole} berhasil disimpan`,
         color: "success",
       });
 
@@ -73,16 +72,30 @@ export function PenilaianModal({
 
     submitPenilaian({
       idSurat: suratId,
+      tahapRole,
       rating,
       deskripsi: deskripsi.trim() || undefined,
     });
+  };
+
+  const getTahapLabel = () => {
+    switch (tahapRole) {
+      case "RT":
+        return "RT";
+      case "STAFF":
+        return "Staf";
+      case "LURAH":
+        return "Lurah";
+      default:
+        return tahapRole;
+    }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md">
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          Beri Penilaian
+          Beri Penilaian - Tahap {getTahapLabel()}
           {suratNomor && (
             <p className="text-sm font-normal text-default-500">
               Surat: {suratNomor}
