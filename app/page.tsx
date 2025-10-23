@@ -38,6 +38,7 @@ interface LockState {
 
 function normalizeId(id?: string) {
   const s = (id || "").trim().toLowerCase();
+
   return s || "_default_";
 }
 
@@ -48,8 +49,10 @@ function storageKey(id: string) {
 function readLockState(id: string): LockState {
   try {
     const raw = localStorage.getItem(storageKey(id));
+
     if (!raw) return { level: 0, failureCount: 0, lockedUntil: 0 };
     const parsed = JSON.parse(raw) as LockState;
+
     return {
       level: parsed?.level ?? 0,
       failureCount: parsed?.failureCount ?? 0,
@@ -78,6 +81,7 @@ function formatDuration(ms: number) {
     .toString()
     .padStart(2, "0");
   const ss = (s % 60).toString().padStart(2, "0");
+
   return `${m}:${ss}`;
 }
 
@@ -94,6 +98,7 @@ function recordFailure(id: string): LockState {
   if (state.level === 0) {
     // Still in pre-lock phase: accumulate failures to 3
     const failures = (state.failureCount || 0) + 1;
+
     if (failures >= 3) {
       // Hit 3 → go to level 1 and lock for 1 minute
       state = {
@@ -107,6 +112,7 @@ function recordFailure(id: string): LockState {
   } else {
     // Already past first lock: every failure escalates to next level (max 15m)
     const nextLevel = Math.min(state.level + 1, MAX_LEVEL);
+
     state = {
       level: nextLevel,
       failureCount: 0,
@@ -115,6 +121,7 @@ function recordFailure(id: string): LockState {
   }
 
   writeLockState(id, state);
+
   return state;
 }
 
@@ -122,15 +129,19 @@ function recordFailure(id: string): LockState {
 // but we clear the lockedUntil so the user can try again.
 function clearExpiredLockButKeepLevel(id: string) {
   const s = readLockState(id);
+
   if (!isCurrentlyLocked(s) && s.lockedUntil) {
     const updated: LockState = {
       level: s.level,
       failureCount: s.failureCount || 0,
       lockedUntil: 0,
     };
+
     writeLockState(id, updated);
+
     return updated;
   }
+
   return s;
 }
 
@@ -168,6 +179,7 @@ export default function LoginPage() {
     const s = clearExpiredLockButKeepLevel(currentId);
     const now = Date.now();
     const remaining = Math.max(0, (s.lockedUntil || 0) - now);
+
     setIsLocked(remaining > 0);
     setTimeLeftMs(remaining);
     setLockLevel(s.level || 0);
@@ -180,15 +192,18 @@ export default function LoginPage() {
     const t = setInterval(() => {
       setTimeLeftMs((ms) => {
         const next = Math.max(0, ms - 1000);
+
         if (next <= 0) {
           setIsLocked(false);
           // After unlock, keep level but clear lockedUntil in storage
           clearExpiredLockButKeepLevel(currentId);
           clearInterval(t);
         }
+
         return next;
       });
     }, 1000);
+
     return () => clearInterval(t);
   }, [isLocked, currentId]);
 
@@ -197,6 +212,7 @@ export default function LoginPage() {
     onSuccess: (data: any) => {
       // Successful login: reset lock state for this identifier
       const id = lastAttemptIdRef.current || currentId;
+
       clearLockState(id);
 
       localStorage.setItem("token", data.token);
@@ -214,12 +230,14 @@ export default function LoginPage() {
 
       if (isCurrentlyLocked(newState)) {
         const remaining = Math.max(0, newState.lockedUntil - now);
+
         setIsLocked(true);
         setTimeLeftMs(remaining);
         setLockLevel(newState.level);
         setPrelockFailures(0);
 
         const minutes = Math.round(LOCK_TIERS_MS[newState.level] / 60_000);
+
         showToast({
           title: "Terlalu banyak percobaan",
           description: `Akun dikunci selama ${minutes} menit. Coba lagi dalam ${formatDuration(remaining)}.`,
@@ -244,8 +262,10 @@ export default function LoginPage() {
     const id = normalizeId(data.nik);
     // If currently locked, block immediately on client side
     const s = readLockState(id);
+
     if (isCurrentlyLocked(s)) {
       const remaining = Math.max(0, s.lockedUntil - Date.now());
+
       setIsLocked(true);
       setTimeLeftMs(remaining);
       setLockLevel(s.level);
@@ -254,6 +274,7 @@ export default function LoginPage() {
         description: `Silakan coba lagi dalam ${formatDuration(remaining)}.`,
         color: "warning",
       });
+
       return;
     }
 

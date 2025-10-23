@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Divider } from "@heroui/divider";
@@ -11,8 +12,13 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/table";
+import { Button } from "@heroui/button";
+import { DocumentIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 
 import { StarRating } from "@/components/ui/StarRating";
+import { previewSuratPdf, previewSuratPengantar } from "@/services/suratService";
+import { showToast } from "@/utils/toastHelper";
+import LoadingScreen from "@/components/ui/loading/LoadingScreen";
 
 interface RecentSuratTableProps {
   data: Array<{
@@ -29,7 +35,10 @@ interface RecentSuratTableProps {
   }>;
 }
 
-const statusColorMap: Record<string, "success" | "warning" | "danger" | "default"> = {
+const statusColorMap: Record<
+  string,
+  "success" | "warning" | "danger" | "default"
+> = {
   DIAJUKAN: "default",
   DIVERIFIKASI_STAFF: "warning",
   DITOLAK_STAFF: "danger",
@@ -52,8 +61,12 @@ const statusLabels: Record<string, string> = {
 };
 
 export function RecentSuratTable({ data }: RecentSuratTableProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
-    <Card>
+    <>
+      {isLoading && <LoadingScreen />}
+      <Card>
       <CardHeader>
         <h3 className="text-lg font-semibold">Surat Terkini</h3>
       </CardHeader>
@@ -67,6 +80,7 @@ export function RecentSuratTable({ data }: RecentSuratTableProps) {
             <TableColumn>STATUS</TableColumn>
             <TableColumn>RATING</TableColumn>
             <TableColumn>TANGGAL</TableColumn>
+            <TableColumn align="end">ACTIONS</TableColumn>
           </TableHeader>
           <TableBody emptyContent="Tidak ada data surat">
             {data.map((item) => (
@@ -86,7 +100,11 @@ export function RecentSuratTable({ data }: RecentSuratTableProps) {
                 <TableCell>
                   {item.penilaian ? (
                     <div className="flex items-center gap-2">
-                      <StarRating value={item.penilaian.rating} readonly size="sm" />
+                      <StarRating
+                        value={item.penilaian.rating}
+                        readonly
+                        size="sm"
+                      />
                     </div>
                   ) : (
                     <span className="text-xs text-default-400">-</span>
@@ -99,11 +117,60 @@ export function RecentSuratTable({ data }: RecentSuratTableProps) {
                     year: "numeric",
                   })}
                 </TableCell>
+                <TableCell>
+                  <div className="flex items-center justify-end gap-2">
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      color="primary"
+                      isIconOnly
+                      onPress={async () => {
+                        setIsLoading(true);
+                        try {
+                          await previewSuratPdf(item.id);
+                        } catch (err: any) {
+                          showToast({
+                            title: "Gagal Preview",
+                            description: err.message,
+                            color: "error",
+                          });
+                        } finally {
+                          setIsLoading(false);
+                        }
+                      }}
+                    >
+                      <DocumentIcon className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      color="secondary"
+                      isIconOnly
+                      onPress={async () => {
+                        setIsLoading(true);
+                        try {
+                          await previewSuratPengantar(item.id);
+                        } catch (err: any) {
+                          showToast({
+                            title: "Gagal Preview",
+                            description: err.message,
+                            color: "error",
+                          });
+                        } finally {
+                          setIsLoading(false);
+                        }
+                      }}
+                    >
+                      <DocumentTextIcon className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </CardBody>
     </Card>
+    </>
   );
 }

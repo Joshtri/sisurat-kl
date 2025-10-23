@@ -1,11 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Spinner } from "@heroui/spinner";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { DocumentIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
+import { previewSuratPdf, previewSuratPengantar } from "@/services/suratService";
+import { showToast } from "@/utils/toastHelper";
+import LoadingScreen from "@/components/ui/loading/LoadingScreen";
 
 interface DetailModalProps {
   isOpen: boolean;
@@ -57,6 +62,8 @@ export function DetailModal({
   startDate,
   endDate,
 }: DetailModalProps) {
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+
   const { data, isLoading } = useQuery({
     queryKey: ["surat-detail", filterType, filterValue, period, startDate, endDate],
     queryFn: async () => {
@@ -86,7 +93,9 @@ export function DetailModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="3xl" scrollBehavior="inside">
+    <>
+      {isLoadingPreview && <LoadingScreen />}
+      <Modal isOpen={isOpen} onClose={onClose} size="3xl" scrollBehavior="inside">
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
           {getTitle()}
@@ -141,6 +150,52 @@ export function DetailModal({
                       })}
                     </div>
                   </div>
+                  <div className="flex gap-2 mt-3 pt-3 border-t border-default-200">
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      color="primary"
+                      startContent={<DocumentIcon className="w-4 h-4" />}
+                      onPress={async () => {
+                        setIsLoadingPreview(true);
+                        try {
+                          await previewSuratPdf(surat.id);
+                        } catch (err: any) {
+                          showToast({
+                            title: "Gagal Preview",
+                            description: err.message,
+                            color: "error",
+                          });
+                        } finally {
+                          setIsLoadingPreview(false);
+                        }
+                      }}
+                    >
+                      Preview PDF
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      color="secondary"
+                      startContent={<DocumentTextIcon className="w-4 h-4" />}
+                      onPress={async () => {
+                        setIsLoadingPreview(true);
+                        try {
+                          await previewSuratPengantar(surat.id);
+                        } catch (err: any) {
+                          showToast({
+                            title: "Gagal Preview",
+                            description: err.message,
+                            color: "error",
+                          });
+                        } finally {
+                          setIsLoadingPreview(false);
+                        }
+                      }}
+                    >
+                      Preview Pengantar
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -157,5 +212,6 @@ export function DetailModal({
         </ModalFooter>
       </ModalContent>
     </Modal>
+    </>
   );
 }
