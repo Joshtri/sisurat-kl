@@ -22,9 +22,10 @@ interface LaporanStatsProps {
     totalRating: number;
     averageRating: number;
   };
+  onCardClick?: (filterType: "all" | "status", filterValue: string) => void;
 }
 
-export function LaporanStats({ summary, ratingStats }: LaporanStatsProps) {
+export function LaporanStats({ summary, ratingStats, onCardClick }: LaporanStatsProps) {
   const stats = [
     {
       title: "Total Surat",
@@ -32,6 +33,8 @@ export function LaporanStats({ summary, ratingStats }: LaporanStatsProps) {
       icon: DocumentTextIcon,
       color: "text-primary",
       bgColor: "bg-primary/10",
+      filterType: "all" as const,
+      filterValue: "all",
     },
     {
       title: "Diterbitkan",
@@ -39,6 +42,8 @@ export function LaporanStats({ summary, ratingStats }: LaporanStatsProps) {
       icon: CheckCircleIcon,
       color: "text-success",
       bgColor: "bg-success/10",
+      filterType: "status" as const,
+      filterValue: "DITERBITKAN",
     },
     {
       title: "Menunggu",
@@ -46,6 +51,8 @@ export function LaporanStats({ summary, ratingStats }: LaporanStatsProps) {
       icon: ClockIcon,
       color: "text-warning",
       bgColor: "bg-warning/10",
+      filterType: "status" as const,
+      filterValue: "MENUNGGU",
     },
     {
       title: "Ditolak",
@@ -53,6 +60,8 @@ export function LaporanStats({ summary, ratingStats }: LaporanStatsProps) {
       icon: XCircleIcon,
       color: "text-danger",
       bgColor: "bg-danger/10",
+      filterType: "status" as const,
+      filterValue: "DITOLAK",
     },
   ];
 
@@ -63,7 +72,12 @@ export function LaporanStats({ summary, ratingStats }: LaporanStatsProps) {
           const Icon = stat.icon;
 
           return (
-            <Card key={index}>
+            <Card
+              key={index}
+              isPressable
+              onPress={() => onCardClick?.(stat.filterType, stat.filterValue)}
+              className="cursor-pointer hover:scale-[1.02] transition-transform"
+            >
               <CardBody>
                 <div className="flex items-center gap-4">
                   <div className={`p-3 rounded-lg ${stat.bgColor}`}>

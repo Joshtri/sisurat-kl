@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
     const period = searchParams.get("period") || "all";
     const customStart = searchParams.get("startDate") || undefined;
     const customEnd = searchParams.get("endDate") || undefined;
-    const filterType = searchParams.get("filterType"); // "jenis" or "status"
+    const filterType = searchParams.get("filterType"); // "jenis", "status", or "all"
     const filterValue = searchParams.get("filterValue");
 
     if (!filterType || !filterValue) {
@@ -90,7 +90,23 @@ export async function GET(request: NextRequest) {
 
     // Add specific filter
     if (filterType === "status") {
-      whereClause.status = filterValue;
+      // Handle special status filters
+      if (filterValue === "MENUNGGU") {
+        whereClause.status = {
+          in: [
+            "DIAJUKAN",
+            "DIVERIFIKASI_STAFF",
+            "DIVERIFIKASI_RT",
+            "DIVERIFIKASI_LURAH",
+          ],
+        };
+      } else if (filterValue === "DITOLAK") {
+        whereClause.status = {
+          in: ["DITOLAK_STAFF", "DITOLAK_RT", "DITOLAK_LURAH"],
+        };
+      } else {
+        whereClause.status = filterValue;
+      }
     } else if (filterType === "jenis") {
       // Get jenis surat by name
       const jenisSurat = await prisma.jenisSurat.findFirst({
@@ -105,6 +121,9 @@ export async function GET(request: NextRequest) {
       }
 
       whereClause.idJenisSurat = jenisSurat.id;
+    } else if (filterType === "all") {
+      // No additional filter, just use date range
+      // whereClause already has the date range filter
     }
 
     // Get surat data with filter

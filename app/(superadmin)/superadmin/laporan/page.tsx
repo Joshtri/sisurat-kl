@@ -9,6 +9,7 @@ import { LaporanStats } from "@/components/Laporan/LaporanStats";
 import { LaporanCharts } from "@/components/Laporan/LaporanCharts";
 import { RecentSuratTable } from "@/components/Laporan/RecentSuratTable";
 import { RatingPerRole } from "@/components/Laporan/RatingPerRole";
+import { DetailModal } from "@/components/Laporan/DetailModal";
 import { exportLaporan, getLaporanData } from "@/services/laporanService";
 import { SkeletonCard } from "@/components/ui/skeleton/SkeletonCard";
 
@@ -17,6 +18,15 @@ export default function LaporanPage() {
   const [startDate, setStartDate] = useState<string>();
   const [endDate, setEndDate] = useState<string>();
   const [isExporting, setIsExporting] = useState(false);
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    filterType: "jenis" | "status" | "all" | null;
+    filterValue: string;
+  }>({
+    isOpen: false,
+    filterType: null,
+    filterValue: "",
+  });
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["laporan", period, startDate, endDate],
@@ -44,6 +54,25 @@ export default function LaporanPage() {
     } finally {
       setIsExporting(false);
     }
+  };
+
+  const handleCardClick = (
+    filterType: "all" | "status",
+    filterValue: string,
+  ) => {
+    setModalState({
+      isOpen: true,
+      filterType,
+      filterValue,
+    });
+  };
+
+  const handleCloseModal = () => {
+    setModalState({
+      isOpen: false,
+      filterType: null,
+      filterValue: "",
+    });
   };
 
   return (
@@ -99,7 +128,11 @@ export default function LaporanPage() {
       {isLoading ? (
         <SkeletonCard rows={1} />
       ) : data ? (
-        <LaporanStats summary={data.summary} ratingStats={data.ratingStats} />
+        <LaporanStats
+          summary={data.summary}
+          ratingStats={data.ratingStats}
+          onCardClick={handleCardClick}
+        />
       ) : null}
 
       {/* Rating Per Role */}
@@ -157,6 +190,17 @@ export default function LaporanPage() {
           </CardBody>
         </Card>
       )}
+
+      {/* Detail Modal */}
+      <DetailModal
+        isOpen={modalState.isOpen}
+        onClose={handleCloseModal}
+        filterType={modalState.filterType}
+        filterValue={modalState.filterValue}
+        period={period}
+        startDate={startDate}
+        endDate={endDate}
+      />
     </div>
   );
 }

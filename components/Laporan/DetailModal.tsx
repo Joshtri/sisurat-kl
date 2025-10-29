@@ -15,7 +15,7 @@ import LoadingScreen from "@/components/ui/loading/LoadingScreen";
 interface DetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  filterType: "jenis" | "status" | null;
+  filterType: "jenis" | "status" | "all" | null;
   filterValue: string;
   period: string;
   startDate?: string;
@@ -88,6 +88,9 @@ export function DetailModal({
     }
     if (filterType === "status") {
       return `Detail: ${statusLabels[filterValue] || filterValue}`;
+    }
+    if (filterType === "all") {
+      return "Detail: Semua Surat";
     }
     return "Detail";
   };
