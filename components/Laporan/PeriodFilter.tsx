@@ -103,7 +103,7 @@ export function PeriodFilter({ onPeriodChange, onExport, isLoading }: PeriodFilt
               startContent={<DocumentArrowDownIcon className="w-5 h-5" />}
               isLoading={isLoading}
             >
-              Export CSV
+              Export EXCEL
             </Button>
           </div>
 
