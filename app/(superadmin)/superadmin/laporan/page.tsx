@@ -82,7 +82,7 @@ export default function LaporanPage() {
         <h1 className="text-3xl font-bold">Laporan & Statistik</h1>
         <p className="text-default-600">
           Lihat laporan dan statistik pengajuan surat secara komprehensif
-        </p>+
+        </p>
       </div>
 
       {/* Filter */}

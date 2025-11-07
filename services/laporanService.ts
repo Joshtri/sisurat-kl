@@ -62,7 +62,7 @@ export async function exportLaporan(
   period: string = "month",
   startDate?: string,
   endDate?: string,
-  format: string = "csv"
+  format: string = "xlsx"
 ) {
   const params = new URLSearchParams({ period, format });
   if (startDate) params.append("startDate", startDate);
@@ -76,7 +76,7 @@ export async function exportLaporan(
   const url = window.URL.createObjectURL(new Blob([res.data]));
   const link = document.createElement("a");
   link.href = url;
-  link.setAttribute("download", `laporan-surat-${period}-${new Date().toISOString().split("T")[0]}.csv`);
+  link.setAttribute("download", `laporan-surat-${period}-${new Date().toISOString().split("T")[0]}.xlsx`);
   document.body.appendChild(link);
   link.click();
   link.remove();

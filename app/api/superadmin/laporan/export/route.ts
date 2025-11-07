@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import * as XLSX from "xlsx";
 
 import { prisma } from "@/lib/prisma";
 
@@ -154,7 +155,120 @@ export async function GET(request: NextRequest) {
       "Catatan Penolakan Staff": surat.catatanPenolakan || "-",
     }));
 
-    if (format === "csv") {
+    if (format === "xlsx" || format === "excel") {
+      const headers = [
+        "No Surat",
+        "Jenis Surat",
+        "Kode Jenis",
+        "Pemohon",
+        "NIK Pemohon",
+        "Status",
+        "Tanggal Pengajuan",
+        "RT Verifikator",
+        "Tanggal Verifikasi RT",
+        "Staff Verifikator",
+        "Tanggal Verifikasi Staff",
+        "Lurah Verifikator",
+        "Tanggal Verifikasi Lurah",
+        "Alasan Pengajuan",
+        "Catatan Penolakan RT",
+        "Catatan Penolakan Staff",
+      ];
+
+      // Create workbook and worksheet
+      const ws = XLSX.utils.json_to_sheet(exportData, { header: headers });
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Laporan Surat");
+
+      // Define header style (merged cells for title)
+      const range = XLSX.utils.decode_range(ws["!ref"] || "A1");
+
+      // Set column widths
+      const columnWidths: Record<string, number> = {
+        A: 12, // No Surat
+        B: 18, // Jenis Surat
+        C: 12, // Kode Jenis
+        D: 18, // Pemohon
+        E: 16, // NIK Pemohon
+        F: 12, // Status
+        G: 16, // Tanggal Pengajuan
+        H: 18, // RT Verifikator
+        I: 18, // Tanggal Verifikasi RT
+        J: 18, // Staff Verifikator
+        K: 20, // Tanggal Verifikasi Staff
+        L: 18, // Lurah Verifikator
+        M: 20, // Tanggal Verifikasi Lurah
+        N: 20, // Alasan Pengajuan
+        O: 20, // Catatan Penolakan RT
+        P: 20, // Catatan Penolakan Staff
+      };
+
+      ws["!cols"] = Object.values(columnWidths).map((wch) => ({ wch }));
+
+      // Style header row with background color and bold font
+      for (let col = 0; col <= range.e.c; col++) {
+        const cellAddress = XLSX.utils.encode_col(col) + "1";
+        if (ws[cellAddress]) {
+          ws[cellAddress].s = {
+            fill: { fgColor: { rgb: "366092" } }, // Dark blue background
+            font: { bold: true, color: { rgb: "FFFFFF" } }, // White bold text
+            alignment: { horizontal: "center", vertical: "center", wrapText: true },
+            border: {
+              top: { style: "thin", color: { rgb: "000000" } },
+              bottom: { style: "thin", color: { rgb: "000000" } },
+              left: { style: "thin", color: { rgb: "000000" } },
+              right: { style: "thin", color: { rgb: "000000" } },
+            },
+          };
+        }
+      }
+
+      // Style data rows with alternating colors and borders
+      for (let row = 2; row <= range.e.r + 1; row++) {
+        const bgColor = row % 2 === 0 ? "E7E6E6" : "FFFFFF"; // Light gray for even rows
+
+        for (let col = 0; col <= range.e.c; col++) {
+          const cellAddress = XLSX.utils.encode_col(col) + row;
+          if (ws[cellAddress]) {
+            ws[cellAddress].s = {
+              fill: { fgColor: { rgb: bgColor } },
+              alignment: { horizontal: "left", vertical: "center", wrapText: true },
+              border: {
+                top: { style: "thin", color: { rgb: "CCCCCC" } },
+                bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+                left: { style: "thin", color: { rgb: "CCCCCC" } },
+                right: { style: "thin", color: { rgb: "CCCCCC" } },
+              },
+            };
+
+            // Center align status column
+            if (col === 5) {
+              ws[cellAddress].s!.alignment = { horizontal: "center", vertical: "center", wrapText: true };
+            }
+          }
+        }
+      }
+
+      // Set row heights
+      ws["!rows"] = [
+        { hpx: 25 }, // Header row height
+        ...Array(exportData.length).fill({ hpx: 20 }), // Data row heights
+      ];
+
+      // Freeze header row
+      ws["!freeze"] = { xSplit: 0, ySplit: 1 };
+
+      // Generate Excel file
+      const buffer = XLSX.write(wb, { bookType: "xlsx", type: "buffer" });
+
+      // Return Excel file
+      return new NextResponse(buffer, {
+        headers: {
+          "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "Content-Disposition": `attachment; filename="laporan-surat-${period}-${new Date().toISOString().split("T")[0]}.xlsx"`,
+        },
+      });
+    } else if (format === "csv") {
       const headers = [
         "No Surat",
         "Jenis Surat",
