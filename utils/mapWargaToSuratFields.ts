@@ -18,5 +18,6 @@ export function mapWargaToSuratFields(warga: Warga) {
     pekerjaan: warga.pekerjaan,
     alamat: warga.alamat,
     noTelepon: warga.noTelepon,
+    "dataSurat.alamatDomisili": warga.alamat, // Auto-fill alamat domisili dari data KK
   };
 }

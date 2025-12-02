@@ -20,6 +20,7 @@ const statusIndexMap: Record<StatusSurat, number> = {
 
 export default function SuratProgress({ status }: SuratProgressProps) {
   const currentStep = statusIndexMap[status];
+  const isRejected = status.includes("DITOLAK");
 
   return (
     <div className="flex items-center space-x-2 mt-4 flex-wrap">
@@ -35,14 +36,16 @@ export default function SuratProgress({ status }: SuratProgressProps) {
                   isActive
                     ? "bg-green-500 border-green-500"
                     : isCurrent
-                      ? "bg-yellow-400 border-yellow-500 animate-pulse"
+                      ? isRejected
+                        ? "bg-red-500 border-red-600 animate-pulse"
+                        : "bg-yellow-400 border-yellow-500 animate-pulse"
                       : "bg-gray-200 border-gray-300"
                 }`}
               />
               <span
                 className={`text-sm ${
                   isActive || isCurrent ? "font-semibold" : "text-gray-400"
-                }`}
+                } ${isCurrent && isRejected ? "text-red-600" : ""}`}
               >
                 {step}
               </span>
