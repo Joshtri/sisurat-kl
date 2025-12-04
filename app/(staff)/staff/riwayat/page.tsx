@@ -37,7 +37,7 @@ export default function RiwayatPage() {
     pemohon: item.namaLengkap,
     rtrw: `${item.rt || "-"} / ${item.rw || "-"}`,
     status: item.status.replaceAll("_", " "),
-    tanggal: formatDateIndo(item.tanggalPengajuan),
+    tanggal: formatDateIndo(item.tanggalPengajuan, true),
     actions: (
       <div className="flex items-center gap-2">
         <TableActionsInline

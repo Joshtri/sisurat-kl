@@ -34,18 +34,23 @@ export function formatDateIndo(dateString: string, withTime = false): string {
   if (!dateString) return "-";
   const date = new Date(dateString);
 
-  const options: Intl.DateTimeFormatOptions = {
+  const dateOptions: Intl.DateTimeFormatOptions = {
     day: "2-digit",
     month: "long",
     year: "numeric",
   };
 
   if (withTime) {
-    options.hour = "2-digit";
-    options.minute = "2-digit";
+    return date.toLocaleString("id-ID", {
+      ...dateOptions,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
   }
 
-  return date.toLocaleDateString("id-ID", options);
+  return date.toLocaleDateString("id-ID", dateOptions);
 }
 
 export const getRoleColor = (role?: string) => {

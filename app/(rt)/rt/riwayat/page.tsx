@@ -35,7 +35,7 @@ export default function RiwayatPage() {
     nama: item.pemohon?.profil?.namaLengkap || item.pemohon?.username,
     nik: item.pemohon?.profil?.nik || "-",
     jenis: item.jenis?.nama || "-",
-    tanggal: formatDateIndo(item.tanggalPengajuan),
+    tanggal: formatDateIndo(item.tanggalPengajuan, true),
     status: item.status.replace(/_/g, " "),
   }));
 

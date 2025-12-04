@@ -151,11 +151,15 @@ export default function HistorySuratPermohonanPage() {
 
   const totalPages = Math.ceil(history.length / itemsPerPage);
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("id-ID", {
+  const formatDateTime = (date: string) => {
+    return new Date(date).toLocaleString("id-ID", {
       day: "2-digit",
       month: "long",
       year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
     });
   };
 
@@ -224,7 +228,7 @@ export default function HistorySuratPermohonanPage() {
                         <div className="flex items-center gap-2 mt-1">
                           <CalendarIcon className="h-4 w-4 text-default-400" />
                           <span className="text-sm text-default-500">
-                            {formatDate(surat.createdAt)}
+                            {formatDateTime(surat.createdAt)}
                           </span>
                         </div>
                       </div>
